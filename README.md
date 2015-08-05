@@ -1,6 +1,10 @@
-# Ember-ajax
+# ember-ajax
 
-This README outlines the details of collaborating on this Ember addon.
+Ember-friendly jQuery.ajax wrapper.
+
+* returns RSVP promises
+* makes apps more testable (resolves promises with Ember.run)
+* makes testing ajax simpler with fixture support
 
 ## Installation
 
@@ -23,3 +27,7 @@ This README outlines the details of collaborating on this Ember addon.
 * `ember build`
 
 For more information on using ember-cli, visit [http://www.ember-cli.com/](http://www.ember-cli.com/).
+
+## Special Thanks
+
+Fork of [instructure/ic-ajax](https://github.com/instructure/ic-ajax). Inspired by [discourse ajax](https://github.com/discourse/discourse/blob/master/app/assets/javascripts/discourse/mixins/ajax.js#L19).
