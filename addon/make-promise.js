@@ -14,7 +14,7 @@ export default function makePromise(settings) {
 }
 
 function makeSuccess(resolve) {
-  return function(response, textStatus, jqXHR) {
+  return function success(response, textStatus, jqXHR) {
     run(null, resolve, {
       response: response,
       textStatus: textStatus,
@@ -24,7 +24,7 @@ function makeSuccess(resolve) {
 }
 
 function makeError(reject) {
-  return function(jqXHR, textStatus, errorThrown) {
+  return function error(jqXHR, textStatus, errorThrown) {
     run(null, reject, {
       jqXHR: jqXHR,
       textStatus: textStatus,
