@@ -1,3 +1,4 @@
+import Ember from 'ember';
 import makePromise from './make-promise';
 /*
  * Same as `request` except it resolves an object with `{response, textStatus,
