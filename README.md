@@ -8,9 +8,20 @@ Ember-friendly jQuery.ajax wrapper.
 
 ## Installation
 
+### As an addon
+
+* `ember install ember-ajax`
+
+### For development
+
 * `git clone` this repository
 * `npm install`
 * `bower install`
+
+## Upgrade from `ic-ajax`
+
+1. Install `ember-ajax`
+2. Search for `ic-ajax` and replace with `ember-ajax`
 
 ## Running
 
