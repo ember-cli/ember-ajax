@@ -11,7 +11,7 @@ export default function makePromise(settings) {
     settings.error = makeError(reject);
     Ember.$.ajax(settings);
   }, 'ember-ajax: ' + (settings.type || 'GET') + ' to ' + settings.url);
-};
+}
 
 function makeSuccess(resolve) {
   return function(response, textStatus, jqXHR) {
@@ -20,7 +20,7 @@ function makeSuccess(resolve) {
       textStatus: textStatus,
       jqXHR: jqXHR
     });
-  }
+  };
 }
 
 function makeError(reject) {
