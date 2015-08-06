@@ -4,9 +4,10 @@ import {
 } from 'qunit';
 import Pretender from 'pretender';
 import raw from 'ember-ajax/raw';
+import {parseArgs} from 'ember-ajax/raw';
 
 let api;
-module('request', {
+module('raw', {
   beforeEach() {
     api = new Pretender();
   },
@@ -51,4 +52,12 @@ test('raw() rejects promise when 404 is returned', function(assert){
     .finally(function(){
       assert.equal(errorCalled, true, "error handler was called");
     });
+});
+
+test('parseArgs', function(assert){
+  assert.deepEqual(parseArgs('http://example.com'), { url: 'http://example.com' },
+    'single string argument treated as url');
+  assert.deepEqual(parseArgs({data: {}}), { data: {}}, 'hash treated as settings');
+  assert.deepEqual(parseArgs('http://example.com', {data: {}}), {url: 'http://example.com', data: {}},
+    'first argument (string) merged into second argument as url');
 });
