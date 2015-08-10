@@ -4,7 +4,6 @@ import {
 } from 'qunit';
 import Pretender from 'pretender';
 import raw from 'ember-ajax/raw';
-import {parseArgs} from 'ember-ajax/raw';
 
 let api;
 module('raw', {
@@ -18,6 +17,7 @@ module('raw', {
 
 // Replace this with your real tests.
 test('raw() returns jqXHR', function(assert) {
+  assert.expect(3);
   const photos = [
     { id: 10, src: 'http://media.giphy.com/media/UdqUo8xvEcvgA/giphy.gif' },
     { id: 42, src: 'http://media0.giphy.com/media/Ko2pyD26RdYRi/giphy.gif'}
@@ -25,11 +25,12 @@ test('raw() returns jqXHR', function(assert) {
   api.get('/photos', function(){
     return [200, {"Content-Type": "application/json"}, JSON.stringify(photos)];
   });
-  return raw('/photos').then(function(data){
-    assert.deepEqual(data.response, photos, 'returned data is same as send data');
-    assert.ok(data.jqXHR, 'jqXHR is present');
-    assert.equal(data.textStatus, 'success', 'textStatus is success');
-  });
+  return raw('/photos')
+    .then(function(data){
+      assert.deepEqual(data.response, photos, 'returned data is same as send data');
+      assert.ok(data.jqXHR, 'jqXHR is present');
+      assert.equal(data.textStatus, 'success', 'textStatus is success');
+    });
 });
 
 test('raw() rejects promise when 404 is returned', function(assert){
@@ -52,12 +53,4 @@ test('raw() rejects promise when 404 is returned', function(assert){
     .finally(function(){
       assert.equal(errorCalled, true, "error handler was called");
     });
-});
-
-test('parseArgs', function(assert){
-  assert.deepEqual(parseArgs('http://example.com'), { url: 'http://example.com' },
-    'single string argument treated as url');
-  assert.deepEqual(parseArgs({data: {}}), { data: {}}, 'hash treated as settings');
-  assert.deepEqual(parseArgs('http://example.com', {data: {}}), {url: 'http://example.com', data: {}},
-    'first argument (string) merged into second argument as url');
 });

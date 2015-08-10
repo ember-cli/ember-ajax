@@ -1,27 +1,16 @@
-import Ember from 'ember';
 import makePromise from './make-promise';
+import parseArgs from './utils/parse-args';
+
 /*
  * Same as `request` except it resolves an object with `{response, textStatus,
  * jqXHR}`, useful if you need access to the jqXHR object for headers, etc.
  */
 export default function raw() {
-  return makePromise(parseArgs.apply(null, arguments));
-}
-
-export function parseArgs() {
-  var settings = {};
-  if (arguments.length === 1) {
-    if (typeof arguments[0] === "string") {
-      settings.url = arguments[0];
-    } else {
-      settings = arguments[0];
-    }
-  } else if (arguments.length === 2) {
-    settings = arguments[1];
-    settings.url = arguments[0];
+  let [ url, type, settings ] = parseArgs.apply(null, arguments);
+  if (!settings) {
+    settings = {};
   }
-  if (settings.success || settings.error) {
-    throw new Ember.Error("ajax should use promises, received 'success' or 'error' callback");
-  }
-  return settings;
+  settings.url = url;
+  settings.type = type;
+  return makePromise(settings);
 }

@@ -6,11 +6,12 @@ const {
 } = Ember;
 
 export default function makePromise(settings) {
+  const type = settings.type || 'GET';
   return new RSVP.Promise(function(resolve, reject) {
     settings.success = makeSuccess(resolve);
     settings.error = makeError(reject);
     Ember.$.ajax(settings);
-  }, 'ember-ajax: ' + (settings.type || 'GET') + ' to ' + settings.url);
+  }, `ember-ajax: ${type} to ${settings.url}`);
 }
 
 function makeSuccess(resolve) {
