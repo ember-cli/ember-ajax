@@ -4,7 +4,16 @@ Ember-friendly jQuery.ajax wrapper.
 
 * returns RSVP promises
 * makes apps more testable (resolves promises with Ember.run)
-* makes testing ajax simpler with fixture support
+* provides mechanism for pulling headers from session
+* upgrade path for ic-ajax
+
+## Ajax Service
+
+## Upgrade from `ic-ajax`
+
+1. `npm uninstall --save-dev ember-cli-ic-ajax`
+2. `ember install ember-ajax`
+3. Search and replace `ic-ajax` with `ember-ajax`
 
 ## Installation
 
@@ -17,12 +26,6 @@ Ember-friendly jQuery.ajax wrapper.
 * `git clone` this repository
 * `npm install`
 * `bower install`
-
-## Upgrade from `ic-ajax`
-
-1. `npm uninstall --save-dev ember-cli-ic-ajax`
-2. `ember install ember-ajax`
-3. Search and replace `ic-ajax` with `ember-ajax`
 
 ## Running
 
