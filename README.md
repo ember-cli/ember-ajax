@@ -10,7 +10,7 @@ Provides Ajax Service for Ember 1.13+ applications.
 
 ## Why an Ajax Service?
 
-We need a singleton mechanism for working with Ajax because currently many Ember
+We need a singleton mechanism for making Ajax requests because currently many Ember
 applications have at least two ways to talk to backend APIs. With Ember Data,
 `RESTAdapter#ajax` offers the ability to specify custom headers and good error
 reporting. When making requests that don't require Ember Data, getting the same
