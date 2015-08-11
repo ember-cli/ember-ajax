@@ -1,11 +1,36 @@
 # ember-ajax
 
-Provides Ajax Service for Ember applications.
+Provides Ajax Service for Ember 1.13+ applications.
 
 * customizable service
 * returns RSVP promises
 * improved error handling
 * ability to specify request headers
+* upgrade path from `ic-ajax`
+
+## Getting started
+
+Once you installed the addon with `ember install ember-ajax`, you have to opt-in
+to use the service by adding `ajax` service to your `app/services` directory.
+
+```js
+import AjaxService from 'ember-ajax/service';
+
+export default AjaxService.extend();
+```
+
+Then inject the `ajax` service into your route or component.
+
+```js
+import Ember from 'ember';
+
+export default Ember.Route.extend({
+  ajax: Ember.inject.service(),
+  model() {
+    return this.get('ajax').request('/posts');
+  }
+})
+```
 
 ## Ajax Service
 
@@ -80,7 +105,6 @@ import {UnauthorizedError, ForbiddenError} from 'ember-ajax/errors';
 
 export default Ember.Route.extend({
   model() {
-    //
     return this.get('ajax').request('/user/me')
       .catch(function(error){
         if (error instanceof UnauthorizedError) {
@@ -98,9 +122,34 @@ export default Ember.Route.extend({
 
 ## Upgrade from `ic-ajax`
 
-1. `npm uninstall --save-dev ember-cli-ic-ajax`
-2. `ember install ember-ajax`
-3. Search and replace `ic-ajax` with `ember-ajax`
+This addon was written to supersede `ic-ajax` and `ember-cli-ic-ajax` addon
+because `ic-ajax` includes features and practices that are no longer considered
+best practices.
+
+`ic-ajax` also wraps requests in `Ember.run` which is no longer necessary on Ember 1.13+.
+It also includes fixtures functionality which is inferior to [ember-cli-mirage](http://www.ember-cli-mirage.com).
+Furthermore, `ic-ajax` author is no longer actively involved in the Ember community.
+
+In most cases, it should be fairly easy to upgrade to `ember-ajax`. To aid you
+in the migration process, I would recommend that you follow the following steps.
+
+1. Install `ember-ajax` with `ember install ember-ajax`
+2. Search and replace `ic-ajax` with `ember-ajax`
+3. Run your test suite and look for `ic-ajax` related deprecations
+4. Refactor your code to eliminate the deprecations.
+5. Uninstall `ic-ajax` with `npm uninstall --save-dev ember-cli-ic-ajax`
+
+Here is a list of notable changes that you need to consider when refactoring.
+
+* `ic-ajax` is used by importing `ic-ajax` into a module. `ember-ajax` is used
+  by injecting `ajax` service into a route or component.
+* `ic-ajax` error handler returns a hash with { jqXHR, textStatus, errorThrown }.
+  `ember-ajax` returns an error object that's an instance of `AjaxError`.
+  `error` object will be either `AjaxError` with `error.status`, `InvalidError`,
+   `UnauthorizedError` or `ForbiddenError`.
+* When you `import ajax from 'ic-ajax'`, `ajax` function will resolve to payload,
+  same way as `ajax.request`. `import raw from 'ic-ajax/raw'` resolves to raw
+  `jqXHR` object with payload on `response` property.
 
 ## Installation
 
