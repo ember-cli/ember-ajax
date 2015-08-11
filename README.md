@@ -9,6 +9,33 @@ Provides Ajax Service for Ember applications.
 
 ## Ajax Service
 
+### Custom Request Headers
+
+`ember-ajax` allows you to specify headers to be used with a request. This is
+especially helpful when you have a session service that provides an auth token
+that you have to include with the requests to authorize your requests.
+
+To include custom headers to be used with your requests, you can specify `headers`
+hash on the `Ajax Service`.
+
+```js
+import Ember from 'ember';
+import AjaxService from 'ember-ajax/service';
+
+export default AjaxService.extend({
+  session: Ember.inject.service(),
+  headers: Ember.computed('session.authToken', {
+    get() {
+      let headers = {};
+      const authToken = this.get('session.authToken');
+      if (authToken) {
+        headers['auth-token'] = authToken;
+      }
+    }
+  })
+});
+```
+
 ### Error handling
 
 `ember-ajax` provides built in error classes that you can use to check the error
@@ -42,9 +69,10 @@ export default AjaxService.extend({
 #### Built in error types
 
 `ember-ajax` has some built in error types that you can use to check error with
-instanceof rather than by numberic number. The built in types are
-`InvalidError`(422), `UnauthorizedError`(401) and `ForbiddenError`(403).
-
+instanceof rather than by comparing to a number. The built in types are
+`InvalidError`(422), `UnauthorizedError`(401) and `ForbiddenError`(403). Each of
+these types has a corresponding is* method to allow you to customize how error
+is determined.
 
 ```
 import Ember from 'ember';
@@ -53,13 +81,13 @@ import {UnauthorizedError, ForbiddenError} from 'ember-ajax/errors';
 export default Ember.Route.extend({
   model() {
     //
-    return this.get('ajax').request('/private/post/123')
+    return this.get('ajax').request('/user/me')
       .catch(function(error){
         if (error instanceof UnauthorizedError) {
           // user is not logged in
           this.transitionTo('login');
         } else if (error instanceof ForbiddenError) {
-          // user doesn't have access to this resource
+          // user doesn't have access to
           this.transitionTo('index');
         }
         throw error;
@@ -104,4 +132,4 @@ For more information on using ember-cli, visit [http://www.ember-cli.com/](http:
 
 ## Special Thanks
 
-Fork of [instructure/ic-ajax](https://github.com/instructure/ic-ajax). Inspired by [discourse ajax](https://github.com/discourse/discourse/blob/master/app/assets/javascripts/discourse/mixins/ajax.js#L19).
+This addon was based on ajax handing in Ember Data's Adapter.
