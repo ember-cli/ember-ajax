@@ -8,6 +8,20 @@ Provides Ajax Service for Ember 1.13+ applications.
 * ability to specify request headers
 * upgrade path from `ic-ajax`
 
+## Why an Ajax Service?
+
+We need a singleton mechanism for working with Ajax because currently many Ember
+applications have at least two ways to talk to backend APIs. With Ember Data,
+`RESTAdapter#ajax` offers the ability to specify custom headers and good error
+reporting. When making requests that don't require Ember Data, getting the same
+features is difficult because `ic-ajax` and `Ember.$.ajax` don't offer any
+interfaces that can automatically set headers based on property of another
+service (like a session service).
+
+The idea with this addon is to provide a service that can be used by both
+Ember Data and on ad-hoc bases and provides consistent interface for making
+Ajax requests.
+
 ## Getting started
 
 Once you installed the addon with `ember install ember-ajax`, you have to opt-in
@@ -67,7 +81,7 @@ export default AjaxService.extend({
 that was returned by the response. This allows you to restrict determination of
 error result to the service instead of sprinkling it around your code.
 
-#### Customize is isSuccess
+#### Customize isSuccess
 
 Some APIs respond with status code 200, even though an error has occurred and
 provide a status code in the payload. With the service, you can easily account
