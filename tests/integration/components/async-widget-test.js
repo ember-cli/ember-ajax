@@ -29,7 +29,7 @@ moduleForComponent('async-widget', {
 });
 
 test('service injected in component', function(assert) {
-  assert.expect(2);
+  assert.expect(3);
   const payload = { posts: [ { id: 1, title: 'hello world' } ] };
   server.get('/posts', json(200, payload ));
 
@@ -71,11 +71,18 @@ test('service injected in component', function(assert) {
     loadData() {
       const url = this.get('url');
       return this.get('ajax').request(url);
-    }
+    },
+    helloStyle: computed('hello', {
+      get() {
+        return `hello ${this.get('hello')}`;
+      }
+    })
   }));
 
   this.render(hbs`{{async-widget id="async-widget" url="/posts"}}`);
   return component.loadData().then(function(response){
+    component.set('hello', 'world');
+    assert.deepEqual(component.get('helloStyle'), 'hello world', 'run loop is not necessary');
     assert.deepEqual(receivedHeaders[0], ['authToken', 'foo'], 'token was used session');
     assert.deepEqual(response, payload, "recieved payload");
   });

@@ -8,8 +8,7 @@ import {
 import parseResponseHeaders from './utils/parse-response-headers';
 
 const {
-  get,
-  run
+  get
 } = Ember;
 
 /**
@@ -86,9 +85,9 @@ export default Ember.Service.extend({
         );
 
         if (response instanceof AjaxError) {
-          run(null, reject, response);
+          reject(response);
         } else {
-          run(null, resolve, response);
+          resolve(response);
         }
       };
 
@@ -106,8 +105,7 @@ export default Ember.Service.extend({
              );
            }
          }
-
-         run(null, reject, error);
+         reject(error);
       };
 
       Ember.$.ajax(hash);
