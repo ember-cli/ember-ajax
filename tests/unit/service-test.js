@@ -7,7 +7,8 @@ import {
 import Service from 'ember-ajax/service';
 import {
   InvalidError,
-  UnauthorizedError
+  UnauthorizedError,
+  ForbiddenError
  } from 'ember-ajax/errors';
 
 import Pretender from 'pretender';
@@ -112,4 +113,5 @@ const errorHandlerTest = ( status, errorClass ) => {
 };
 
 errorHandlerTest(401, UnauthorizedError);
+errorHandlerTest(403, ForbiddenError);
 errorHandlerTest(422, InvalidError);

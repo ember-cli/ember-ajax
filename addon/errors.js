@@ -30,3 +30,10 @@ export function UnauthorizedError(errors) {
 }
 
 UnauthorizedError.prototype = Object.create(AjaxError.prototype);
+
+export function ForbiddenError(errors) {
+  AjaxError.call(this, errors,
+    'Request was rejected because user is not permitted to perform this operation.');
+}
+
+ForbiddenError.prototype = Object.create(AjaxError.prototype);

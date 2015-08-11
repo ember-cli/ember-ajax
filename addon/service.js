@@ -3,7 +3,8 @@ import Ember from 'ember';
 import {
   AjaxError,
   UnauthorizedError,
-  InvalidError
+  InvalidError,
+  ForbiddenError
 } from './errors';
 import parseResponseHeaders from './utils/parse-response-headers';
 
@@ -164,6 +165,8 @@ export default Ember.Service.extend({
      return payload;
    } else if (this.isUnauthorized(status, headers, payload)) {
      return new UnauthorizedError(payload.errors);
+   } else if (this.isForbidden(status, headers, payload)){
+     return new ForbiddenError(payload.errors);
    } else if (this.isInvalid(status, headers, payload)) {
      return new InvalidError(payload.errors);
    }
@@ -184,6 +187,19 @@ export default Ember.Service.extend({
  */
   isUnauthorized(status/*, headers, payload */) {
     return status === 401;
+  },
+
+  /**
+     Default `handleResponse` implementation uses this hook to decide if the
+     response is a forbidden error.
+     @method isForbidden
+     @param  {Number} status
+     @param  {Object} headers
+     @param  {Object} payload
+     @return {Boolean}
+   */
+  isForbidden(status/*, headers, payload */) {
+    return status === 403;
   },
 
   /**

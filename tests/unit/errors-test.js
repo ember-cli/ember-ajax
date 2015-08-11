@@ -7,7 +7,8 @@ import Ember from 'ember';
 import {
   AjaxError,
   InvalidError,
-  UnauthorizedError
+  UnauthorizedError,
+  ForbiddenError
 } from 'ember-ajax/errors';
 
 module("unit/errors-test - AjaxError");
@@ -28,4 +29,10 @@ test("UnauthorizedError", function(assert){
   var error = new UnauthorizedError();
   assert.ok(error instanceof Error);
   assert.ok(error instanceof UnauthorizedError);
+});
+
+test("ForbiddenError", function(assert){
+  var error = new ForbiddenError();
+  assert.ok(error instanceof Error);
+  assert.ok(error instanceof ForbiddenError);
 });
