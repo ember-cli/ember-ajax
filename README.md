@@ -74,7 +74,7 @@ instanceof rather than by comparing to a number. The built in types are
 these types has a corresponding is* method to allow you to customize how error
 is determined.
 
-```
+```js
 import Ember from 'ember';
 import {UnauthorizedError, ForbiddenError} from 'ember-ajax/errors';
 
