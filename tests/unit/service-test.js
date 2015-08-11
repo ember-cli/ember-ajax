@@ -29,7 +29,6 @@ test('options() headers are set', function(assert){
   };
   ajaxOptions.beforeSend(fakeXHR);
   assert.deepEqual(receivedHeaders, [['Content-Type', 'application/json'], ['Other-key', 'Other Value']], 'headers assigned');
-
 });
 
 test("options() do not serializes data when GET", function(assert) {

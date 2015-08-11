@@ -7,7 +7,8 @@ import {
 import parseResponseHeaders from './utils/parse-response-headers';
 
 const {
-  get
+  get,
+  run
 } = Ember;
 
 /**
@@ -72,11 +73,11 @@ const {
 export default Ember.Service.extend({
 
   request(url, type, options) {
-    return new Ember.RSVP.Promise((resolve, reject) => {
-      const hash = this.options(url, type, options);
+    const hash = this.options(url, type, options);
 
-      hash.success = args => {
-        const { jqXHR, response: payload } = args;
+    return new Ember.RSVP.Promise((resolve, reject) => {
+
+      hash.success = (payload, textStatus, jqXHR) => {
         let response = this.handleResponse(
           jqXHR.status,
           parseResponseHeaders(jqXHR.getAllResponseHeaders()),
@@ -84,15 +85,13 @@ export default Ember.Service.extend({
         );
 
         if (response instanceof AjaxError) {
-          throw response;
-         } else {
-           return response;
-         }
+          run(null, reject, response);
+        } else {
+          run(null, resolve, response);
+        }
       };
 
-      hash.error = args => {
-        const { jqXHR, errorThrown } = args;
-
+      hash.error = (jqXHR, textStatus, errorThrown) => {
         let error;
 
          if (!(error instanceof Error)) {
@@ -107,11 +106,11 @@ export default Ember.Service.extend({
            }
          }
 
-         Ember.run(null, reject, error);
+         run(null, reject, error);
       };
 
       Ember.$.ajax(hash);
-    }, `ember-ajax: ${type} to ${url}`);
+    }, `ember-ajax: ${hash.type} to ${url}`);
   },
 
   /**
