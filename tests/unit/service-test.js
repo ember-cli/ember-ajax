@@ -3,11 +3,25 @@ import {
   module,
   test
 } from 'qunit';
-import Service from 'ember-ajax/service';
 
-let service;
+import Service from 'ember-ajax/service';
+import {
+  InvalidError,
+  UnauthorizedError
+ } from 'ember-ajax/errors';
+
+import Pretender from 'pretender';
+import json from 'dummy/tests/helpers/json';
+
+const { typeOf } = Ember;
+
+let service, server;
 module('service', {
+  beforeEach() {
+    server = new Pretender();
+  },
   afterEach(){
+    server.shutdown();
     Ember.run(service, 'destroy');
   }
 });
@@ -80,3 +94,22 @@ test("options() empty data", function(assert) {
     url: 'example.com'
   });
 });
+
+const errorHandlerTest = ( status, errorClass ) => {
+  test(`${status} handler`, function(assert){
+    server.get('/posts', json(status));
+    service = Service.create();
+    return service.request('/posts')
+      .then(function(){
+        assert.ok(false, 'success handler should not be called');
+      })
+      .catch(function(reason){
+        assert.ok(reason instanceof errorClass);
+        assert.ok(reason.errors && typeOf(reason.errors) === 'array',
+          "has errors array");
+      });
+  });
+};
+
+errorHandlerTest(401, UnauthorizedError);
+errorHandlerTest(422, InvalidError);

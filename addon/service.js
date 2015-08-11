@@ -1,7 +1,8 @@
 import Ember from 'ember';
 
-import AjaxError from './errors';
 import {
+  AjaxError,
+  UnauthorizedError,
   InvalidError
 } from './errors';
 import parseResponseHeaders from './utils/parse-response-headers';
@@ -121,7 +122,7 @@ export default Ember.Service.extend({
     @param {Object} options
     @return {Object}
   */
-  options: function(url, type, options) {
+  options(url, type, options) {
     var hash = options || {};
     hash.url = url;
     hash.type = type;
@@ -160,9 +161,11 @@ export default Ember.Service.extend({
    @param  {Object} payload
    @return {Object | DS.AdapterError} response
  */
- handleResponse: function(status, headers, payload) {
+ handleResponse(status, headers, payload) {
    if (this.isSuccess(status, headers, payload)) {
      return payload;
+   } else if (this.isUnauthorized(status, headers, payload)) {
+     return new UnauthorizedError(payload.errors);
    } else if (this.isInvalid(status, headers, payload)) {
      return new InvalidError(payload.errors);
    }
@@ -172,7 +175,20 @@ export default Ember.Service.extend({
    return new AjaxError(errors);
  },
 
-   /**
+  /**
+   Default `handleResponse` implementation uses this hook to decide if the
+   response is a an authorized error.
+   @method isUnauthorized
+   @param  {Number} status
+   @param  {Object} headers
+   @param  {Object} payload
+   @return {Boolean}
+ */
+  isUnauthorized(status/*, headers, payload */) {
+    return status === 401;
+  },
+
+  /**
     Default `handleResponse` implementation uses this hook to decide if the
     response is a an invalid error.
     @method isInvalid
@@ -181,8 +197,8 @@ export default Ember.Service.extend({
     @param  {Object} payload
     @return {Boolean}
   */
-  isInvalid: function(status/*, headers, payload */) {
-    return status === 422;
+  isInvalid(status/*, headers, payload */) {
+  return status === 422;
   },
 
    /**
@@ -194,7 +210,7 @@ export default Ember.Service.extend({
     @param  {Object} payload
     @return {Boolean}
   */
-  isSuccess: function(status/*, headers, payload */) {
+  isSuccess(status/*, headers, payload */) {
     return status >= 200 && status < 300 || status === 304;
   },
 
@@ -204,7 +220,7 @@ export default Ember.Service.extend({
     @param {String} responseText
     @return {Object}
   */
-  parseErrorResponse: function(responseText) {
+  parseErrorResponse(responseText) {
     var json = responseText;
 
     try {
@@ -222,7 +238,7 @@ export default Ember.Service.extend({
     @param  {Object} payload
     @return {Object} errors payload
   */
-  normalizeErrorResponse: function(status, headers, payload) {
+  normalizeErrorResponse(status, headers, payload) {
     if (payload && typeof payload === 'object' && payload.errors) {
       return payload.errors;
     } else {

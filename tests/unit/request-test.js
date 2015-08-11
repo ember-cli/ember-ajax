@@ -5,13 +5,13 @@ import {
 import Pretender from 'pretender';
 import request from 'ember-ajax/request';
 
-let api;
+let server;
 module('request', {
   beforeEach() {
-    api = new Pretender();
+    server = new Pretender();
   },
   afterEach() {
-    api.shutdown();
+    server.shutdown();
   }
 });
 
@@ -21,7 +21,7 @@ test('request() produces data', function(assert) {
     { id: 10, src: 'http://media.giphy.com/media/UdqUo8xvEcvgA/giphy.gif' },
     { id: 42, src: 'http://media0.giphy.com/media/Ko2pyD26RdYRi/giphy.gif'}
   ];
-  api.get('/photos', function(){
+  server.get('/photos', function(){
     return [200, {"Content-Type": "application/json"}, JSON.stringify(photos)];
   });
   return request('/photos').then(function(data){
@@ -31,7 +31,7 @@ test('request() produces data', function(assert) {
 
 test('request() rejects promise when 404 is returned', function(assert){
   assert.expect(3);
-  api.get('/photos', function(){
+  server.get('/photos', function(){
     return [404, {"Content-Type": "application/json"}];
   });
 

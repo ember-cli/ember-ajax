@@ -4,9 +4,10 @@ import {
 } from 'qunit';
 
 import Ember from 'ember';
-import AjaxError from 'ember-ajax/errors';
 import {
-  InvalidError
+  AjaxError,
+  InvalidError,
+  UnauthorizedError
 } from 'ember-ajax/errors';
 
 module("unit/errors-test - AjaxError");
@@ -21,4 +22,10 @@ test("InvalidError", function(assert) {
   var error = new InvalidError();
   assert.ok(error instanceof Error);
   assert.ok(error instanceof InvalidError);
+});
+
+test("UnauthorizedError", function(assert){
+  var error = new UnauthorizedError();
+  assert.ok(error instanceof Error);
+  assert.ok(error instanceof UnauthorizedError);
 });

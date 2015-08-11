@@ -6,7 +6,7 @@ const EmberError = Ember.Error;
   @class AjaxError
   @namespace DS
 */
-export default function AjaxError(errors, message = 'Ajax operation failed') {
+export function AjaxError(errors, message = 'Ajax operation failed') {
   EmberError.call(this, message);
 
   this.errors = errors || [
@@ -24,3 +24,9 @@ export function InvalidError(errors) {
 }
 
 InvalidError.prototype = Object.create(AjaxError.prototype);
+
+export function UnauthorizedError(errors) {
+  AjaxError.call(this, errors, 'Ajax authorization failed');
+}
+
+UnauthorizedError.prototype = Object.create(AjaxError.prototype);
