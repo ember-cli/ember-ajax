@@ -1,4 +1,4 @@
-# ember-ajax
+# ember-ajax [![Build Status](https://travis-ci.org/embersherpa/ember-ajax.svg)](https://travis-ci.org/embersherpa/ember-ajax)
 
 Provides Ajax Service for Ember 1.13+ applications.
 
