@@ -5,8 +5,8 @@ import {
   UnauthorizedError,
   InvalidError,
   ForbiddenError
-} from './errors';
-import parseResponseHeaders from './utils/parse-response-headers';
+} from '../errors';
+import parseResponseHeaders from '../utils/parse-response-headers';
 
 const {
   get
@@ -20,7 +20,7 @@ const {
   object and Ember Data will send them along with each ajax request.
 
   ```app/services/ajax
-  import AjaxService from 'ember-ajax/service';
+  import AjaxService from 'ember-ajax/services/ajax';
 
   export default AjaxService.extend({
     headers: {
@@ -35,7 +35,7 @@ const {
 
   ```app/services/ajax.js
   import Ember from 'ember';
-  import AjaxService from 'ember-ajax/service';
+  import AjaxService from 'ember-ajax/services/ajax';
 
   export default AjaxService.extend({
     session: Ember.inject.service(),
@@ -57,7 +57,7 @@ const {
 
   ```app/services/ajax.js
   import Ember from 'ember';
-  import AjaxService from 'ember-ajax/service';
+  import AjaxService from 'ember-ajax/services/ajax';
 
   export default AjaxService.extend({
     session: Ember.inject.service(),

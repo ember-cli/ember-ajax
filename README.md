@@ -24,16 +24,7 @@ Ajax requests.
 
 ## Getting started
 
-Once you installed the addon with `ember install ember-ajax`, you have to opt-in
-to use the service by adding `ajax` service to your `app/services` directory.
-
-```js
-import AjaxService from 'ember-ajax/service';
-
-export default AjaxService.extend();
-```
-
-Then inject the `ajax` service into your route or component.
+To use the ajax service, inject the `ajax` service into your route or component.
 
 ```js
 import Ember from 'ember';
@@ -59,7 +50,7 @@ hash on the `Ajax Service`.
 
 ```js
 import Ember from 'ember';
-import AjaxService from 'ember-ajax/service';
+import AjaxService from 'ember-ajax/services/ajax';
 
 export default AjaxService.extend({
   session: Ember.inject.service(),
@@ -90,7 +81,7 @@ for this behaviour by overwriting the `isSuccess` method.
 In app/services/ajax.js,
 
 ```js
-import AjaxService from 'ember-ajax/service';
+import AjaxService from 'ember-ajax/services/ajax';
 
 export default AjaxService.extend({
   isSuccess(status, headers, payload ) {

@@ -4,7 +4,7 @@ import {
   test
 } from 'qunit';
 
-import Service from 'ember-ajax/service';
+import Service from 'ember-ajax/services/ajax';
 import {
   InvalidError,
   UnauthorizedError,
@@ -17,7 +17,7 @@ import json from 'dummy/tests/helpers/json';
 const { typeOf } = Ember;
 
 let service, server;
-module('service', {
+module('service:ajax', {
   beforeEach() {
     server = new Pretender();
   },

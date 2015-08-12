@@ -12,7 +12,7 @@ const {
   computed
 } = Ember;
 
-import AjaxService from 'ember-ajax/service';
+import AjaxService from 'ember-ajax/services/ajax';
 import Pretender from 'pretender';
 import json from 'dummy/tests/helpers/json';
 
@@ -37,7 +37,7 @@ test('service injected in component', function(assert) {
   this.registry.register('service:session', Service.extend({ authToken }));
 
   let receivedHeaders = [];
-  this.registry.register('service:ajax', AjaxService.extend({
+  this.registry.register('service:fajax', AjaxService.extend({
     options() {
       let options = this._super.apply(this, arguments);
       var fakeXHR = {
@@ -64,7 +64,7 @@ test('service injected in component', function(assert) {
   let component;
   this.registry.register('component:async-widget', Component.extend({
     url: null,
-    ajax: inject.service(),
+    ajax: inject.service('fajax'),
     didInsertElement() {
       component = this;
     },
