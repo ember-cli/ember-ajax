@@ -128,7 +128,14 @@ export default Ember.Service.extend({
     hash.dataType = 'json';
     hash.context = this;
 
-    if (hash.data && type !== 'GET') {
+    var formData;
+    if (hash.data && hash.data.constructor) {
+      if(hash.data.constructor.name === 'FormData') {
+        formData = true;
+      }
+    }
+
+    if (hash.data && type !== 'GET' && !formData) {
       hash.contentType = 'application/json; charset=utf-8';
       hash.data = JSON.stringify(hash.data);
     }
