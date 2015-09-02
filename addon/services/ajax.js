@@ -114,7 +114,7 @@ export default Ember.Service.extend({
   },
 
   /**
-    @method ajaxOptions
+    @method options
     @private
     @param {String} url
     @param {String} type The request type GET, POST, PUT, DELETE etc.
