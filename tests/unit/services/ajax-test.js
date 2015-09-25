@@ -46,7 +46,7 @@ test('options() headers are set', function(assert){
   assert.deepEqual(receivedHeaders, [['Content-Type', 'application/json'], ['Other-key', 'Other Value']], 'headers assigned');
 });
 
-test("options() do not serializes data when GET", function(assert) {
+test("options() sets raw data", function(assert) {
   service = Service.create();
 
   var url = 'example.com';
@@ -64,12 +64,20 @@ test("options() do not serializes data when GET", function(assert) {
   });
 });
 
-test("options() serializes data when not GET", function(assert) {
+test("options() sets options correctly", function(assert) {
   service = Service.create();
 
-  var url = 'example.com';
+  var url  = 'example.com';
   var type = 'POST';
-  var ajaxOptions = service.options(url, type, { data: { key: 'value' } });
+  var data = JSON.stringify({ key: 'value' });
+  var ajaxOptions = service.options(
+    url,
+    type,
+    {
+      data: data,
+      contentType: "application/json; charset=utf-8"
+    }
+  );
 
   assert.deepEqual(ajaxOptions, {
     contentType: "application/json; charset=utf-8",

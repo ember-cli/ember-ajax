@@ -125,13 +125,8 @@ export default Ember.Service.extend({
     var hash = options || {};
     hash.url = url;
     hash.type = type;
-    hash.dataType = 'json';
+    hash.dataType = hash.dataType || 'json';
     hash.context = this;
-
-    if (hash.data && type !== 'GET') {
-      hash.contentType = 'application/json; charset=utf-8';
-      hash.data = JSON.stringify(hash.data);
-    }
 
     var headers = get(this, 'headers');
     if (headers !== undefined) {
