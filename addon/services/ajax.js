@@ -124,7 +124,7 @@ export default Ember.Service.extend({
   options(url, type, options) {
     var hash = options || {};
     hash.url = url;
-    hash.type = type;
+    hash.type = type || 'GET';
     hash.dataType = hash.dataType || 'json';
     hash.context = this;
 
