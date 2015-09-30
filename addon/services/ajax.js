@@ -9,6 +9,7 @@ import {
 import parseResponseHeaders from '../utils/parse-response-headers';
 
 const {
+  deprecate,
   get
 } = Ember;
 
@@ -73,8 +74,26 @@ const {
 **/
 export default Ember.Service.extend({
 
-  request(url, type, options) {
-    const hash = this.options(url, type, options);
+  request(url, options) {
+    var opts;
+
+    if (arguments.length > 2 || typeof options === 'string') {
+      deprecate(
+        'ember-ajax/ajax#request calling request with `type` is deprecated and will be removed in ember-ajax@1.0.0. If you want to specify a type pass an object like {type: \'DELETE\'}',
+        false, { id: 'ember-ajax.service.request' }
+      );
+
+      if (arguments.length > 2) {
+        opts = arguments[2];
+        opts.type = options;
+      } else {
+        opts = { type: options };
+      }
+    } else {
+      opts = options;
+    }
+
+    const hash = this.options(url, opts);
 
     return new Ember.RSVP.Promise((resolve, reject) => {
 
@@ -121,10 +140,10 @@ export default Ember.Service.extend({
     @param {Object} options
     @return {Object}
   */
-  options(url, type, options) {
+  options(url, options) {
     var hash = options || {};
     hash.url = url;
-    hash.type = type || 'GET';
+    hash.type = hash.type || 'GET';
     hash.dataType = hash.dataType || 'json';
     hash.context = this;
 
