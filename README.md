@@ -61,6 +61,7 @@ export default AjaxService.extend({
       if (authToken) {
         headers['auth-token'] = authToken;
       }
+      return headers;
     }
   })
 });
