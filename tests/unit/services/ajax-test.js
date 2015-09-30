@@ -104,6 +104,32 @@ test("options() empty data", function(assert) {
   });
 });
 
+test("options() type defaults to GET", function(assert) {
+  service = Service.create();
+
+  var url = 'example.com';
+  var ajaxOptions = service.options(url);
+
+  assert.equal(ajaxOptions.type, 'GET');
+});
+
+test("request() promise label is correct", function(assert) {
+  service = Service.create();
+  const url = '/posts';
+  const data = { post: { title: 'Title', description: 'Some description.' } };
+  const serverResponse = [200, { "Content-Type": "application/json" }, JSON.stringify(data)];
+
+  server.get(url, () => serverResponse);
+  server.post(url, () => serverResponse);
+
+  var getPromise = service.request(url);
+  assert.equal(getPromise._label, 'ember-ajax: GET to /posts');
+
+  var postPromise = service.request(url, 'POST', { data });
+  assert.equal(postPromise._label, 'ember-ajax: POST to /posts');
+});
+
+
 const errorHandlerTest = ( status, errorClass ) => {
   test(`${status} handler`, function(assert){
     server.get('/posts', json(status));
