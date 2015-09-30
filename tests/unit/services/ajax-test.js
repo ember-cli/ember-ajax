@@ -35,7 +35,7 @@ test('options() headers are set', function(assert){
 
   const url = 'example.com';
   const type = 'GET';
-  var ajaxOptions = service.options(url, type, {});
+  var ajaxOptions = service.options(url, { type: type });
   var receivedHeaders = [];
   var fakeXHR = {
     setRequestHeader: function(key, value) {
@@ -51,7 +51,7 @@ test("options() sets raw data", function(assert) {
 
   var url = 'example.com';
   var type = 'GET';
-  var ajaxOptions = service.options(url, type, { data: { key: 'value' } });
+  var ajaxOptions = service.options(url, { type: type, data: { key: 'value' } });
 
   assert.deepEqual(ajaxOptions, {
     context: service,
@@ -72,8 +72,8 @@ test("options() sets options correctly", function(assert) {
   var data = JSON.stringify({ key: 'value' });
   var ajaxOptions = service.options(
     url,
-    type,
     {
+      type: type,
       data: data,
       contentType: "application/json; charset=utf-8"
     }
@@ -94,7 +94,7 @@ test("options() empty data", function(assert) {
 
   var url = 'example.com';
   var type = 'POST';
-  var ajaxOptions = service.options(url, type, {});
+  var ajaxOptions = service.options(url, { type: type });
 
   assert.deepEqual(ajaxOptions, {
     context: service,
@@ -116,8 +116,13 @@ test("options() type defaults to GET", function(assert) {
 test("request() promise label is correct", function(assert) {
   service = Service.create();
   const url = '/posts';
-  const data = { post: { title: 'Title', description: 'Some description.' } };
-  const serverResponse = [200, { "Content-Type": "application/json" }, JSON.stringify(data)];
+  const data = {
+    type: 'POST',
+    data: {
+      post: { title: 'Title', description: 'Some description.' }
+    }
+  };
+  const serverResponse = [200, { "Content-Type": "application/json" }, JSON.stringify(data.data)];
 
   server.get(url, () => serverResponse);
   server.post(url, () => serverResponse);
@@ -125,7 +130,7 @@ test("request() promise label is correct", function(assert) {
   var getPromise = service.request(url);
   assert.equal(getPromise._label, 'ember-ajax: GET to /posts');
 
-  var postPromise = service.request(url, 'POST', { data });
+  var postPromise = service.request(url, data);
   assert.equal(postPromise._label, 'ember-ajax: POST to /posts');
 });
 
