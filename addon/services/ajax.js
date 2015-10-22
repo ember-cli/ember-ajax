@@ -10,7 +10,8 @@ import parseResponseHeaders from '../utils/parse-response-headers';
 
 const {
   deprecate,
-  get
+  get,
+  isBlank
 } = Ember;
 
 /**
@@ -141,7 +142,7 @@ export default Ember.Service.extend({
   */
   options(url, options) {
     var hash = options || {};
-    hash.url = url;
+    hash.url = this._buildURL(url);
     hash.type = hash.type || 'GET';
     hash.dataType = hash.dataType || 'json';
     hash.context = this;
@@ -154,6 +155,22 @@ export default Ember.Service.extend({
     }
 
     return hash;
+  },
+
+  _buildURL(url) {
+    const host = get(this, 'host');
+    if (isBlank(host)) {
+      return url;
+    }
+    const startsWith = String.prototype.startsWith || function(searchString, position) {
+      position = position || 0;
+      return this.indexOf(searchString, position) === position;
+    };
+    if (startsWith.call(url, '/')) {
+      return `${host}${url}`;
+    } else {
+      return `${host}/${url}`;
+    }
   },
 
   /**
