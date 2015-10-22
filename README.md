@@ -69,6 +69,39 @@ export default AjaxService.extend({
 });
 ```
 
+### Custom Host
+
+`ember-ajax` allows you to specify a host to be used with a request. This is
+especially helpful so you don't have to continually pass in the host along
+with the path, makes `request()` a bit cleaner.
+
+To include a custom host to be used with your requests, you can specify `host`
+property on the `Ajax Service`.
+
+```js
+// app/services/ajax.js
+
+import Ember from 'ember';
+import AjaxService from 'ember-ajax/services/ajax';
+
+export default AjaxService.extend({
+  host: 'http://api.example.com'
+});
+```
+
+That allows you to only have to make a call to `request()` as such:
+
+```js
+// GET http://api.example.com/users/me
+request('/users/me')
+```
+
+You can even leave off the forward slash if you'd like:
+```js
+// GET http://api.example.com/users/me
+request('users/me')
+```
+
 ### Error handling
 
 `ember-ajax` provides built in error classes that you can use to check the error
