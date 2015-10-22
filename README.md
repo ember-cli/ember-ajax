@@ -49,6 +49,8 @@ To include custom headers to be used with your requests, you can specify `header
 hash on the `Ajax Service`.
 
 ```js
+// app/services/ajax.js
+
 import Ember from 'ember';
 import AjaxService from 'ember-ajax/services/ajax';
 
@@ -79,9 +81,9 @@ Some APIs respond with status code 200, even though an error has occurred and
 provide a status code in the payload. With the service, you can easily account
 for this behaviour by overwriting the `isSuccess` method.
 
-In app/services/ajax.js,
-
 ```js
+// app/services/ajax.js
+
 import AjaxService from 'ember-ajax/services/ajax';
 
 export default AjaxService.extend({
@@ -110,6 +112,7 @@ import Ember from 'ember';
 import {UnauthorizedError, ForbiddenError} from 'ember-ajax/errors';
 
 export default Ember.Route.extend({
+  ajax: Ember.inject.service(),
   model() {
     return this.get('ajax').request('/user/me')
       .catch(function(error){
