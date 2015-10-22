@@ -134,6 +134,23 @@ test("request() promise label is correct", function(assert) {
   assert.equal(postPromise._label, 'ember-ajax: POST to /posts');
 });
 
+test("options() host is set on the url (url starting with `/`", function(assert) {
+  service = Service.create({ host: 'https://discuss.emberjs.com' });
+
+  var url = '/users/me';
+  var ajaxoptions = service.options(url);
+
+  assert.equal(ajaxoptions.url, 'https://discuss.emberjs.com/users/me');
+});
+
+test("options() host is set on the url (url not starting with `/`", function(assert) {
+  service = Service.create({ host: 'https://discuss.emberjs.com' });
+
+  var url = 'users/me';
+  var ajaxoptions = service.options(url);
+
+  assert.equal(ajaxoptions.url, 'https://discuss.emberjs.com/users/me');
+});
 
 const errorHandlerTest = ( status, errorClass ) => {
   test(`${status} handler`, function(assert){
