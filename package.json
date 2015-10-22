@@ -1,6 +1,6 @@
 {
   "name": "ember-ajax",
-  "version": "0.6.3",
+  "version": "0.6.4",
   "description": "The default blueprint for ember-cli addons.",
   "directories": {
     "doc": "doc",
