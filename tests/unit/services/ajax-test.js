@@ -134,6 +134,49 @@ test("request() promise label is correct", function(assert) {
   assert.equal(postPromise._label, 'ember-ajax: POST to /posts');
 });
 
+test("post() promise label is correct", function(assert) {
+  service = Service.create();
+  const url = '/posts';
+  const options = {
+    data: {
+      post: { title: 'Title', description: 'Some description.' }
+    }
+  };
+  const serverResponse = [200, { "Content-Type": "application/json" }, JSON.stringify(options.data)];
+
+  server.post(url, () => serverResponse);
+
+  const postPromise = service.post(url, options);
+  assert.equal(postPromise._label, 'ember-ajax: POST to /posts');
+});
+
+test("put() promise label is correct", function(assert) {
+  service = Service.create();
+  const url = '/posts/1';
+  const options = {
+    data: {
+      post: { title: 'Title', description: 'Some description.' }
+    }
+  };
+  const serverResponse = [200, { "Content-Type": "application/json" }, JSON.stringify(options.data)];
+
+  server.put(url, () => serverResponse);
+
+  const putPromise = service.put(url, options);
+  assert.equal(putPromise._label, 'ember-ajax: PUT to /posts/1');
+});
+
+test("del() promise label is correct", function(assert) {
+  service = Service.create();
+  const url = '/posts/1';
+  const serverResponse = [200, { "Content-Type": "application/json" }, JSON.stringify({})];
+
+  server.delete(url, () => serverResponse);
+
+  const delPromise = service.del(url);
+  assert.equal(delPromise._label, 'ember-ajax: DELETE to /posts/1');
+});
+
 test("options() host is set on the url (url starting with `/`", function(assert) {
   service = Service.create({ host: 'https://discuss.emberjs.com' });
 

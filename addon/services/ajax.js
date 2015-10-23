@@ -133,6 +133,29 @@ export default Ember.Service.extend({
     }, `ember-ajax: ${hash.type} to ${url}`);
   },
 
+  // calls `request()` but forces `options.type` to `POST`
+  post(url, options) {
+    return this.request(url, this._addTypeToOptionsFor(options, 'POST'));
+  },
+
+  // calls `request()` but forces `options.type` to `PUT`
+  put(url, options) {
+    return this.request(url, this._addTypeToOptionsFor(options, 'PUT'));
+  },
+
+  // calls `request()` but forces `options.type` to `DELETE`
+  del(url, options) {
+    return this.request(url, this._addTypeToOptionsFor(options, 'DELETE'));
+  },
+
+  // forcibly manipulates the options hash to include the HTTP method on the type key
+  _addTypeToOptionsFor(options, method) {
+    options = options || {};
+    delete options.type;
+    options.type = method;
+    return options;
+  },
+
   /**
     @method options
     @private
