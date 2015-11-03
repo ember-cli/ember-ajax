@@ -152,9 +152,8 @@ test("post() promise label is correct", function(assert) {
   const postPromise = service.post(url, options);
   assert.equal(postPromise._label, 'ember-ajax: POST to /posts');
 
-  postPromise.then(function (response) {
-    assert.equal(response.post.title, title);
-    assert.equal(response.post.description, description);
+  return postPromise.then(function (response) {
+    assert.deepEqual(response.post, options.data.post);
   });
 });
 
@@ -177,10 +176,8 @@ test("put() promise label is correct", function(assert) {
   const putPromise = service.put(url, options);
   assert.equal(putPromise._label, 'ember-ajax: PUT to /posts/1');
 
-  putPromise.then(function (response) {
-    assert.equal(response.post.title, title);
-    assert.equal(response.post.description, description);
-    assert.equal(response.post.id, id);
+  return putPromise.then(function (response) {
+    assert.deepEqual(response.post, options.data.post);
   });
 });
 
@@ -195,8 +192,8 @@ test("del() promise label is correct", function(assert) {
   const delPromise = service.del(url);
   assert.equal(delPromise._label, 'ember-ajax: DELETE to /posts/1');
 
-  delPromise.then(function (response) {
-    assert.equal(response, {});
+  return delPromise.then(function (response) {
+    assert.deepEqual(response, {});
   });
 });
 
