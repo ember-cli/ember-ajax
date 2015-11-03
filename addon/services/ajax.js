@@ -151,7 +151,6 @@ export default Ember.Service.extend({
   // forcibly manipulates the options hash to include the HTTP method on the type key
   _addTypeToOptionsFor(options, method) {
     options = options || {};
-    delete options.type;
     options.type = method;
     return options;
   },

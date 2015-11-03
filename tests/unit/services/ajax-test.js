@@ -115,8 +115,8 @@ test("options() type defaults to GET", function(assert) {
 
 test("request() promise label is correct", function(assert) {
   service = Service.create();
-  const url = '/posts';
-  const data = {
+  let url = '/posts';
+  let data = {
     type: 'POST',
     data: {
       post: { title: 'Title', description: 'Some description.' }
@@ -127,54 +127,77 @@ test("request() promise label is correct", function(assert) {
   server.get(url, () => serverResponse);
   server.post(url, () => serverResponse);
 
-  var getPromise = service.request(url);
+  const getPromise = service.request(url);
   assert.equal(getPromise._label, 'ember-ajax: GET to /posts');
 
-  var postPromise = service.request(url, data);
+  const postPromise = service.request(url, data);
   assert.equal(postPromise._label, 'ember-ajax: POST to /posts');
 });
 
 test("post() promise label is correct", function(assert) {
   service = Service.create();
-  const url = '/posts';
-  const options = {
+  let url = '/posts',
+    title = 'Title',
+    description = 'Some description.',
+    options = {
     data: {
-      post: { title: 'Title', description: 'Some description.' }
+      post: { title: title, description: description }
     }
   };
+
   const serverResponse = [200, { "Content-Type": "application/json" }, JSON.stringify(options.data)];
 
   server.post(url, () => serverResponse);
 
   const postPromise = service.post(url, options);
   assert.equal(postPromise._label, 'ember-ajax: POST to /posts');
+
+  postPromise.then(function (response) {
+    assert.equal(response.post.title, title);
+    assert.equal(response.post.description, description);
+  });
 });
 
 test("put() promise label is correct", function(assert) {
   service = Service.create();
-  const url = '/posts/1';
-  const options = {
+  let url = '/posts/1',
+    title = 'Title',
+    description = 'Some description.',
+    id = 1,
+    options = {
     data: {
-      post: { title: 'Title', description: 'Some description.' }
+      post: { id: id, title: title, description: description }
     }
   };
+
   const serverResponse = [200, { "Content-Type": "application/json" }, JSON.stringify(options.data)];
 
   server.put(url, () => serverResponse);
 
   const putPromise = service.put(url, options);
   assert.equal(putPromise._label, 'ember-ajax: PUT to /posts/1');
+
+  putPromise.then(function (response) {
+    assert.equal(response.post.title, title);
+    assert.equal(response.post.description, description);
+    assert.equal(response.post.id, id);
+  });
 });
 
 test("del() promise label is correct", function(assert) {
   service = Service.create();
-  const url = '/posts/1';
+  let url = '/posts/1';
+
   const serverResponse = [200, { "Content-Type": "application/json" }, JSON.stringify({})];
 
   server.delete(url, () => serverResponse);
 
   const delPromise = service.del(url);
   assert.equal(delPromise._label, 'ember-ajax: DELETE to /posts/1');
+
+  delPromise.then(function (response) {
+    assert.equal(response, {});
+  });
 });
 
 test("options() host is set on the url (url starting with `/`", function(assert) {
