@@ -39,6 +39,17 @@ export default Ember.Route.extend({
 
 ## Ajax Service
 
+### HTTP-verbed methods
+
+Can skip setting the `method` or `type` keys in your `options` object when calling `request(url, options)` by
+instead calling `post(url, options)`, `put(url, options)` or `del(url, options)`.
+
+```js
+post('/posts', { data: { title: 'Ember' } })  // Makes a POST request to /posts
+put('/posts/1', { data: { title: 'Ember' } }) // Makes a PUT request to /posts/1
+del('/posts/1', { })                          // Makes a DELETE request to /posts/1
+```
+
 ### Custom Request Headers
 
 `ember-ajax` allows you to specify headers to be used with a request. This is
