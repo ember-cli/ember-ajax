@@ -143,6 +143,11 @@ export default Ember.Service.extend({
     return this.request(url, this._addTypeToOptionsFor(options, 'PUT'));
   },
 
+  // calls `request()` but forces `options.type` to `PATCH`
+  patch(url, options) {
+    return this.request(url, this._addTypeToOptionsFor(options, 'PATCH'));
+  },
+
   // calls `request()` but forces `options.type` to `DELETE`
   del(url, options) {
     return this.request(url, this._addTypeToOptionsFor(options, 'DELETE'));
