@@ -181,6 +181,28 @@ test("put() promise label is correct", function(assert) {
   });
 });
 
+test("patch() promise label is correct", function(assert) {
+  service = Service.create();
+  let url = '/posts/1',
+    description = 'Some description.',
+    options = {
+    data: {
+      post: { description: description }
+    }
+  };
+
+  const serverResponse = [200, { "Content-Type": "application/json" }, JSON.stringify(options.data)];
+
+  server.patch(url, () => serverResponse);
+
+  const patchPromise = service.patch(url, options);
+  assert.equal(patchPromise._label, 'ember-ajax: PATCH to /posts/1');
+
+  return patchPromise.then(function (response) {
+    assert.deepEqual(response.post, options.data.post);
+  });
+});
+
 test("del() promise label is correct", function(assert) {
   service = Service.create();
   let url = '/posts/1';
