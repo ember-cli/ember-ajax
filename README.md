@@ -1,4 +1,4 @@
-# ember-ajax [![Build Status](https://travis-ci.org/embersherpa/ember-ajax.svg)](https://travis-ci.org/embersherpa/ember-ajax) [![Ember Observer Score](http://emberobserver.com/badges/ember-ajax.svg)](http://emberobserver.com/addons/ember-ajax)
+# ember-ajax [![Build Status](https://travis-ci.org/ember-cli/ember-ajax.svg)](https://travis-ci.org/ember-cli/ember-ajax) [![Ember Observer Score](http://emberobserver.com/badges/ember-ajax.svg)](http://emberobserver.com/addons/ember-ajax)
 
 Provides Ajax Service for Ember 1.13+ applications.
 
