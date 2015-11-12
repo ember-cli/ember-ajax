@@ -21,8 +21,8 @@
     "andThen",
     "currentURL",
     "currentPath",
-    "currentRouteName",
-    "expectDeprecation"
+    "expectDeprecation",
+    "currentRouteName"
   ],
   "node": false,
   "browser": false,
