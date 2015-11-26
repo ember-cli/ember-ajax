@@ -73,6 +73,7 @@ const {
   ```
 
 **/
+
 export default Ember.Service.extend({
 
   request(url, options) {
@@ -129,7 +130,11 @@ export default Ember.Service.extend({
          reject(error);
       };
 
-      Ember.$.ajax(hash);
+      if (typeof najax === 'undefined') {
+        Ember.$.ajax(hash);
+      } else {
+        najax(hash); // jshint ignore:line
+      }
     }, `ember-ajax: ${hash.type} to ${url}`);
   },
 
