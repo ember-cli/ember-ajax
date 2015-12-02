@@ -15,7 +15,7 @@ const {
 import AjaxService from 'ember-ajax/services/ajax';
 import Pretender from 'pretender';
 import json from 'dummy/tests/helpers/json';
-
+import wait from 'ember-test-helpers/wait';
 
 let server;
 moduleForComponent('async-widget', {
@@ -28,18 +28,19 @@ moduleForComponent('async-widget', {
   }
 });
 
+const PAYLOAD = { posts: [ { id: 1, title: 'hello world' } ] };
+
 test('service injected in component', function(assert) {
   assert.expect(3);
-  const payload = { posts: [ { id: 1, title: 'hello world' } ] };
-  server.get('/posts', json(200, payload ));
+  server.get('/posts', json(200, PAYLOAD ));
 
   const authToken = 'foo';
-  this.registry.register('service:session', Service.extend({ authToken }));
+  this.register('service:session', Service.extend({ authToken }));
 
   let receivedHeaders = [];
-  this.registry.register('service:fajax', AjaxService.extend({
+  this.register('service:fajax', AjaxService.extend({
     options() {
-      let options = this._super.apply(this, arguments);
+      let options = this._super(...arguments);
       var fakeXHR = {
         setRequestHeader: function(key, value) {
           receivedHeaders.push([key, value]);
@@ -62,7 +63,7 @@ test('service injected in component', function(assert) {
   }));
 
   let component;
-  this.registry.register('component:async-widget', Component.extend({
+  this.register('component:async-widget', Component.extend({
     url: null,
     ajax: inject.service('fajax'),
     didInsertElement() {
@@ -84,6 +85,32 @@ test('service injected in component', function(assert) {
     component.set('hello', 'world');
     assert.deepEqual(component.get('helloStyle'), 'hello world', 'run loop is not necessary');
     assert.deepEqual(receivedHeaders[0], ['authToken', 'foo'], 'token was used session');
-    assert.deepEqual(response, payload, "recieved payload");
+    assert.deepEqual(response, PAYLOAD, "recieved PAYLOAD");
   });
+});
+
+test('error thrown in service can be caught in acceptance test', function(assert){
+  server.post('/posts/1', json(404, { error: "not found" } ), 200);
+
+  this.register('service:ajax', AjaxService.extend({
+    customPOST(url) {
+      return this.post(url).catch(function(e){
+        throw e;
+      });
+    }
+  }));
+
+  this.register('component:async-widget', Ember.Component.extend({
+    ajax: inject.service(),
+    click() {
+      this.get('ajax').customPOST(this.get('url'));
+    }
+  }));
+
+  this.render(hbs`{{#async-widget classNames="async-widget" url="/posts/1"}}Post!{{/async-widget}}`);
+
+  assert.throws(function(){
+    this.$('.async-widget').click();
+  }, 'Ajax operation failed');
+
 });
