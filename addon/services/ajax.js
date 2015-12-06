@@ -94,9 +94,14 @@ export default Ember.Service.extend({
       opts = options;
     }
 
-    const hash = this.options(url, opts);
+    let hash = this.options(url, opts);
 
-    return new Ember.RSVP.Promise((resolve, reject) => {
+    return this.makePromise(hash);
+  },
+
+  makePromise(hash) {
+
+    let promise = new Ember.RSVP.Promise((resolve, reject) => {
 
       hash.success = (payload, textStatus, jqXHR) => {
         let response = this.handleResponse(
@@ -130,7 +135,9 @@ export default Ember.Service.extend({
       };
 
       Ember.$.ajax(hash);
-    }, `ember-ajax: ${hash.type} to ${url}`);
+    }, `ember-ajax: ${hash.type} to ${hash.url}`);
+
+    return promise;
   },
 
   // calls `request()` but forces `options.type` to `POST`

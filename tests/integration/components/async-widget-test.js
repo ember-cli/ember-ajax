@@ -89,7 +89,7 @@ test('service injected in component', function(assert) {
   });
 });
 
-test('error thrown in service can be caught in acceptance test', function(assert){
+test('error thrown in service can be caught with assert.throws', function(assert){
   server.post('/posts/1', json(404, { error: "not found" } ), 200);
 
   this.register('service:ajax', AjaxService.extend({
@@ -113,4 +113,32 @@ test('error thrown in service can be caught in acceptance test', function(assert
     this.$('.async-widget').click();
   }, 'Ajax operation failed');
 
+});
+
+test('waiting for promises to complete', function(assert){
+
+  server.get('/foo', json(200, { foo: 'bar' }), 300);
+
+  let component;
+
+  this.register('component:async-widget', Ember.Component.extend({
+    layout: hbs`{{yield foo}}`,
+    ajax: inject.service(),
+    foo: 'foo',
+    click() {
+      this.get('ajax').request('/foo').then(({foo})=>{
+        component = this;
+        this.set('foo', foo);
+      });
+    }
+  }));
+
+  this.render(hbs`{{#async-widget classNames="async-widget" as |foo|}}Got: {{foo}} for foo{{/async-widget}}`);
+
+  assert.equal(this.$('.async-widget').text(), 'Got: foo for foo');
+  this.$('.async-widget').click();
+
+  return wait().then(()=>{
+    assert.equal(this.$('.async-widget').text(), 'Got: bar for foo');
+  });
 });
