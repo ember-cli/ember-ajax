@@ -1,26 +1,12 @@
 # ember-ajax [![Build Status](https://travis-ci.org/ember-cli/ember-ajax.svg)](https://travis-ci.org/ember-cli/ember-ajax) [![Ember Observer Score](http://emberobserver.com/badges/ember-ajax.svg)](http://emberobserver.com/addons/ember-ajax)
 
-Provides Ajax Service for Ember 1.13+ applications.
+Service for making AJAX requests in Ember 1.13+ applications.
 
 * customizable service
 * returns RSVP promises
 * improved error handling
 * ability to specify request headers
 * upgrade path from `ic-ajax`
-
-## Why an Ajax Service?
-
-We need a singleton mechanism for making Ajax requests because currently many Ember
-applications have at least two ways to talk to backend APIs. With Ember Data,
-`RESTAdapter#ajax` offers the ability to specify custom headers and good error
-reporting. When making requests that don't require Ember Data, getting the same
-features is difficult because `ic-ajax` and `Ember.$.ajax` don't offer any
-interfaces that can automatically set headers based on property of another
-service (like a session service).
-
-The idea with this addon is to provide a service that can be used by both
-Ember Data and on ad-hoc bases and provides consistent interface for making
-Ajax requests.
 
 ## Getting started
 
@@ -178,7 +164,7 @@ export default Ember.Route.extend({
 
 ### Fixture Data
 
-When writing acceptance tests, you will often need to provide fixture data for your application. This can be accomplished by mocking your server with [`Pretender.js`](https://github.com/pretenderjs/pretender). You can use it directly with [ember-cli-pretender](https://github.com/rwjblue/ember-cli-pretender) or through a helper library.
+When writing tests, you will often need to provide fixture data for your application. This can be accomplished by mocking your server with [`Pretender.js`](https://github.com/pretenderjs/pretender). You can use it directly with [ember-cli-pretender](https://github.com/rwjblue/ember-cli-pretender) or through a helper library.
 
 If you're looking for a full featured mock server with fixtures support, choose [EmberCLI Mirage](http://www.ember-cli-mirage.com/) otherwise use the leaner [EmberCLI Fake Server](https://github.com/201-created/ember-cli-fake-server).
 
@@ -232,7 +218,7 @@ test('waiting for a route with async widget', function(assert) {
 
 ### Integration Test
 
-```
+```javascript
 import hbs from 'htmlbars-inline-precompile';
 import {
   moduleForComponent,
@@ -343,6 +329,20 @@ Here is a list of notable changes that you need to consider when refactoring.
 * `ember build`
 
 For more information on using ember-cli, visit [http://www.ember-cli.com/](http://www.ember-cli.com/).
+
+## Why an Ajax Service?
+
+We need a singleton mechanism for making Ajax requests because currently many Ember
+applications have at least two ways to talk to backend APIs. With Ember Data,
+`RESTAdapter#ajax` offers the ability to specify custom headers and good error
+reporting. When making requests that don't require Ember Data, getting the same
+features is difficult because `ic-ajax` and `Ember.$.ajax` don't offer any
+interfaces that can automatically set headers based on property of another
+service (like a session service).
+
+The idea with this addon is to provide a service that can be used by both
+Ember Data and on ad-hoc bases and provides consistent interface for making
+Ajax requests.
 
 ## Special Thanks
 
