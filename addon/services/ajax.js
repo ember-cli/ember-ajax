@@ -75,6 +75,14 @@ const {
 **/
 export default Ember.Service.extend({
 
+  init() {
+    this._super(...arguments);
+
+    if (Ember.testing) {
+      this.__test_promises__ = [];
+    }
+  },
+
   request(url, options) {
     var opts;
 
@@ -136,6 +144,10 @@ export default Ember.Service.extend({
 
       Ember.$.ajax(hash);
     }, `ember-ajax: ${hash.type} to ${hash.url}`);
+
+    if (Ember.testing) {
+      this.__test_promises__.push(promise);
+    }
 
     return promise;
   },
@@ -324,7 +336,7 @@ export default Ember.Service.extend({
         {
           status: `${status}`,
           title: "The backend responded with an error",
-          detail: `${payload}`
+          detail: payload
         }
       ];
     }

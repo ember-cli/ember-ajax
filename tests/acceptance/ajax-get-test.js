@@ -37,3 +37,22 @@ test('waiting for a route with async widget', function(assert) {
   });
 
 });
+
+test(`Ajax failure doesn't bubble up to console.` , function(assert){
+
+  server.get('/posts', json(404, "Not Found"), 300);
+
+  visit('/');
+
+  andThen(function() {
+    assert.equal(currentURL(), '/');
+    assert.ok($('.ajax-get').length === 1, 'ajax-get component is rendered');
+  });
+
+  click('button:contains(Load Data)');
+
+  andThen(function(){
+    assert.equal($('.ajax-get .error').text(), 'Not Found');
+  });
+
+});

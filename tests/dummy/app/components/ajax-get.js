@@ -6,12 +6,14 @@ export default Ember.Component.extend({
   actions: {
     load() {
       let url = this.get('url');
-      return this.get('ajax').request(url).then(data => {
-        this.setProperties({
-          data,
-          isLoaded: true
-        });
-      });
+      return this.get('ajax').request(url)
+        .then(data => {
+          this.setProperties({
+            data,
+            isLoaded: true
+          });
+        })
+        .catch( error => this.set('errors', error.errors ));
     }
   }
 });
