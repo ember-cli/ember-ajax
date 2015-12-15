@@ -1,26 +1,12 @@
 # ember-ajax [![Build Status](https://travis-ci.org/ember-cli/ember-ajax.svg)](https://travis-ci.org/ember-cli/ember-ajax) [![Ember Observer Score](http://emberobserver.com/badges/ember-ajax.svg)](http://emberobserver.com/addons/ember-ajax)
 
-Provides Ajax Service for Ember 1.13+ applications.
+Service for making AJAX requests in Ember 1.13+ applications.
 
 * customizable service
 * returns RSVP promises
 * improved error handling
 * ability to specify request headers
 * upgrade path from `ic-ajax`
-
-## Why an Ajax Service?
-
-We need a singleton mechanism for making Ajax requests because currently many Ember
-applications have at least two ways to talk to backend APIs. With Ember Data,
-`RESTAdapter#ajax` offers the ability to specify custom headers and good error
-reporting. When making requests that don't require Ember Data, getting the same
-features is difficult because `ic-ajax` and `Ember.$.ajax` don't offer any
-interfaces that can automatically set headers based on property of another
-service (like a session service).
-
-The idea with this addon is to provide a service that can be used by both
-Ember Data and on ad-hoc bases and provides consistent interface for making
-Ajax requests.
 
 ## Getting started
 
@@ -174,6 +160,117 @@ export default Ember.Route.extend({
 });
 ```
 
+## Testing
+
+### Fixture Data
+
+When writing tests, you will often need to provide fixture data for your application. This can be accomplished by mocking your server with [`Pretender.js`](https://github.com/pretenderjs/pretender). You can use it directly with [ember-cli-pretender](https://github.com/rwjblue/ember-cli-pretender) or through a helper library.
+
+If you're looking for a full featured mock server with fixtures support, choose [EmberCLI Mirage](http://www.ember-cli-mirage.com/) otherwise use the leaner [EmberCLI Fake Server](https://github.com/201-created/ember-cli-fake-server).
+
+#### Error Handling
+
+When writing integration & acceptance tests, your tests should be testing for what the user can see. Therefore, your tests should be checking if the errors are in the DOM. If errors bubble up to the console, then you should catch the failure in your app code and present the errors to the user.
+
+### Acceptance Tests
+
+```javascript
+import { test } from 'qunit';
+import moduleForAcceptance from 'dummy/tests/helpers/module-for-acceptance';
+
+import Pretender from 'pretender';
+
+let server;
+
+moduleForAcceptance('ajax-get component', {
+  beforeEach() {
+    server = new Pretender();
+  },
+  afterEach() {
+    server.shutdown();
+  }
+});
+
+test('waiting for a route with async widget', function(assert) {
+
+  const PAYLOAD = [{title: 'Foo'}, {title: 'Bar'}, {title: 'Baz'}];
+
+  server.get('/posts', function(){
+    return [ 200, {"Content-Type": "application/json"}, JSON.stringify(PAYLOAD) ];
+  }, 300);
+
+  visit('/');
+
+  andThen(function() {
+    assert.equal(currentURL(), '/');
+    assert.ok($('.ajax-get').length === 1, 'ajax-get component is rendered');
+  });
+
+  click('button:contains(Load Data)');
+
+  andThen(function(){
+    assert.equal($('.ajax-get li:eq(0)').text(), 'Foo');
+    assert.equal($('.ajax-get li:eq(1)').text(), 'Bar');
+    assert.equal($('.ajax-get li:eq(2)').text(), 'Baz');
+  });
+});
+```
+
+### Integration Test
+
+```javascript
+import hbs from 'htmlbars-inline-precompile';
+import {
+  moduleForComponent,
+  test
+} from 'ember-qunit';
+
+import Pretender from 'pretender';
+import json from 'dummy/tests/helpers/json';
+import wait from 'ember-test-helpers/wait';
+
+let server;
+moduleForComponent('ajax-get', {
+  integration: true,
+  beforeEach() {
+    server = new Pretender();
+  },
+  afterEach() {
+    server.shutdown();
+  }
+});
+
+test('clicking Load Data loads data', function(assert) {
+  const PAYLOAD = [{title: 'Foo'}, {title: 'Bar'}, {title: 'Baz'}];
+
+  server.get('/foo', json(200, PAYLOAD), 300);
+
+  this.render(hbs`
+    {{#ajax-get url="/foo" as |data isLoaded|}}
+      {{#if isLoaded}}
+        <ul>
+        {{#each data as |post|}}
+          <li>{{post.title}}</li>
+        {{/each}}
+        </ul>
+      {{else}}
+        <button {{action data}}>Load Data</button>
+      {{/if}}
+    {{/ajax-get}}
+  `);
+
+  this.$(`.ajax-get button`).click();
+
+  return wait().then(function(){
+    assert.equal($('.ajax-get li:eq(0)').text(), 'Foo');
+    assert.equal($('.ajax-get li:eq(1)').text(), 'Bar');
+    assert.equal($('.ajax-get li:eq(2)').text(), 'Baz');
+  });
+});
+```
+
+**Notice**, the `wait()` helper. It waits for Ajax requests to complete before continuing.
+
 ## Upgrade from `ic-ajax`
 
 This addon was written to supersede `ic-ajax` and `ember-cli-ic-ajax` addon
@@ -232,6 +329,20 @@ Here is a list of notable changes that you need to consider when refactoring.
 * `ember build`
 
 For more information on using ember-cli, visit [http://www.ember-cli.com/](http://www.ember-cli.com/).
+
+## Why an Ajax Service?
+
+We need a singleton mechanism for making Ajax requests because currently many Ember
+applications have at least two ways to talk to backend APIs. With Ember Data,
+`RESTAdapter#ajax` offers the ability to specify custom headers and good error
+reporting. When making requests that don't require Ember Data, getting the same
+features is difficult because `ic-ajax` and `Ember.$.ajax` don't offer any
+interfaces that can automatically set headers based on property of another
+service (like a session service).
+
+The idea with this addon is to provide a service that can be used by both
+Ember Data and on ad-hoc bases and provides consistent interface for making
+Ajax requests.
 
 ## Special Thanks
 

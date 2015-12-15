@@ -1,0 +1,9 @@
+{{#if errors}}
+  <ul class="errors">
+  {{#each errors as |error|}}
+    <li class="error">{{error.detail}}</li>
+  {{/each}}
+  </ul>
+{{else}}
+  {{yield (if isLoaded data (action 'load')) isLoaded}}
+{{/if}}

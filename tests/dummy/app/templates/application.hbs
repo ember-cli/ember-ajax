@@ -1,3 +1,15 @@
 <h2 id="title">Welcome to Ember</h2>
 
+{{#ajax-get url="/posts" as |data isLoaded|}}
+  {{#if isLoaded}}
+    <ul>
+    {{#each data as |post|}}
+      <li>{{post.title}}</li>
+    {{/each}}
+    </ul>
+  {{else}}
+    <button {{action data}}>Load Data</button>
+  {{/if}}
+{{/ajax-get}}
+
 {{outlet}}

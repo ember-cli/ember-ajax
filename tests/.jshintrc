@@ -22,7 +22,8 @@
     "currentURL",
     "currentPath",
     "expectDeprecation",
-    "currentRouteName"
+    "currentRouteName",
+    "waitForAjax"
   ],
   "node": false,
   "browser": false,
