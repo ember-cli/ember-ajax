@@ -124,6 +124,23 @@ You can even leave off the forward slash if you'd like:
 request('users/me')
 ```
 
+### Endpoint Path Customization
+
+The `namespace` property can be used to prefix requests with a specific url namespace.
+
+```js
+// app/services/ajax.js
+
+import Ember from 'ember';
+import AjaxService from 'ember-ajax/services/ajax';
+
+export default AjaxService.extend({
+  namespace: '/api/v1'
+});
+
+`request('/posts')` would now target `/api/v1/posts`.
+```
+
 ### Error handling
 
 `ember-ajax` provides built in error classes that you can use to check the error

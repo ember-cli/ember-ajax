@@ -35,7 +35,7 @@ test('options() headers are set', function(assert) {
     headers: { 'Content-Type': 'application/json', 'Other-key': 'Other Value' }
   });
 
-  const url = 'example.com';
+  const url = '/posts';
   const type = 'GET';
   const ajaxOptions = service.options(url, { type });
   const receivedHeaders = [];
@@ -62,7 +62,7 @@ test('options() sets raw data', function(assert) {
     },
     dataType: 'json',
     type: 'GET',
-    url: 'example.com'
+    url: '/posts'
   });
 });
 
@@ -87,7 +87,7 @@ test('options() sets options correctly', function(assert) {
     data: '{"key":"value"}',
     dataType: 'json',
     type: 'POST',
-    url: 'example.com'
+    url: '/posts'
   });
 });
 
@@ -102,7 +102,7 @@ test('options() empty data', function(assert) {
     context: service,
     dataType: 'json',
     type: 'POST',
-    url: 'example.com'
+    url: '/posts'
   });
 });
 
@@ -220,22 +220,52 @@ test('del() promise label is correct', function(assert) {
   });
 });
 
-test("options() host is set on the url (url starting with `/`", function(assert) {
-  service = Service.create({ host: 'https://discuss.emberjs.com' });
+test('options() url is correct without host, namespace options', function(assert) {
+  service = Service.create({});
 
-  var url = '/users/me';
-  var ajaxoptions = service.options(url);
-
-  assert.equal(ajaxoptions.url, 'https://discuss.emberjs.com/users/me');
+  assert.equal(service.options('/posts').url, '/posts', '`/` is not prepended on url');
+  assert.equal(service.options('posts').url, '/posts', '`/` is prepended on url');
 });
 
-test("options() host is set on the url (url not starting with `/`", function(assert) {
-  service = Service.create({ host: 'https://discuss.emberjs.com' });
+test('options() host is set on the url', function(assert) {
+  service = Service.create({ host: 'https://emberjs.com' });
 
-  var url = 'users/me';
-  var ajaxoptions = service.options(url);
+  assert.equal(service.options('/posts').url, 'https://emberjs.com/posts', '`/` is not prepended on url');
+  assert.equal(service.options('posts').url, 'https://emberjs.com/posts', '`/` is prepended on url');
+});
 
-  assert.equal(ajaxoptions.url, 'https://discuss.emberjs.com/users/me');
+test('options() namespace is set on the url', function(assert) {
+  service = Service.create({ namespace: 'api/v1' });
+  assert.equal(service.options('/posts').url, '/api/v1/posts', '`/` is prepended on namespace');
+  assert.equal(service.options('posts').url, '/api/v1/posts', '`/` is prepended on namespace and url');
+
+  service = Service.create({ namespace: '/api/v1' });
+  assert.equal(service.options('/posts').url, '/api/v1/posts', '`/` is not prepended on namespace and url');
+  assert.equal(service.options('posts').url, '/api/v1/posts', '`/` is prepended on url');
+});
+
+test('options() host and namespace are set on the url', function(assert) {
+  service = Service.create({
+    host: 'https://emberjs.com',
+    namespace: 'api/v1'
+  });
+  assert.equal(service.options('/posts').url, 'https://emberjs.com/api/v1/posts', '`/` is prepended on namespace');
+  assert.equal(service.options('posts').url, 'https://emberjs.com/api/v1/posts', '`/` is prepended on namespace and url');
+
+  service = Service.create({
+    host: 'https://emberjs.com',
+    namespace: '/api/v1'
+  });
+  assert.equal(service.options('/posts').url, 'https://emberjs.com/api/v1/posts', '`/` is not prepended on namespace and url');
+  assert.equal(service.options('posts').url, 'https://emberjs.com/api/v1/posts', '`/` is prepended on url');
+});
+
+test('options() host and namespace are not set on the full url', function(assert) {
+  service = Service.create({
+    host: 'https://emberjs.com',
+    namespace: 'api/v1'
+  });
+  assert.equal(service.options('https://discuss.emberjs.com').url, 'https://discuss.emberjs.com');
 });
 
 const errorHandlerTest = (status, errorClass) => {
