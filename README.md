@@ -20,21 +20,45 @@ export default Ember.Route.extend({
   model() {
     return this.get('ajax').request('/posts');
   }
-})
+});
 ```
 
 ## Ajax Service
 
+### Basic Usage
+
+The AJAX service provides methods to be used to make AJAX requests, similar to the way that you would use `jQuery.ajax`.  In fact, `ember-ajax` is a wrapper around jQuery's method, and can be configured in much the same way.
+
+In general, you will use the `request(url, options)` method, where `url` is the destination of the request and `options` is a configuration hash for [`jQuery.ajax`](http://api.jquery.com/jQuery.ajax/#jQuery-ajax-settings).
+
+```javascript
+import Ember from 'ember';
+
+export default Ember.Controller.extend({
+  ajax: Ember.inject.service(),
+  actions: {
+    sendRequest() {
+      return this.get('ajax').request('/posts', {
+        method: 'POST',
+        data: {
+          foo: 'bar'
+        }
+      });
+    }
+  }
+});
+```
+
 ### HTTP-verbed methods
 
-Can skip setting the `method` or `type` keys in your `options` object when calling `request(url, options)` by
+You can skip setting the `method` or `type` keys in your `options` object when calling `request(url, options)` by
 instead calling `post(url, options)`, `put(url, options)`, `patch(url, options)` or `del(url, options)`.
 
 ```js
-post('/posts', { data: { title: 'Ember' } })  // Makes a POST request to /posts
-put('/posts/1', { data: { title: 'Ember' } }) // Makes a PUT request to /posts/1
+post('/posts', { data: { title: 'Ember' } })    // Makes a POST request to /posts
+put('/posts/1', { data: { title: 'Ember' } })   // Makes a PUT request to /posts/1
 patch('/posts/1', { data: { title: 'Ember' } }) // Makes a PATCH request to /posts/1
-del('/posts/1', { })                          // Makes a DELETE request to /posts/1
+del('/posts/1')                                 // Makes a DELETE request to /posts/1
 ```
 
 ### Custom Request Headers
