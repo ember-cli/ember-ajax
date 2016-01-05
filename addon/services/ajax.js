@@ -10,8 +10,7 @@ import parseResponseHeaders from '../utils/parse-response-headers';
 
 const {
   deprecate,
-  get,
-  isBlank
+  get
 } = Ember;
 
 /**
@@ -192,19 +191,32 @@ export default Ember.Service.extend({
   },
 
   _buildURL(url) {
-    const host = get(this, 'host');
-    if (isBlank(host)) {
+    let host = get(this, 'host');
+    let namespace = get(this, 'namespace');
+
+    if(/^http(s)?:\/\//.test(url)) {
       return url;
     }
-    const startsWith = String.prototype.startsWith || function(searchString, position) {
-      position = position || 0;
-      return this.indexOf(searchString, position) === position;
-    };
-    if (startsWith.call(url, '/')) {
-      return `${host}${url}`;
-    } else {
-      return `${host}/${url}`;
+
+    url = this._normalizePath(url);
+    namespace = this._normalizePath(namespace);
+
+    return [ host, namespace, url ].join('');
+  },
+
+  _normalizePath(path) {
+    if(path) {
+      // make sure path starts with `/`
+      if (path.charAt(0) !== '/') {
+        path = '/' + path;
+      }
+
+      // remove end `/`
+      if (path.charAt(path.length -1) === '/') {
+        path = path.slice(0, -1);
+      }
     }
+    return path;
   },
 
   /**
