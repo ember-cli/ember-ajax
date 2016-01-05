@@ -8,7 +8,9 @@ import {
   AjaxError,
   InvalidError,
   UnauthorizedError,
-  ForbiddenError
+  ForbiddenError,
+  BadRequestError,
+  ServerError
 } from 'ember-ajax/errors';
 
 module("unit/errors-test - AjaxError");
@@ -35,4 +37,16 @@ test("ForbiddenError", function(assert){
   var error = new ForbiddenError();
   assert.ok(error instanceof Error);
   assert.ok(error instanceof ForbiddenError);
+});
+
+test("BadRequestError", function(assert) {
+  var error = new BadRequestError();
+  assert.ok(error instanceof Error);
+  assert.ok(error instanceof BadRequestError);
+});
+
+test("ServerError", function(assert) {
+  var error = new ServerError();
+  assert.ok(error instanceof Error);
+  assert.ok(error instanceof ServerError);
 });
