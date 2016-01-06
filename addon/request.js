@@ -1,7 +1,7 @@
+import Ember from 'ember';
 import raw from './raw';
 
-import Ember from 'ember';
-const {deprecate} = Ember;
+const { deprecate } = Ember;
 
 /*
  * jQuery.ajax wrapper, supports the same signature except providing

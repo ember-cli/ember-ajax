@@ -20,7 +20,7 @@ moduleForComponent('ajax-get', {
 });
 
 test('clicking Load Data loads data', function(assert) {
-  const PAYLOAD = [{title: 'Foo'}, {title: 'Bar'}, {title: 'Baz'}];
+  const PAYLOAD = [{ title: 'Foo' }, { title: 'Bar' }, { title: 'Baz' }];
 
   server.get('/foo', json(200, PAYLOAD), 300);
 
@@ -40,7 +40,7 @@ test('clicking Load Data loads data', function(assert) {
 
   this.$(`.ajax-get button`).click();
 
-  return wait().then(function(){
+  return wait().then(function() {
     assert.equal($('.ajax-get li:eq(0)').text(), 'Foo');
     assert.equal($('.ajax-get li:eq(1)').text(), 'Bar');
     assert.equal($('.ajax-get li:eq(2)').text(), 'Baz');

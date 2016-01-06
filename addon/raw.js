@@ -1,8 +1,8 @@
+import Ember from 'ember';
 import makePromise from './make-promise';
 import parseArgs from './utils/parse-args';
 
-import Ember from 'ember';
-const {deprecate} = Ember;
+const { deprecate } = Ember;
 
 /*
  * Same as `request` except it resolves an object with `{response, textStatus,
