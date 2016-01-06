@@ -23,13 +23,13 @@ module('service:ajax', {
   beforeEach() {
     server = new Pretender();
   },
-  afterEach(){
+  afterEach() {
     server.shutdown();
     Ember.run(service, 'destroy');
   }
 });
 
-test('options() headers are set', function(assert){
+test('options() headers are set', function(assert) {
 
   service = Service.create({
     headers: { 'Content-Type': 'application/json', 'Other-key': 'Other Value' }
@@ -37,10 +37,10 @@ test('options() headers are set', function(assert){
 
   const url = 'example.com';
   const type = 'GET';
-  var ajaxOptions = service.options(url, { type: type });
-  var receivedHeaders = [];
-  var fakeXHR = {
-    setRequestHeader: function(key, value) {
+  const ajaxOptions = service.options(url, { type });
+  const receivedHeaders = [];
+  const fakeXHR = {
+    setRequestHeader(key, value) {
       receivedHeaders.push([key, value]);
     }
   };
@@ -48,12 +48,12 @@ test('options() headers are set', function(assert){
   assert.deepEqual(receivedHeaders, [['Content-Type', 'application/json'], ['Other-key', 'Other Value']], 'headers assigned');
 });
 
-test("options() sets raw data", function(assert) {
+test('options() sets raw data', function(assert) {
   service = Service.create();
 
-  var url = 'example.com';
-  var type = 'GET';
-  var ajaxOptions = service.options(url, { type: type, data: { key: 'value' } });
+  const url = 'example.com';
+  const type = 'GET';
+  const ajaxOptions = service.options(url, { type, data: { key: 'value' } });
 
   assert.deepEqual(ajaxOptions, {
     context: service,
@@ -66,23 +66,23 @@ test("options() sets raw data", function(assert) {
   });
 });
 
-test("options() sets options correctly", function(assert) {
+test('options() sets options correctly', function(assert) {
   service = Service.create();
 
-  var url  = 'example.com';
-  var type = 'POST';
-  var data = JSON.stringify({ key: 'value' });
-  var ajaxOptions = service.options(
+  const url  = 'example.com';
+  const type = 'POST';
+  const data = JSON.stringify({ key: 'value' });
+  const ajaxOptions = service.options(
     url,
     {
-      type: type,
-      data: data,
-      contentType: "application/json; charset=utf-8"
+      type,
+      data,
+      contentType: 'application/json; charset=utf-8'
     }
   );
 
   assert.deepEqual(ajaxOptions, {
-    contentType: "application/json; charset=utf-8",
+    contentType: 'application/json; charset=utf-8',
     context: service,
     data: '{"key":"value"}',
     dataType: 'json',
@@ -91,12 +91,12 @@ test("options() sets options correctly", function(assert) {
   });
 });
 
-test("options() empty data", function(assert) {
+test('options() empty data', function(assert) {
   service = Service.create();
 
-  var url = 'example.com';
-  var type = 'POST';
-  var ajaxOptions = service.options(url, { type: type });
+  const url = 'example.com';
+  const type = 'POST';
+  const ajaxOptions = service.options(url, { type });
 
   assert.deepEqual(ajaxOptions, {
     context: service,
@@ -106,16 +106,16 @@ test("options() empty data", function(assert) {
   });
 });
 
-test("options() type defaults to GET", function(assert) {
+test('options() type defaults to GET', function(assert) {
   service = Service.create();
 
-  var url = 'example.com';
-  var ajaxOptions = service.options(url);
+  const url = 'example.com';
+  const ajaxOptions = service.options(url);
 
   assert.equal(ajaxOptions.type, 'GET');
 });
 
-test("request() promise label is correct", function(assert) {
+test('request() promise label is correct', function(assert) {
   service = Service.create();
   let url = '/posts';
   let data = {
@@ -124,7 +124,7 @@ test("request() promise label is correct", function(assert) {
       post: { title: 'Title', description: 'Some description.' }
     }
   };
-  const serverResponse = [200, { "Content-Type": "application/json" }, JSON.stringify(data.data)];
+  const serverResponse = [200, { 'Content-Type': 'application/json' }, JSON.stringify(data.data)];
 
   server.get(url, () => serverResponse);
   server.post(url, () => serverResponse);
@@ -136,87 +136,86 @@ test("request() promise label is correct", function(assert) {
   assert.equal(postPromise._label, 'ember-ajax: POST to /posts');
 });
 
-test("post() promise label is correct", function(assert) {
+test('post() promise label is correct', function(assert) {
   service = Service.create();
-  let url = '/posts',
-    title = 'Title',
-    description = 'Some description.',
-    options = {
+  const url = '/posts';
+  const title = 'Title';
+  const description = 'Some description.';
+  let options = {
     data: {
-      post: { title: title, description: description }
+      post: { title, description }
     }
   };
-
-  const serverResponse = [200, { "Content-Type": "application/json" }, JSON.stringify(options.data)];
+  const serverResponse = [200, { 'Content-Type': 'application/json' }, JSON.stringify(options.data)];
 
   server.post(url, () => serverResponse);
 
   const postPromise = service.post(url, options);
   assert.equal(postPromise._label, 'ember-ajax: POST to /posts');
 
-  return postPromise.then(function (response) {
+  return postPromise.then(function(response) {
     assert.deepEqual(response.post, options.data.post);
   });
 });
 
-test("put() promise label is correct", function(assert) {
+test('put() promise label is correct', function(assert) {
   service = Service.create();
-  let url = '/posts/1',
-    title = 'Title',
-    description = 'Some description.',
-    id = 1,
-    options = {
+  const url = '/posts/1';
+  const title = 'Title';
+  const description = 'Some description.';
+  const id = 1;
+  const options = {
     data: {
-      post: { id: id, title: title, description: description }
+      post: { id, title, description }
     }
   };
 
-  const serverResponse = [200, { "Content-Type": "application/json" }, JSON.stringify(options.data)];
+  const serverResponse = [200, { 'Content-Type': 'application/json' }, JSON.stringify(options.data)];
 
   server.put(url, () => serverResponse);
 
   const putPromise = service.put(url, options);
   assert.equal(putPromise._label, 'ember-ajax: PUT to /posts/1');
 
-  return putPromise.then(function (response) {
+  return putPromise.then(function(response) {
     assert.deepEqual(response.post, options.data.post);
   });
 });
 
-test("patch() promise label is correct", function(assert) {
+test('patch() promise label is correct', function(assert) {
   service = Service.create();
-  let url = '/posts/1',
-    description = 'Some description.',
-    options = {
+  const url = '/posts/1';
+  const description = 'Some description.';
+  const options = {
     data: {
-      post: { description: description }
+      post: { description }
     }
   };
 
-  const serverResponse = [200, { "Content-Type": "application/json" }, JSON.stringify(options.data)];
+  const serverResponse = [200, { 'Content-Type': 'application/json' }, JSON.stringify(options.data)];
 
   server.patch(url, () => serverResponse);
 
   const patchPromise = service.patch(url, options);
   assert.equal(patchPromise._label, 'ember-ajax: PATCH to /posts/1');
 
-  return patchPromise.then(function (response) {
+  return patchPromise.then(function(response) {
     assert.deepEqual(response.post, options.data.post);
   });
 });
 
-test("del() promise label is correct", function(assert) {
+test('del() promise label is correct', function(assert) {
   service = Service.create();
-  let url = '/posts/1';
+  const url = '/posts/1';
 
-  const serverResponse = [200, { "Content-Type": "application/json" }, JSON.stringify({})];
+  const serverResponse = [200, { 'Content-Type': 'application/json' }, JSON.stringify({})];
 
   server.delete(url, () => serverResponse);
 
   const delPromise = service.del(url);
   assert.equal(delPromise._label, 'ember-ajax: DELETE to /posts/1');
 
-  return delPromise.then(function (response) {
+  return delPromise.then(function(response) {
     assert.deepEqual(response, {});
   });
 });
@@ -239,18 +238,18 @@ test("options() host is set on the url (url not starting with `/`", function(ass
   assert.equal(ajaxoptions.url, 'https://discuss.emberjs.com/users/me');
 });
 
-const errorHandlerTest = ( status, errorClass ) => {
-  test(`${status} handler`, function(assert){
+const errorHandlerTest = (status, errorClass) => {
+  test(`${status} handler`, function(assert) {
     server.get('/posts', json(status));
     service = Service.create();
     return service.request('/posts')
-      .then(function(){
+      .then(function() {
         assert.ok(false, 'success handler should not be called');
       })
-      .catch(function(reason){
+      .catch(function(reason) {
         assert.ok(reason instanceof errorClass);
         assert.ok(reason.errors && typeOf(reason.errors) === 'array',
-          "has errors array");
+          'has errors array');
       });
   });
 };

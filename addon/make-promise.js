@@ -16,20 +16,12 @@ export default function makePromise(settings) {
 
 function makeSuccess(resolve) {
   return function success(response, textStatus, jqXHR) {
-    run(null, resolve, {
-      response: response,
-      textStatus: textStatus,
-      jqXHR: jqXHR
-    });
+    run(null, resolve, { response, textStatus, jqXHR });
   };
 }
 
 function makeError(reject) {
   return function error(jqXHR, textStatus, errorThrown) {
-    run(null, reject, {
-      jqXHR: jqXHR,
-      textStatus: textStatus,
-      errorThrown: errorThrown
-    });
+    run(null, reject, { jqXHR, textStatus, errorThrown });
   };
 }
