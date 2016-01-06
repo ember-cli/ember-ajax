@@ -1,5 +1,4 @@
 import Ember from 'ember';
-
 import {
   AjaxError,
   UnauthorizedError,
@@ -8,6 +7,14 @@ import {
   BadRequestError,
   ServerError
 } from '../errors';
+import {
+  isUnauthorized,
+  isForbidden,
+  isInvalid,
+  isBadRequest,
+  isServerError,
+  isSuccess
+} from '../utils/check-status-code';
 import parseResponseHeaders from '../utils/parse-response-headers';
 
 const {
@@ -237,9 +244,9 @@ export default Ember.Service.extend({
       return new ForbiddenError(payload.errors);
     } else if (this.isInvalid(status, headers, payload)) {
       return new InvalidError(payload.errors);
-    } else if (this.isBadRequest(status)) {
+    } else if (this.isBadRequest(status, headers, payload)) {
       return new BadRequestError(payload.errors);
-    } else if (this.isServerError(status)) {
+    } else if (this.isServerError(status, headers, payload)) {
       return new ServerError(payload.errors);
     }
 
@@ -249,79 +256,87 @@ export default Ember.Service.extend({
   },
 
   /**
-   Default `handleResponse` implementation uses this hook to decide if the
-   response is a an authorized error.
-   @method isUnauthorized
-   @private
-   @param  {Number} status
-   @param  {Object} headers
-   @param  {Object} payload
-   @return {Boolean}
- */
-  isUnauthorized(status/*, headers, payload */) {
-    return status === 401;
-  },
-
-  /**
-     Default `handleResponse` implementation uses this hook to decide if the
-     response is a forbidden error.
-     @method isForbidden
-     @private
-     @param  {Number} status
-     @param  {Object} headers
-     @param  {Object} payload
-     @return {Boolean}
+   * Default `handleResponse` implementation uses this hook to decide if the
+   * response is a an authorized error.
+   * @method isUnauthorized
+   * @private
+   * @param {Number} status
+   * @param {Object} headers
+   * @param {Object} payload
+   * @return {Boolean}
    */
-  isForbidden(status/*, headers, payload */) {
-    return status === 403;
+  isUnauthorized(status) {
+    return isUnauthorized(status);
   },
 
   /**
-    Default `handleResponse` implementation uses this hook to decide if the
-    response is a an invalid error.
-    @method isInvalid
-    @private
-    @param  {Number} status
-    @param  {Object} headers
-    @param  {Object} payload
-    @return {Boolean}
-  */
-  isInvalid(status/*, headers, payload */) {
-    return status === 422;
+   * Default `handleResponse` implementation uses this hook to decide if the
+   * response is a forbidden error.
+   * @method isForbidden
+   * @private
+   * @param {Number} status
+   * @param {Object} headers
+   * @param {Object} payload
+   * @return {Boolean}
+   */
+  isForbidden(status) {
+    return isForbidden(status);
   },
 
   /**
-    @method isBadRequest
-    @private
-    @param  {Number} status
-    @return {Boolean}
-  */
+   * Default `handleResponse` implementation uses this hook to decide if the
+   * response is a an invalid error.
+   * @method isInvalid
+   * @private
+   * @param {Number} status
+   * @param {Object} headers
+   * @param {Object} payload
+   * @return {Boolean}
+   */
+  isInvalid(status) {
+    return isInvalid(status);
+  },
+
+  /**
+   * Default `handleResponse` implementation uses this hook to decide if the
+   * response is a bad request error.
+   * @method isBadRequest
+   * @private
+   * @param {Number} status
+   * @param {Object} headers
+   * @param {Object} payload
+   * @return {Boolean}
+   */
   isBadRequest(status) {
-    return status === 400;
+    return isBadRequest(status);
   },
 
   /**
-    @method isServerError
-    @private
-    @param {Number} status
-    @return {Boolean}
+   * Default `handleResponse` implementation uses this hook to decide if the
+   * response is a server error.
+   * @method isServerError
+   * @private
+   * @param {Number} status
+   * @param {Object} headers
+   * @param {Object} payload
+   * @return {Boolean}
    */
   isServerError(status) {
-    return status >= 500 && status < 600;
+    return isServerError(status);
   },
 
   /**
-    Default `handleResponse` implementation uses this hook to decide if the
-    response is a success.
-    @method isSuccess
-    @private
-    @param  {Number} status
-    @param  {Object} headers
-    @param  {Object} payload
-    @return {Boolean}
-  */
-  isSuccess(status/*, headers, payload */) {
-    return status >= 200 && status < 300 || status === 304;
+   * Default `handleResponse` implementation uses this hook to decide if the
+   * response is a success.
+   * @method isSuccess
+   * @private
+   * @param {Number} status
+   * @param {Object} headers
+   * @param {Object} payload
+   * @return {Boolean}
+   */
+  isSuccess(status) {
+    return isSuccess(status);
   },
 
   /**
