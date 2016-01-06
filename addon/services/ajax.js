@@ -4,7 +4,9 @@ import {
   AjaxError,
   UnauthorizedError,
   InvalidError,
-  ForbiddenError
+  ForbiddenError,
+  BadRequestError,
+  ServerError
 } from '../errors';
 import parseResponseHeaders from '../utils/parse-response-headers';
 
@@ -225,6 +227,7 @@ export default Ember.Service.extend({
    @return {Object | DS.AdapterError} response
  */
  handleResponse(status, headers, payload) {
+   payload = payload || {};
    if (this.isSuccess(status, headers, payload)) {
      return payload;
    } else if (this.isUnauthorized(status, headers, payload)) {
@@ -233,6 +236,10 @@ export default Ember.Service.extend({
      return new ForbiddenError(payload.errors);
    } else if (this.isInvalid(status, headers, payload)) {
      return new InvalidError(payload.errors);
+   } else if (this.isBadRequest(status)) {
+     return new BadRequestError(payload.errors);
+   } else if (this.isServerError(status)) {
+     return new ServerError(payload.errors);
    }
 
    let errors = this.normalizeErrorResponse(status, headers, payload);
@@ -276,7 +283,25 @@ export default Ember.Service.extend({
     @return {Boolean}
   */
   isInvalid(status/*, headers, payload */) {
-  return status === 422;
+    return status === 422;
+  },
+
+  /**
+    @method isBadRequest
+    @param  {Number} status
+    @return {Boolean}
+  */
+  isBadRequest(status) {
+    return status === 400;
+  },
+
+  /**
+     @method isServerError
+     @param {Number} status
+     @return {Boolean}
+   */
+  isServerError(status) {
+    return status >= 500 && status < 600;
   },
 
    /**

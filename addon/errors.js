@@ -37,3 +37,15 @@ export function ForbiddenError(errors) {
 }
 
 ForbiddenError.prototype = Object.create(AjaxError.prototype);
+
+export function BadRequestError(errors) {
+  AjaxError.call(this, errors, 'Request was formatted incorrectly.');
+}
+
+BadRequestError.prototype = Object.create(AjaxError.prototype);
+
+export function ServerError(errors) {
+  AjaxError.call(this, errors, 'Request was rejected due to server error');
+}
+
+ServerError.prototype = Object.create(AjaxError.prototype);
