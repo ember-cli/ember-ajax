@@ -178,7 +178,7 @@ export default Ember.Service.extend({
   */
   options(url, options) {
     var hash = options || {};
-    hash.url = this._buildURL(url);
+    hash.url = this._buildURL(url, hash);
     hash.type = hash.type || 'GET';
     hash.dataType = hash.dataType || 'json';
     hash.context = this;
@@ -193,9 +193,9 @@ export default Ember.Service.extend({
     return hash;
   },
 
-  _buildURL(url) {
-    const host = get(this, 'host');
-    if (isBlank(host)) {
+  _buildURL(url, options) {
+    let host = options.host || get(this, 'host');
+    if (isBlank(host) || host === '/') {
       return url;
     }
     const startsWith = String.prototype.startsWith || function(searchString, position) {
