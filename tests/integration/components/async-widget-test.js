@@ -32,7 +32,7 @@ const PAYLOAD = { posts: [ { id: 1, title: 'hello world' } ] };
 
 test('service injected in component', function(assert) {
   assert.expect(3);
-  server.get('/posts', json(200, PAYLOAD ));
+  server.get('/posts', json(200, PAYLOAD));
 
   const authToken = 'foo';
   this.register('service:session', Service.extend({ authToken }));
@@ -41,8 +41,8 @@ test('service injected in component', function(assert) {
   this.register('service:fajax', AjaxService.extend({
     options() {
       let options = this._super(...arguments);
-      var fakeXHR = {
-        setRequestHeader: function(key, value) {
+      const fakeXHR = {
+        setRequestHeader(key, value) {
           receivedHeaders.push([key, value]);
         }
       };
@@ -81,20 +81,20 @@ test('service injected in component', function(assert) {
   }));
 
   this.render(hbs`{{async-widget id="async-widget" url="/posts"}}`);
-  return component.loadData().then(function(response){
+  return component.loadData().then(function(response) {
     component.set('hello', 'world');
     assert.deepEqual(component.get('helloStyle'), 'hello world', 'run loop is not necessary');
     assert.deepEqual(receivedHeaders[0], ['authToken', 'foo'], 'token was used session');
-    assert.deepEqual(response, PAYLOAD, "recieved PAYLOAD");
+    assert.deepEqual(response, PAYLOAD, 'recieved PAYLOAD');
   });
 });
 
-test('error thrown in service can be caught with assert.throws', function(assert){
-  server.post('/posts/1', json(404, { error: "not found" } ), 200);
+test('error thrown in service can be caught with assert.throws', function(assert) {
+  server.post('/posts/1', json(404, { error: 'not found' }), 200);
 
   this.register('service:ajax', AjaxService.extend({
     customPOST(url) {
-      return this.post(url).catch(function(e){
+      return this.post(url).catch(function(e) {
         throw e;
       });
     }
@@ -109,13 +109,13 @@ test('error thrown in service can be caught with assert.throws', function(assert
 
   this.render(hbs`{{#async-widget classNames="async-widget" url="/posts/1"}}Post!{{/async-widget}}`);
 
-  assert.throws(function(){
+  assert.throws(function() {
     this.$('.async-widget').click();
   }, 'Ajax operation failed');
 
 });
 
-test('waiting for promises to complete', function(assert){
+test('waiting for promises to complete', function(assert) {
 
   server.get('/foo', json(200, { foo: 'bar' }), 300);
 
@@ -126,7 +126,7 @@ test('waiting for promises to complete', function(assert){
     ajax: inject.service(),
     foo: 'foo',
     click() {
-      this.get('ajax').request('/foo').then(({foo})=>{
+      this.get('ajax').request('/foo').then(({ foo }) => {
         component = this;
         this.set('foo', foo);
       });
@@ -138,7 +138,7 @@ test('waiting for promises to complete', function(assert){
   assert.equal(this.$('.async-widget').text(), 'Got: foo for foo');
   this.$('.async-widget').click();
 
-  return wait().then(()=>{
+  return wait().then(() => {
     assert.equal(this.$('.async-widget').text(), 'Got: bar for foo');
   });
 });

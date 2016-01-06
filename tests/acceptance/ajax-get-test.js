@@ -16,8 +16,7 @@ moduleForAcceptance('ajax-get component', {
 });
 
 test('waiting for a route with async widget', function(assert) {
-
-  const PAYLOAD = [{title: 'Foo'}, {title: 'Bar'}, {title: 'Baz'}];
+  const PAYLOAD = [{ title: 'Foo' }, { title: 'Bar' }, { title: 'Baz' }];
 
   server.get('/posts', json(200, PAYLOAD), 300);
 
@@ -30,17 +29,15 @@ test('waiting for a route with async widget', function(assert) {
 
   click('button:contains(Load Data)');
 
-  andThen(function(){
+  andThen(function() {
     assert.equal($('.ajax-get li:eq(0)').text(), 'Foo');
     assert.equal($('.ajax-get li:eq(1)').text(), 'Bar');
     assert.equal($('.ajax-get li:eq(2)').text(), 'Baz');
   });
-
 });
 
-test(`Ajax failure doesn't bubble up to console.` , function(assert){
-
-  server.get('/posts', json(404, "Not Found"), 300);
+test(`Ajax failure doesn't bubble up to console.` , function(assert) {
+  server.get('/posts', json(404, 'Not Found'), 300);
 
   visit('/');
 
@@ -51,8 +48,7 @@ test(`Ajax failure doesn't bubble up to console.` , function(assert){
 
   click('button:contains(Load Data)');
 
-  andThen(function(){
+  andThen(function() {
     assert.equal($('.ajax-get .error').text(), 'Not Found');
   });
-
 });

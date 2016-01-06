@@ -73,12 +73,12 @@ const {
     }).volatile()
   });
   ```
-
+ @public
 **/
 export default Ember.Service.extend({
 
   request(url, options) {
-    var opts;
+    let opts;
 
     if (arguments.length > 2 || typeof options === 'string') {
       deprecate(
@@ -122,18 +122,18 @@ export default Ember.Service.extend({
       hash.error = (jqXHR, textStatus, errorThrown) => {
         let error;
 
-         if (!(error instanceof Error)) {
-           if (errorThrown instanceof Error) {
-             error = errorThrown;
-           } else {
-             error = this.handleResponse(
+        if (!(error instanceof Error)) {
+          if (errorThrown instanceof Error) {
+            error = errorThrown;
+          } else {
+            error = this.handleResponse(
                jqXHR.status,
                parseResponseHeaders(jqXHR.getAllResponseHeaders()),
                this.parseErrorResponse(jqXHR.responseText) || errorThrown
-             );
-           }
-         }
-         reject(error);
+            );
+          }
+        }
+        reject(error);
       };
 
       Ember.$.ajax(hash);
@@ -177,15 +177,15 @@ export default Ember.Service.extend({
     @return {Object}
   */
   options(url, options) {
-    var hash = options || {};
+    const hash = options || {};
     hash.url = this._buildURL(url);
     hash.type = hash.type || 'GET';
     hash.dataType = hash.dataType || 'json';
     hash.context = this;
 
-    var headers = get(this, 'headers');
+    const headers = get(this, 'headers');
     if (headers !== undefined) {
-      hash.beforeSend = function (xhr) {
+      hash.beforeSend = function(xhr) {
         Object.keys(headers).forEach((key) =>  xhr.setRequestHeader(key, headers[key]));
       };
     }
@@ -221,36 +221,38 @@ export default Ember.Service.extend({
    2. Your API might return errors as successful responses with status code
    200 and an Errors text or object.
    @method handleResponse
+   @private
    @param  {Number} status
    @param  {Object} headers
    @param  {Object} payload
    @return {Object | DS.AdapterError} response
  */
- handleResponse(status, headers, payload) {
-   payload = payload || {};
-   if (this.isSuccess(status, headers, payload)) {
-     return payload;
-   } else if (this.isUnauthorized(status, headers, payload)) {
-     return new UnauthorizedError(payload.errors);
-   } else if (this.isForbidden(status, headers, payload)){
-     return new ForbiddenError(payload.errors);
-   } else if (this.isInvalid(status, headers, payload)) {
-     return new InvalidError(payload.errors);
-   } else if (this.isBadRequest(status)) {
-     return new BadRequestError(payload.errors);
-   } else if (this.isServerError(status)) {
-     return new ServerError(payload.errors);
-   }
+  handleResponse(status, headers, payload) {
+    payload = payload || {};
+    if (this.isSuccess(status, headers, payload)) {
+      return payload;
+    } else if (this.isUnauthorized(status, headers, payload)) {
+      return new UnauthorizedError(payload.errors);
+    } else if (this.isForbidden(status, headers, payload)) {
+      return new ForbiddenError(payload.errors);
+    } else if (this.isInvalid(status, headers, payload)) {
+      return new InvalidError(payload.errors);
+    } else if (this.isBadRequest(status)) {
+      return new BadRequestError(payload.errors);
+    } else if (this.isServerError(status)) {
+      return new ServerError(payload.errors);
+    }
 
-   let errors = this.normalizeErrorResponse(status, headers, payload);
+    let errors = this.normalizeErrorResponse(status, headers, payload);
 
-   return new AjaxError(errors);
- },
+    return new AjaxError(errors);
+  },
 
   /**
    Default `handleResponse` implementation uses this hook to decide if the
    response is a an authorized error.
    @method isUnauthorized
+   @private
    @param  {Number} status
    @param  {Object} headers
    @param  {Object} payload
@@ -264,6 +266,7 @@ export default Ember.Service.extend({
      Default `handleResponse` implementation uses this hook to decide if the
      response is a forbidden error.
      @method isForbidden
+     @private
      @param  {Number} status
      @param  {Object} headers
      @param  {Object} payload
@@ -277,6 +280,7 @@ export default Ember.Service.extend({
     Default `handleResponse` implementation uses this hook to decide if the
     response is a an invalid error.
     @method isInvalid
+    @private
     @param  {Number} status
     @param  {Object} headers
     @param  {Object} payload
@@ -288,6 +292,7 @@ export default Ember.Service.extend({
 
   /**
     @method isBadRequest
+    @private
     @param  {Number} status
     @return {Boolean}
   */
@@ -296,18 +301,20 @@ export default Ember.Service.extend({
   },
 
   /**
-     @method isServerError
-     @param {Number} status
-     @return {Boolean}
+    @method isServerError
+    @private
+    @param {Number} status
+    @return {Boolean}
    */
   isServerError(status) {
     return status >= 500 && status < 600;
   },
 
-   /**
+  /**
     Default `handleResponse` implementation uses this hook to decide if the
     response is a success.
     @method isSuccess
+    @private
     @param  {Number} status
     @param  {Object} headers
     @param  {Object} payload
@@ -324,7 +331,7 @@ export default Ember.Service.extend({
     @return {Object}
   */
   parseErrorResponse(responseText) {
-    var json = responseText;
+    let json = responseText;
 
     try {
       json = Ember.$.parseJSON(responseText);
@@ -348,7 +355,7 @@ export default Ember.Service.extend({
       return [
         {
           status: `${status}`,
-          title: "The backend responded with an error",
+          title: 'The backend responded with an error',
           detail: payload
         }
       ];
