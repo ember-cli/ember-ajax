@@ -1,6 +1,6 @@
 import Ember from 'ember';
 import AjaxRequest from '../ajax-request';
-import extendBabelClass from '../utils/extend-babel-class';
+import mixinify from 'ember-mixinify-class';
 
 const { Service } = Ember;
 
@@ -63,4 +63,4 @@ const { Service } = Ember;
   ```
  @public
 **/
-export default Service.extend(extendBabelClass(AjaxRequest));
+export default Service.extend(mixinify(AjaxRequest));
