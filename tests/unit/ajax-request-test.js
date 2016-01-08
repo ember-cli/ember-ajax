@@ -126,10 +126,10 @@ test('request() promise label is correct', function(assert) {
   server.post(url, () => serverResponse);
 
   const getPromise = service.request(url);
-  assert.equal(getPromise._label, 'ember-ajax: GET to /posts');
+  assert.equal(getPromise._label, 'ember-ajax: GET /posts response');
 
   const postPromise = service.request(url, data);
-  assert.equal(postPromise._label, 'ember-ajax: POST to /posts');
+  assert.equal(postPromise._label, 'ember-ajax: POST /posts response');
 });
 
 test('post() promise label is correct', function(assert) {
@@ -147,7 +147,7 @@ test('post() promise label is correct', function(assert) {
   server.post(url, () => serverResponse);
 
   const postPromise = service.post(url, options);
-  assert.equal(postPromise._label, 'ember-ajax: POST to /posts');
+  assert.equal(postPromise._label, 'ember-ajax: POST /posts response');
 
   return postPromise.then(function(response) {
     assert.deepEqual(response.post, options.data.post);
@@ -171,7 +171,7 @@ test('put() promise label is correct', function(assert) {
   server.put(url, () => serverResponse);
 
   const putPromise = service.put(url, options);
-  assert.equal(putPromise._label, 'ember-ajax: PUT to /posts/1');
+  assert.equal(putPromise._label, 'ember-ajax: PUT /posts/1 response');
 
   return putPromise.then(function(response) {
     assert.deepEqual(response.post, options.data.post);
@@ -193,7 +193,7 @@ test('patch() promise label is correct', function(assert) {
   server.patch(url, () => serverResponse);
 
   const patchPromise = service.patch(url, options);
-  assert.equal(patchPromise._label, 'ember-ajax: PATCH to /posts/1');
+  assert.equal(patchPromise._label, 'ember-ajax: PATCH /posts/1 response');
 
   return patchPromise.then(function(response) {
     assert.deepEqual(response.post, options.data.post);
@@ -208,7 +208,7 @@ test('del() promise label is correct', function(assert) {
   server.delete(url, () => serverResponse);
 
   const delPromise = service.del(url);
-  assert.equal(delPromise._label, 'ember-ajax: DELETE to /posts/1');
+  assert.equal(delPromise._label, 'ember-ajax: DELETE /posts/1 response');
 
   return delPromise.then(function(response) {
     assert.deepEqual(response, {});

@@ -34,7 +34,7 @@ test('raw() returns jqXHR', function(assert) {
 });
 
 test('raw() rejects promise when 404 is returned', function(assert) {
-  assert.expect(3);
+  assert.expect(2);
   api.get('/photos', function() {
     return [404, { 'Content-Type': 'application/json' }];
   });
@@ -45,9 +45,8 @@ test('raw() rejects promise when 404 is returned', function(assert) {
       errorCalled = false;
     })
     .catch(function(response) {
-      const { errorThrown, textStatus } = response;
+      const { errorThrown } = response;
       assert.equal(errorThrown, 'Not Found');
-      assert.equal(textStatus, textStatus);
       errorCalled = true;
     })
     .finally(function() {

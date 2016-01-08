@@ -2,6 +2,9 @@ import {
   module,
   test
 } from 'qunit';
+import {
+  isNotFound
+} from 'ember-ajax/errors';
 import Pretender from 'pretender';
 import request from 'ember-ajax/request';
 
@@ -30,7 +33,7 @@ test('request() produces data', function(assert) {
 });
 
 test('request() rejects promise when 404 is returned', function(assert) {
-  assert.expect(3);
+  assert.expect(2);
   server.get('/photos', function() {
     return [404, { 'Content-Type': 'application/json' }];
   });
@@ -41,9 +44,7 @@ test('request() rejects promise when 404 is returned', function(assert) {
       errorCalled = false;
     })
     .catch(function(response) {
-      const { errorThrown, textStatus } = response;
-      assert.equal(errorThrown, 'Not Found');
-      assert.equal(textStatus, textStatus);
+      assert.ok(isNotFound(response));
       errorCalled = true;
     })
     .finally(function() {

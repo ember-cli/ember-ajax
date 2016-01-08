@@ -5,16 +5,16 @@ import {
   InvalidError,
   ForbiddenError,
   BadRequestError,
-  ServerError
-} from './errors';
-import {
+  NotFoundError,
+  ServerError,
   isUnauthorized,
   isForbidden,
   isInvalid,
   isBadRequest,
+  isNotFound,
   isServerError,
   isSuccess
-} from './utils/check-status-code';
+} from './errors';
 import parseResponseHeaders from './utils/parse-response-headers';
 
 const {
@@ -28,10 +28,19 @@ export default class AjaxRequest {
 
   request(url, options) {
     const hash = this.options(url, options);
-    return this.makePromise(hash);
+    return new Promise((resolve, reject) => {
+      this.raw(url, hash)
+        .then(({ response }) => {
+          resolve(response);
+        })
+        .catch(({ response }) => {
+          reject(response);
+        });
+    }, `ember-ajax: ${hash.type} ${hash.url} response`);
   }
 
-  makePromise(hash) {
+  raw(url, options) {
+    const hash = this.options(url, options);
     return new Promise((resolve, reject) => {
       hash.success = (payload, textStatus, jqXHR) => {
         let response = this.handleResponse(
@@ -41,29 +50,24 @@ export default class AjaxRequest {
         );
 
         if (response instanceof AjaxError) {
-          reject(response);
+          reject({ payload, textStatus, jqXHR, response });
         } else {
-          resolve(response);
+          resolve({ payload, textStatus, jqXHR, response });
         }
       };
 
       hash.error = (jqXHR, textStatus, errorThrown) => {
-        let error;
-
-        if (errorThrown instanceof Error) {
-          error = errorThrown;
-        } else {
-          error = this.handleResponse(
-             jqXHR.status,
-             parseResponseHeaders(jqXHR.getAllResponseHeaders()),
-             this.parseErrorResponse(jqXHR.responseText) || errorThrown
-          );
-        }
-        reject(error);
+        const payload = this.parseErrorResponse(jqXHR.responseText) || errorThrown;
+        const response = this.handleResponse(
+           jqXHR.status,
+           parseResponseHeaders(jqXHR.getAllResponseHeaders()),
+           payload
+        );
+        reject({ payload, textStatus, jqXHR, errorThrown, response });
       };
 
       $.ajax(hash);
-    }, `ember-ajax: ${hash.type} to ${hash.url}`);
+    }, `ember-ajax: ${hash.type} ${hash.url}`);
   }
 
   // calls `request()` but forces `options.type` to `POST`
@@ -163,6 +167,8 @@ export default class AjaxRequest {
       return new InvalidError(payload.errors);
     } else if (this.isBadRequest(status, headers, payload)) {
       return new BadRequestError(payload.errors);
+    } else if (this.isNotFound(status, headers, payload)) {
+      return new NotFoundError(payload.errors);
     } else if (this.isServerError(status, headers, payload)) {
       return new ServerError(payload.errors);
     }
@@ -253,6 +259,10 @@ export default class AjaxRequest {
    */
   isSuccess(status) {
     return isSuccess(status);
+  }
+
+  isNotFound(status) {
+    return isNotFound(status);
   }
 
   /**
