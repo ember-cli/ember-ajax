@@ -50,16 +50,14 @@ export default class AjaxRequest {
       hash.error = (jqXHR, textStatus, errorThrown) => {
         let error;
 
-        if (!(error instanceof Error)) {
-          if (errorThrown instanceof Error) {
-            error = errorThrown;
-          } else {
-            error = this.handleResponse(
-               jqXHR.status,
-               parseResponseHeaders(jqXHR.getAllResponseHeaders()),
-               this.parseErrorResponse(jqXHR.responseText) || errorThrown
-            );
-          }
+        if (errorThrown instanceof Error) {
+          error = errorThrown;
+        } else {
+          error = this.handleResponse(
+             jqXHR.status,
+             parseResponseHeaders(jqXHR.getAllResponseHeaders()),
+             this.parseErrorResponse(jqXHR.responseText) || errorThrown
+          );
         }
         reject(error);
       };
