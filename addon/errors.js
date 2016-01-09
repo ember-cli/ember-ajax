@@ -82,56 +82,56 @@ ServerError.prototype = Object.create(AjaxError.prototype);
 
 /**
  * Checks if the given status code represents an unauthorized request error
- * @method isUnauthorized
+ * @method isUnauthorizedError
  * @public
  * @param  {Number | AjaxError} error
  * @return {Boolean}
  */
-export function isUnauthorized(error) {
+export function isUnauthorizedError(error) {
   return error === 401;
 }
 
 /**
  * Checks if the given status code represents a forbidden request error
- * @method isForbidden
+ * @method isForbiddenError
  * @public
  * @param  {Number} status
  * @return {Boolean}
  */
-export function isForbidden(status) {
+export function isForbiddenError(status) {
   return status === 403;
 }
 
 /**
  * Checks if the given status code represents an invalid request error
- * @method isInvalid
+ * @method isInvalidError
  * @public
  * @param  {Number} status
  * @return {Boolean}
  */
-export function isInvalid(status) {
+export function isInvalidError(status) {
   return status === 422;
 }
 
 /**
  * Checks if the given status code represents a bad request error
- * @method isBadRequest
+ * @method isBadRequestError
  * @public
  * @param  {Number} status
  * @return {Boolean}
  */
-export function isBadRequest(status) {
+export function isBadRequestError(status) {
   return status === 400;
 }
 
 /**
  * Checks if the given status code represents a "not found" error
- * @method isNotFound
+ * @method isNotFoundError
  * @public
  * @param  {Number | AjaxError} error
  * @return {Boolean}
  */
-export function isNotFound(error) {
+export function isNotFoundError(error) {
   if (error instanceof AjaxError) {
     return error instanceof NotFoundError;
   } else {

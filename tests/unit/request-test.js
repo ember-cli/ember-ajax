@@ -3,7 +3,7 @@ import {
   test
 } from 'qunit';
 import {
-  isNotFound
+  isNotFoundError
 } from 'ember-ajax/errors';
 import Pretender from 'pretender';
 import request from 'ember-ajax/request';
@@ -44,7 +44,7 @@ test('request() rejects promise when 404 is returned', function(assert) {
       errorCalled = false;
     })
     .catch(function(response) {
-      assert.ok(isNotFound(response));
+      assert.ok(isNotFoundError(response));
       errorCalled = true;
     })
     .finally(function() {

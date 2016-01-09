@@ -11,10 +11,10 @@ import {
   ForbiddenError,
   BadRequestError,
   ServerError,
-  isUnauthorized,
-  isForbidden,
-  isInvalid,
-  isBadRequest,
+  isUnauthorizedError,
+  isForbiddenError,
+  isInvalidError,
+  isBadRequestError,
   isServerError,
   isSuccess
 } from 'ember-ajax/errors';
@@ -58,19 +58,19 @@ test('ServerError', function(assert) {
 });
 
 test('detects unauthorized request correctly', function(assert) {
-  assert.ok(isUnauthorized(401));
+  assert.ok(isUnauthorizedError(401));
 });
 
 test('detects forbidden request correctly', function(assert) {
-  assert.ok(isForbidden(403));
+  assert.ok(isForbiddenError(403));
 });
 
 test('detects invalid request correctly', function(assert) {
-  assert.ok(isInvalid(422));
+  assert.ok(isInvalidError(422));
 });
 
 test('detects bad request correctly', function(assert) {
-  assert.ok(isBadRequest(400));
+  assert.ok(isBadRequestError(400));
 });
 
 test('detects server error correctly', function(assert) {

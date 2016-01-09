@@ -7,11 +7,11 @@ import {
   BadRequestError,
   NotFoundError,
   ServerError,
-  isUnauthorized,
-  isForbidden,
-  isInvalid,
-  isBadRequest,
-  isNotFound,
+  isUnauthorizedError,
+  isForbiddenError,
+  isInvalidError,
+  isBadRequestError,
+  isNotFoundError,
   isServerError,
   isSuccess
 } from './errors';
@@ -159,15 +159,15 @@ export default class AjaxRequest {
     payload = payload || {};
     if (this.isSuccess(status, headers, payload)) {
       return payload;
-    } else if (this.isUnauthorized(status, headers, payload)) {
+    } else if (this.isUnauthorizedError(status, headers, payload)) {
       return new UnauthorizedError(payload.errors);
-    } else if (this.isForbidden(status, headers, payload)) {
+    } else if (this.isForbiddenError(status, headers, payload)) {
       return new ForbiddenError(payload.errors);
-    } else if (this.isInvalid(status, headers, payload)) {
+    } else if (this.isInvalidError(status, headers, payload)) {
       return new InvalidError(payload.errors);
-    } else if (this.isBadRequest(status, headers, payload)) {
+    } else if (this.isBadRequestError(status, headers, payload)) {
       return new BadRequestError(payload.errors);
-    } else if (this.isNotFound(status, headers, payload)) {
+    } else if (this.isNotFoundError(status, headers, payload)) {
       return new NotFoundError(payload.errors);
     } else if (this.isServerError(status, headers, payload)) {
       return new ServerError(payload.errors);
@@ -180,57 +180,71 @@ export default class AjaxRequest {
   /**
    * Default `handleResponse` implementation uses this hook to decide if the
    * response is a an authorized error.
-   * @method isUnauthorized
+   * @method isUnauthorizedError
    * @private
    * @param {Number} status
    * @param {Object} headers
    * @param {Object} payload
    * @return {Boolean}
    */
-  isUnauthorized(status) {
-    return isUnauthorized(status);
+  isUnauthorizedError(status) {
+    return isUnauthorizedError(status);
   }
 
   /**
    * Default `handleResponse` implementation uses this hook to decide if the
    * response is a forbidden error.
-   * @method isForbidden
+   * @method isForbiddenError
    * @private
    * @param {Number} status
    * @param {Object} headers
    * @param {Object} payload
    * @return {Boolean}
    */
-  isForbidden(status) {
-    return isForbidden(status);
+  isForbiddenError(status) {
+    return isForbiddenError(status);
   }
 
   /**
    * Default `handleResponse` implementation uses this hook to decide if the
    * response is a an invalid error.
-   * @method isInvalid
+   * @method isInvalidError
    * @private
    * @param {Number} status
    * @param {Object} headers
    * @param {Object} payload
    * @return {Boolean}
    */
-  isInvalid(status) {
-    return isInvalid(status);
+  isInvalidError(status) {
+    return isInvalidError(status);
   }
 
   /**
    * Default `handleResponse` implementation uses this hook to decide if the
    * response is a bad request error.
-   * @method isBadRequest
+   * @method isBadRequestError
    * @private
    * @param {Number} status
    * @param {Object} headers
    * @param {Object} payload
    * @return {Boolean}
    */
-  isBadRequest(status) {
-    return isBadRequest(status);
+  isBadRequestError(status) {
+    return isBadRequestError(status);
+  }
+
+  /**
+   * Default `handleResponse` implementation uses this hook to decide if the
+   * response is a "not found" error.
+   * @method isNotFoundError
+   * @private
+   * @param {Number} status
+   * @param {Object} headers
+   * @param {Object} payload
+   * @return {Boolean}
+   */
+  isNotFoundError(status) {
+    return isNotFoundError(status);
   }
 
   /**
@@ -259,10 +273,6 @@ export default class AjaxRequest {
    */
   isSuccess(status) {
     return isSuccess(status);
-  }
-
-  isNotFound(status) {
-    return isNotFound(status);
   }
 
   /**
