@@ -57,27 +57,52 @@ test('ServerError', function(assert) {
   assert.ok(error instanceof ServerError);
 });
 
-test('detects unauthorized request correctly', function(assert) {
+test('isUnauthorizedError: detects error code correctly', function(assert) {
   assert.ok(isUnauthorizedError(401));
 });
 
-test('detects forbidden request correctly', function(assert) {
+test('isUnauthorizedError: detects error class correctly', function(assert) {
+  const error = new UnauthorizedError();
+  assert.ok(isUnauthorizedError(error));
+});
+
+test('isForbiddenError: detects error code correctly', function(assert) {
   assert.ok(isForbiddenError(403));
 });
 
-test('detects invalid request correctly', function(assert) {
+test('isForbiddenError: detects error class correctly', function(assert) {
+  const error = new ForbiddenError();
+  assert.ok(isForbiddenError(error));
+});
+
+test('isInvalidError: detects error code correctly', function(assert) {
   assert.ok(isInvalidError(422));
 });
 
-test('detects bad request correctly', function(assert) {
+test('isInvalidError: detects error class correctly', function(assert) {
+  const error = new InvalidError();
+  assert.ok(isInvalidError(error));
+});
+
+test('isBadRequestError: detects error code correctly', function(assert) {
   assert.ok(isBadRequestError(400));
 });
 
-test('detects server error correctly', function(assert) {
+test('isBadRequestError: detects error class correctly', function(assert) {
+  const error = new BadRequestError();
+  assert.ok(isBadRequestError(error));
+});
+
+test('isServerError: detects error code correctly', function(assert) {
   assert.notOk(isServerError(499));
   assert.ok(isServerError(500));
   assert.ok(isServerError(599));
   assert.notOk(isServerError(600));
+});
+
+test('isServerError: detects error class correctly', function(assert) {
+  const error = new ServerError();
+  assert.ok(isServerError(error));
 });
 
 test('detects successful request correctly', function(assert) {

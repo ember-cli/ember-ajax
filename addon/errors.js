@@ -81,51 +81,72 @@ export function ServerError(errors) {
 ServerError.prototype = Object.create(AjaxError.prototype);
 
 /**
- * Checks if the given status code represents an unauthorized request error
+ * Checks if the given status code or AjaxError obejct represents an
+ * unauthorized request error
  * @method isUnauthorizedError
  * @public
  * @param  {Number | AjaxError} error
  * @return {Boolean}
  */
 export function isUnauthorizedError(error) {
-  return error === 401;
+  if (error instanceof AjaxError) {
+    return error instanceof UnauthorizedError;
+  } else {
+    return error === 401;
+  }
 }
 
 /**
- * Checks if the given status code represents a forbidden request error
+ * Checks if the given status code or AjaxError object represents a forbidden
+ * request error
  * @method isForbiddenError
  * @public
- * @param  {Number} status
+ * @param  {Number | AjaxError} error
  * @return {Boolean}
  */
-export function isForbiddenError(status) {
-  return status === 403;
+export function isForbiddenError(error) {
+  if (error instanceof AjaxError) {
+    return error instanceof ForbiddenError;
+  } else {
+    return error === 403;
+  }
 }
 
 /**
- * Checks if the given status code represents an invalid request error
+ * Checks if the given status code or AjaxError object represents an invalid
+ * request error
  * @method isInvalidError
  * @public
- * @param  {Number} status
+ * @param  {Number | AjaxError} error
  * @return {Boolean}
  */
-export function isInvalidError(status) {
-  return status === 422;
+export function isInvalidError(error) {
+  if (error instanceof AjaxError) {
+    return error instanceof InvalidError;
+  } else {
+    return error === 422;
+  }
 }
 
 /**
- * Checks if the given status code represents a bad request error
+ * Checks if the given status code or AjaxError object represents a bad request
+ * error
  * @method isBadRequestError
  * @public
- * @param  {Number} status
+ * @param  {Number | AjaxError} error
  * @return {Boolean}
  */
-export function isBadRequestError(status) {
-  return status === 400;
+export function isBadRequestError(error) {
+  if (error instanceof AjaxError) {
+    return error instanceof BadRequestError;
+  } else {
+    return error === 400;
+  }
 }
 
 /**
- * Checks if the given status code represents a "not found" error
+ * Checks if the given status code or AjaxError object represents a
+ * "not found" error
  * @method isNotFoundError
  * @public
  * @param  {Number | AjaxError} error
@@ -140,14 +161,18 @@ export function isNotFoundError(error) {
 }
 
 /**
- * Checks if the given status code represents a server error
+ * Checks if the given status code or AjaxError object represents a server error
  * @method isServerError
  * @public
- * @param {Number} status
+ * @param  {Number | AjaxError} error
  * @return {Boolean}
  */
-export function isServerError(status) {
-  return status >= 500 && status < 600;
+export function isServerError(error) {
+  if (error instanceof AjaxError) {
+    return error instanceof ServerError;
+  } else {
+    return error >= 500 && error < 600;
+  }
 }
 
 /**
