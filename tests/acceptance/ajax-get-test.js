@@ -49,6 +49,6 @@ test(`Ajax failure doesn't bubble up to console.` , function(assert) {
   click('button:contains(Load Data)');
 
   andThen(function() {
-    assert.equal($('.ajax-get .error').text(), 'Not Found');
+    assert.equal($('.ajax-get .error').text(), 'Resource was not found.');
   });
 });

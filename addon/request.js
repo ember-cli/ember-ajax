@@ -1,17 +1,16 @@
-import Ember from 'ember';
-import raw from './raw';
+import AjaxRequest from './ajax-request';
 
-const { deprecate } = Ember;
-
-/*
- * jQuery.ajax wrapper, supports the same signature except providing
- * `success` and `error` handlers will throw an error (use promises instead)
- * and it resolves only the response (no access to jqXHR or textStatus).
+/**
+ * Helper function that allows you to use the default `ember-ajax` to make
+ * requests without using the service.
+ *
+ * Note: Unlike `ic-ajax`'s `request` helper function, this will *not* return a
+ * jqXHR object in the error handler.  If you need jqXHR, you can use the `raw`
+ * function instead.
+ *
+ * @public
  */
 export default function request() {
-  deprecate('ember-ajax/request is deprecated and will be removed in ember-ajax@2.0.0',
-    false, { id: 'ember-ajax.raw' });
-  return raw(...arguments).then(function(result) {
-    return result.response;
-  }, null, 'ember-ajax: unwrap raw ajax response');
+  const ajax = new AjaxRequest();
+  return ajax.request(...arguments);
 }
