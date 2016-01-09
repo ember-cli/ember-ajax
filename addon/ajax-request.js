@@ -70,22 +70,34 @@ export default class AjaxRequest {
     }, `ember-ajax: ${hash.type} ${hash.url}`);
   }
 
-  // calls `request()` but forces `options.type` to `POST`
+  /**
+   * calls `request()` but forces `options.type` to `POST`
+   * @public
+   */
   post(url, options) {
     return this.request(url, this._addTypeToOptionsFor(options, 'POST'));
   }
 
-  // calls `request()` but forces `options.type` to `PUT`
+  /**
+   * calls `request()` but forces `options.type` to `PUT`
+   * @public
+   */
   put(url, options) {
     return this.request(url, this._addTypeToOptionsFor(options, 'PUT'));
   }
 
-  // calls `request()` but forces `options.type` to `PATCH`
+  /**
+   * calls `request()` but forces `options.type` to `PATCH`
+   * @public
+   */
   patch(url, options) {
     return this.request(url, this._addTypeToOptionsFor(options, 'PATCH'));
   }
 
-  // calls `request()` but forces `options.type` to `DELETE`
+  /**
+   * calls `request()` but forces `options.type` to `DELETE`
+   * @public
+   */
   del(url, options) {
     return this.request(url, this._addTypeToOptionsFor(options, 'DELETE'));
   }
@@ -98,12 +110,12 @@ export default class AjaxRequest {
   }
 
   /**
-    @method options
-    @private
-    @param {String} url
-    @param {Object} options
-    @return {Object}
-  */
+   * @method options
+   * @private
+   * @param {String} url
+   * @param {Object} options
+   * @return {Object}
+   */
   options(url, options) {
     const hash = options || {};
     hash.url = this._buildURL(url);
@@ -138,23 +150,24 @@ export default class AjaxRequest {
   }
 
   /**
-   Takes an ajax response, and returns the json payload or an error.
-
-   By default this hook just returns the json payload passed to it.
-   You might want to override it in two cases:
-
-   1. Your API might return useful results in the response headers.
-   Response headers are passed in as the second argument.
-
-   2. Your API might return errors as successful responses with status code
-   200 and an Errors text or object.
-   @method handleResponse
-   @private
-   @param  {Number} status
-   @param  {Object} headers
-   @param  {Object} payload
-   @return {Object | DS.AdapterError} response
- */
+   * Takes an ajax response, and returns the json payload or an error.
+   *
+   * By default this hook just returns the json payload passed to it.
+   * You might want to override it in two cases:
+   *
+   * 1. Your API might return useful results in the response headers.
+   *    Response headers are passed in as the second argument.
+   *
+   * 2. Your API might return errors as successful responses with status code
+   *    200 and an Errors text or object.
+   *
+   * @method handleResponse
+   * @private
+   * @param  {Number} status
+   * @param  {Object} headers
+   * @param  {Object} payload
+   * @return {Object | DS.AdapterError} response
+   */
   handleResponse(status, headers, payload) {
     payload = payload || {};
     if (this.isSuccess(status, headers, payload)) {
@@ -276,11 +289,11 @@ export default class AjaxRequest {
   }
 
   /**
-    @method parseErrorResponse
-    @private
-    @param {String} responseText
-    @return {Object}
-  */
+   * @method parseErrorResponse
+   * @private
+   * @param {String} responseText
+   * @return {Object}
+   */
   parseErrorResponse(responseText) {
     let json = responseText;
 
@@ -292,13 +305,13 @@ export default class AjaxRequest {
   }
 
   /**
-    @method normalizeErrorResponse
-    @private
-    @param  {Number} status
-    @param  {Object} headers
-    @param  {Object} payload
-    @return {Object} errors payload
-  */
+   * @method normalizeErrorResponse
+   * @private
+   * @param  {Number} status
+   * @param  {Object} headers
+   * @param  {Object} payload
+   * @return {Object} errors payload
+   */
   normalizeErrorResponse(status, headers, payload) {
     if (payload && typeof payload === 'object' && payload.errors) {
       return payload.errors;
