@@ -255,6 +255,44 @@ test('options() host is overridable on a per-request basis', function(assert) {
   assert.equal(ajaxoptions.url, 'https://myurl.com/users/me');
 });
 
+test('it creates a detailed error message for unmatched server errors with an AJAX payload', function(assert) {
+  assert.expect(3);
+
+  const response = [408, { 'Content-Type': 'application/json' }, JSON.stringify(
+    { errors: [ 'Some error response' ] }
+  )];
+  server.get('/posts', () => response);
+
+  const service = new AjaxRequest();
+  return service.request('/posts')
+    .then(function() {
+      assert.ok(false, 'success handler should not be called');
+    })
+    .catch(function(result) {
+      assert.textContains(result.message, 'Some error response', 'Show payload as string');
+      assert.textContains(result.message, 'GET', 'Show AJAX method');
+      assert.textContains(result.message, '/posts', 'Show URL');
+    });
+});
+
+test('it creates a detailed error message for unmatched server errors with a text payload', function(assert) {
+  assert.expect(3);
+
+  const response = [408, { 'Content-Type': 'text/html' }, 'Some error response'];
+  server.get('/posts', () => response);
+
+  const service = new AjaxRequest();
+  return service.request('/posts')
+    .then(function() {
+      assert.ok(false, 'success handler should not be called');
+    })
+    .catch(function(result) {
+      assert.textContains(result.message, 'Some error response', 'Show payload as string');
+      assert.textContains(result.message, 'GET', 'Show AJAX method');
+      assert.textContains(result.message, '/posts', 'Show URL');
+    });
+});
+
 const errorHandlerTest = (status, errorClass) => {
   test(`${status} handler`, function(assert) {
     server.get('/posts', json(status));
