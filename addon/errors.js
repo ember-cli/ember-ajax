@@ -1,6 +1,6 @@
 import Ember from 'ember';
 
-const EmberError = Ember.Error;
+const { Error: EmberError } = Ember;
 
 /**
  * @class AjaxError
