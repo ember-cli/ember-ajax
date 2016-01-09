@@ -21,7 +21,8 @@ const {
   $,
   RSVP: { Promise },
   get,
-  isBlank
+  isBlank,
+  run
 } = Ember;
 
 export default class AjaxRequest {
@@ -50,9 +51,9 @@ export default class AjaxRequest {
         );
 
         if (response instanceof AjaxError) {
-          reject({ payload, textStatus, jqXHR, response });
+          run.join(null, reject, { payload, textStatus, jqXHR, response });
         } else {
-          resolve({ payload, textStatus, jqXHR, response });
+          run.join(null, resolve, { payload, textStatus, jqXHR, response });
         }
       };
 
@@ -63,7 +64,7 @@ export default class AjaxRequest {
            parseResponseHeaders(jqXHR.getAllResponseHeaders()),
            payload
         );
-        reject({ payload, textStatus, jqXHR, errorThrown, response });
+        run.join(null, reject, { payload, textStatus, jqXHR, errorThrown, response });
       };
 
       $.ajax(hash);
