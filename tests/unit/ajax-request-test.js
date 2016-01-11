@@ -215,7 +215,7 @@ test('del() promise label is correct', function(assert) {
   });
 });
 
-test('options() host is set on the url (url starting with `/`', function(assert) {
+test('options() host is set on the url (url starting with `/`)', function(assert) {
   class RequestWithHost extends AjaxRequest {
     get host() {
       return 'https://discuss.emberjs.com';
@@ -228,7 +228,7 @@ test('options() host is set on the url (url starting with `/`', function(assert)
   assert.equal(ajaxoptions.url, 'https://discuss.emberjs.com/users/me');
 });
 
-test('options() host is set on the url (url not starting with `/`', function(assert) {
+test('options() host is set on the url (url not starting with `/`)', function(assert) {
   class RequestWithHost extends AjaxRequest {
     get host() {
       return 'https://discuss.emberjs.com';
@@ -239,6 +239,20 @@ test('options() host is set on the url (url not starting with `/`', function(ass
   const ajaxoptions = service.options(url);
 
   assert.equal(ajaxoptions.url, 'https://discuss.emberjs.com/users/me');
+});
+
+test('options() host is overridable on a per-request basis', function(assert) {
+  class RequestWithHost extends AjaxRequest {
+    get host() {
+      return 'https://discuss.emberjs.com';
+    }
+  }
+  const service = new RequestWithHost();
+  const url = 'users/me';
+  const host = 'https://myurl.com';
+  const ajaxoptions = service.options(url, { host });
+
+  assert.equal(ajaxoptions.url, 'https://myurl.com/users/me');
 });
 
 const errorHandlerTest = (status, errorClass) => {
