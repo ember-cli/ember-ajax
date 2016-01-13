@@ -27,9 +27,13 @@ export default Ember.Route.extend({
 
 ### Basic Usage
 
-The AJAX service provides methods to be used to make AJAX requests, similar to the way that you would use `jQuery.ajax`.  In fact, `ember-ajax` is a wrapper around jQuery's method, and can be configured in much the same way.
+The AJAX service provides methods to be used to make AJAX requests, similar to
+the way that you would use `jQuery.ajax`.  In fact, `ember-ajax` is a wrapper
+around jQuery's method, and can be configured in much the same way.
 
-In general, you will use the `request(url, options)` method, where `url` is the destination of the request and `options` is a configuration hash for [`jQuery.ajax`](http://api.jquery.com/jQuery.ajax/#jQuery-ajax-settings).
+In general, you will use the `request(url, options)` method, where `url` is the
+destination of the request and `options` is a configuration hash for
+[`jQuery.ajax`](http://api.jquery.com/jQuery.ajax/#jQuery-ajax-settings).
 
 ```javascript
 import Ember from 'ember';
@@ -49,10 +53,16 @@ export default Ember.Controller.extend({
 });
 ```
 
+In this example, `this.get('ajax').request()` will return a promise with the
+result of the request.  Your handler code inside `.then` or `.catch` will
+automatically be wrapped in an Ember run loop for maximum compatibility with
+Ember, right out of the box.
+
 ### HTTP-verbed methods
 
-You can skip setting the `method` or `type` keys in your `options` object when calling `request(url, options)` by
-instead calling `post(url, options)`, `put(url, options)`, `patch(url, options)` or `del(url, options)`.
+You can skip setting the `method` or `type` keys in your `options` object when
+calling `request(url, options)` by instead calling `post(url, options)`,
+`put(url, options)`, `patch(url, options)` or `del(url, options)`.
 
 ```js
 post('/posts', { data: { title: 'Ember' } })    // Makes a POST request to /posts
@@ -67,8 +77,8 @@ del('/posts/1')                                 // Makes a DELETE request to /po
 especially helpful when you have a session service that provides an auth token
 that you have to include with the requests to authorize your requests.
 
-To include custom headers to be used with your requests, you can specify `headers`
-hash on the `Ajax Service`.
+To include custom headers to be used with your requests, you can specify
+`headers` hash on the `Ajax Service`.
 
 ```js
 // app/services/ajax.js
@@ -157,10 +167,16 @@ export default AjaxService.extend({
 #### Built in error types
 
 `ember-ajax` has some built in error types that you can use to check error with
-instanceof rather than by comparing to a number. The built in types are
-`InvalidError`(422), `UnauthorizedError`(401) and `ForbiddenError`(403). Each of
-these types has a corresponding is* method to allow you to customize how error
-is determined.
+instanceof rather than by comparing to a number. The built in types are:
+
+* `InvalidError`(422)
+* `UnauthorizedError`(401)
+* `ForbiddenError`(403)
+* `BadRequestError` (400)
+* `ServerError` (5XX)
+
+Each of these types has a corresponding is* method (like `isBadRequest`) to
+allow you to customize how error is determined.
 
 ```js
 import Ember from 'ember';
@@ -188,13 +204,22 @@ export default Ember.Route.extend({
 
 ### Fixture Data
 
-When writing tests, you will often need to provide fixture data for your application. This can be accomplished by mocking your server with [`Pretender.js`](https://github.com/pretenderjs/pretender). You can use it directly with [ember-cli-pretender](https://github.com/rwjblue/ember-cli-pretender) or through a helper library.
+When writing tests, you will often need to provide fixture data for your
+application. This can be accomplished by mocking your server with
+[`Pretender.js`](https://github.com/pretenderjs/pretender). You can use it
+directly with [ember-cli-pretender](https://github.com/rwjblue/ember-cli-pretender)
+or through a helper library.
 
-If you're looking for a full featured mock server with fixtures support, choose [EmberCLI Mirage](http://www.ember-cli-mirage.com/) otherwise use the leaner [EmberCLI Fake Server](https://github.com/201-created/ember-cli-fake-server).
+If you're looking for a full featured mock server with fixtures support, choose
+[EmberCLI Mirage](http://www.ember-cli-mirage.com/) otherwise use the leaner
+[EmberCLI Fake Server](https://github.com/201-created/ember-cli-fake-server).
 
 #### Error Handling
 
-When writing integration & acceptance tests, your tests should be testing for what the user can see. Therefore, your tests should be checking if the errors are in the DOM. If errors bubble up to the console, then you should catch the failure in your app code and present the errors to the user.
+When writing integration & acceptance tests, your tests should be testing for
+what the user can see. Therefore, your tests should be checking if the errors
+are in the DOM. If errors bubble up to the console, then you should catch the
+failure in your app code and present the errors to the user.
 
 ### Acceptance Tests
 
@@ -293,7 +318,8 @@ test('clicking Load Data loads data', function(assert) {
 });
 ```
 
-**Notice**, the `wait()` helper. It waits for Ajax requests to complete before continuing.
+**Notice**, the `wait()` helper. It waits for Ajax requests to complete before
+continuing.
 
 ## Upgrade from `ic-ajax`
 
@@ -301,12 +327,9 @@ This addon was written to supersede `ic-ajax` and `ember-cli-ic-ajax` addon
 because `ic-ajax` includes features and practices that are no longer considered
 best practices.
 
-`ic-ajax` also wraps requests in `Ember.run` which is no longer necessary on Ember 1.13+.
-It also includes fixtures functionality which is inferior to [ember-cli-mirage](http://www.ember-cli-mirage.com).
-Furthermore, `ic-ajax` author is no longer actively involved in the Ember community.
-
-In most cases, it should be fairly easy to upgrade to `ember-ajax`. To aid you
-in the migration process, I would recommend that you follow the following steps.
+In most cases, it should be fairly easy to upgrade to `ember-ajax`. To aid
+you in the migration process, I would recommend that you follow the following
+steps.
 
 1. Install `ember-ajax` with `ember install ember-ajax`
 2. Search and replace `ic-ajax` with `ember-ajax`
@@ -317,14 +340,14 @@ in the migration process, I would recommend that you follow the following steps.
 Here is a list of notable changes that you need to consider when refactoring.
 
 * `ic-ajax` is used by importing `ic-ajax` into a module. `ember-ajax` is used
-  by injecting `ajax` service into a route or component.
+   by injecting `ajax` service into a route or component.
 * `ic-ajax` error handler returns a hash with { jqXHR, textStatus, errorThrown }.
-  `ember-ajax` returns an error object that's an instance of `AjaxError`.
-  `error` object will be either `AjaxError` with `error.status`, `InvalidError`,
-   `UnauthorizedError` or `ForbiddenError`.
-* When you `import ajax from 'ic-ajax'`, `ajax` function will resolve to payload,
-  same way as `ajax.request`. `import raw from 'ic-ajax/raw'` resolves to raw
-  `jqXHR` object with payload on `response` property.
+  `ember-ajax` returns an error object that's an instance of `AjaxError`. `error`
+  object will be either `AjaxError` with `error.status` or one of the error
+  types listed above.
+* When you `import ajax from 'ic-ajax'`, `ajax` function will resolve to
+  payload, same way as `ajax.request`. `import raw from 'ic-ajax/raw'`
+  resolves to raw `jqXHR` object with payload on `response` property.
 
 ## Installation
 
@@ -356,13 +379,13 @@ For more information on using ember-cli, visit [http://www.ember-cli.com/](http:
 
 ## Why an Ajax Service?
 
-We need a singleton mechanism for making Ajax requests because currently many Ember
-applications have at least two ways to talk to backend APIs. With Ember Data,
-`RESTAdapter#ajax` offers the ability to specify custom headers and good error
-reporting. When making requests that don't require Ember Data, getting the same
-features is difficult because `ic-ajax` and `Ember.$.ajax` don't offer any
-interfaces that can automatically set headers based on property of another
-service (like a session service).
+We need a singleton mechanism for making Ajax requests because currently many
+Ember applications have at least two ways to talk to backend APIs. With Ember
+Data, `RESTAdapter#ajax` offers the ability to specify custom headers and good
+error reporting. When making requests that don't require Ember Data, getting
+the same features is difficult because `ic-ajax` and `Ember.$.ajax` don't offer
+any interfaces that can automatically set headers based on property of
+another service (like a session service).
 
 The idea with this addon is to provide a service that can be used by both
 Ember Data and on ad-hoc bases and provides consistent interface for making
