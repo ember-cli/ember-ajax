@@ -177,23 +177,24 @@ export default class AjaxRequest {
    */
   handleResponse(status, headers, payload, requestData) {
     payload = payload || {};
+    const errors = this.normalizeErrorResponse(status, headers, payload);
+
     if (this.isSuccess(status, headers, payload)) {
       return payload;
     } else if (this.isUnauthorizedError(status, headers, payload)) {
-      return new UnauthorizedError(payload.errors);
+      return new UnauthorizedError(errors);
     } else if (this.isForbiddenError(status, headers, payload)) {
-      return new ForbiddenError(payload.errors);
+      return new ForbiddenError(errors);
     } else if (this.isInvalidError(status, headers, payload)) {
-      return new InvalidError(payload.errors);
+      return new InvalidError(errors);
     } else if (this.isBadRequestError(status, headers, payload)) {
-      return new BadRequestError(payload.errors);
+      return new BadRequestError(errors);
     } else if (this.isNotFoundError(status, headers, payload)) {
-      return new NotFoundError(payload.errors);
+      return new NotFoundError(errors);
     } else if (this.isServerError(status, headers, payload)) {
-      return new ServerError(payload.errors);
+      return new ServerError(errors);
     }
 
-    const errors = this.normalizeErrorResponse(status, headers, payload);
     const detailedMessage = this.generateDetailedMessage(status, headers, payload, requestData);
     return new AjaxError(errors, detailedMessage);
   }
@@ -349,7 +350,7 @@ export default class AjaxRequest {
    * @param  {Number} status
    * @param  {Object} headers
    * @param  {Object} payload
-   * @return {Object} errors payload
+   * @return {Array} errors payload
    */
   normalizeErrorResponse(status, headers, payload) {
     if (payload && typeof payload === 'object' && payload.errors) {

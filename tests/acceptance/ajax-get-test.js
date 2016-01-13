@@ -37,7 +37,8 @@ test('waiting for a route with async widget', function(assert) {
 });
 
 test(`Ajax failure doesn't bubble up to console.` , function(assert) {
-  server.get('/posts', json(404, 'Not Found'), 300);
+  const errorMessage = 'Not Found';
+  server.get('/posts', json(404, errorMessage), 300);
 
   visit('/');
 
@@ -49,6 +50,6 @@ test(`Ajax failure doesn't bubble up to console.` , function(assert) {
   click('button:contains(Load Data)');
 
   andThen(function() {
-    assert.equal($('.ajax-get .error').text(), 'Resource was not found.');
+    assert.equal($('.ajax-get .error').text(), errorMessage);
   });
 });
