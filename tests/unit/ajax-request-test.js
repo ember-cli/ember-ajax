@@ -14,7 +14,7 @@ import {
  } from 'ember-ajax/errors';
 
 import Pretender from 'pretender';
-import json from 'dummy/tests/helpers/json';
+import { jsonFactory, jsonResponse } from 'dummy/tests/helpers/json';
 
 const { typeOf } = Ember;
 
@@ -29,23 +29,22 @@ module('AjaxRequest class', {
 });
 
 test('options() headers are set', function(assert) {
+  assert.expect(2);
+
+  server.get('example.com', (req) => {
+    const { requestHeaders } = req;
+    assert.equal(requestHeaders['Content-Type'], 'application/json');
+    assert.equal(requestHeaders['Other-key'], 'Other Value');
+    return jsonResponse();
+  });
+
   class RequestWithHeaders extends AjaxRequest {
     get headers() {
       return { 'Content-Type': 'application/json', 'Other-key': 'Other Value' };
     }
   }
   const service = new RequestWithHeaders();
-  const url = 'example.com';
-  const type = 'GET';
-  const ajaxOptions = service.options(url, { type });
-  const receivedHeaders = [];
-  const fakeXHR = {
-    setRequestHeader(key, value) {
-      receivedHeaders.push([key, value]);
-    }
-  };
-  ajaxOptions.beforeSend(fakeXHR);
-  assert.deepEqual(receivedHeaders, [['Content-Type', 'application/json'], ['Other-key', 'Other Value']], 'headers assigned');
+  return service.request('example.com');
 });
 
 test('options() sets raw data', function(assert) {
@@ -295,7 +294,7 @@ test('it creates a detailed error message for unmatched server errors with a tex
 
 const errorHandlerTest = (status, errorClass) => {
   test(`${status} handler`, function(assert) {
-    server.get('/posts', json(status));
+    server.get('/posts', jsonFactory(status));
     const service = new AjaxRequest();
     return service.request('/posts')
       .then(function() {
