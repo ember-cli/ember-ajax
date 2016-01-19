@@ -22,6 +22,7 @@ const {
   RSVP: { Promise },
   get,
   isBlank,
+  isPresent,
   run
 } = Ember;
 
@@ -123,21 +124,20 @@ export default class AjaxRequest {
    * @param {Object} options
    * @return {Object}
    */
-  options(url, options) {
-    const hash = options || {};
-    hash.url = this._buildURL(url, hash);
-    hash.type = hash.type || 'GET';
-    hash.dataType = hash.dataType || 'json';
-    hash.context = this;
+  options(url, options = {}) {
+    options.url = this._buildURL(url, options);
+    options.type = options.type || 'GET';
+    options.dataType = options.dataType || 'json';
+    options.context = this;
 
     const headers = get(this, 'headers');
-    if (headers !== undefined) {
-      hash.beforeSend = function(xhr) {
+    if (isPresent(headers)) {
+      options.beforeSend = function(xhr) {
         Object.keys(headers).forEach((key) =>  xhr.setRequestHeader(key, headers[key]));
       };
     }
 
-    return hash;
+    return options;
   }
 
   _buildURL(url, options) {
@@ -145,11 +145,7 @@ export default class AjaxRequest {
     if (isBlank(host) || host === '/') {
       return url;
     }
-    const startsWith = String.prototype.startsWith || function(searchString, position) {
-      position = position || 0;
-      return this.indexOf(searchString, position) === position;
-    };
-    if (startsWith.call(url, '/')) {
+    if (url.charAt(0) === '/') {
       return `${host}${url}`;
     } else {
       return `${host}/${url}`;
