@@ -29,10 +29,10 @@ const {
 
 export default class AjaxRequest {
 
-  request(url, options) {
-    const hash = this.options(url, options);
+  request(url, options, sendHeaders = false) {
+    const hash = this.options(url, options, sendHeaders);
     return new Promise((resolve, reject) => {
-      this.raw(url, hash)
+      this.raw(url, hash, sendHeaders)
         .then(({ response }) => {
           resolve(response);
         })
@@ -42,8 +42,8 @@ export default class AjaxRequest {
     }, `ember-ajax: ${hash.type} ${hash.url} response`);
   }
 
-  raw(url, options) {
-    const hash = this.options(url, options);
+  raw(url, options, sendHeaders = false) {
+    const hash = this.options(url, options, sendHeaders);
     const requestData = {
       type: hash.type,
       url: hash.url
@@ -83,32 +83,32 @@ export default class AjaxRequest {
    * calls `request()` but forces `options.type` to `POST`
    * @public
    */
-  post(url, options) {
-    return this.request(url, this._addTypeToOptionsFor(options, 'POST'));
+  post(url, options, sendHeaders = false) {
+    return this.request(url, this._addTypeToOptionsFor(options, 'POST'), sendHeaders);
   }
 
   /**
    * calls `request()` but forces `options.type` to `PUT`
    * @public
    */
-  put(url, options) {
-    return this.request(url, this._addTypeToOptionsFor(options, 'PUT'));
+  put(url, options, sendHeaders = false) {
+    return this.request(url, this._addTypeToOptionsFor(options, 'PUT'), sendHeaders);
   }
 
   /**
    * calls `request()` but forces `options.type` to `PATCH`
    * @public
    */
-  patch(url, options) {
-    return this.request(url, this._addTypeToOptionsFor(options, 'PATCH'));
+  patch(url, options, sendHeaders = false) {
+    return this.request(url, this._addTypeToOptionsFor(options, 'PATCH'), sendHeaders);
   }
 
   /**
    * calls `request()` but forces `options.type` to `DELETE`
    * @public
    */
-  del(url, options) {
-    return this.request(url, this._addTypeToOptionsFor(options, 'DELETE'));
+  del(url, options, sendHeaders = false) {
+    return this.request(url, this._addTypeToOptionsFor(options, 'DELETE'), sendHeaders);
   }
 
   // forcibly manipulates the options hash to include the HTTP method on the type key
@@ -123,19 +123,22 @@ export default class AjaxRequest {
    * @private
    * @param {String} url
    * @param {Object} options
+   * @param {Boolean} sendHeaders whether or not to force including the headers
    * @return {Object}
    */
-  options(url, options = {}) {
+  options(url, options = {}, sendHeaders = false) {
     options.url = this._buildURL(url, options);
     options.type = options.type || 'GET';
     options.dataType = options.dataType || 'json';
     options.context = this;
 
-    const headers = get(this, 'headers');
-    if (isPresent(headers)) {
-      options.beforeSend = function(xhr) {
-        Object.keys(headers).forEach((key) =>  xhr.setRequestHeader(key, headers[key]));
-      };
+    if (sendHeaders || this._shouldSendHeaders(options)) {
+      const headers = get(this, 'headers');
+      if (isPresent(headers)) {
+        options.beforeSend = function(xhr) {
+          Object.keys(headers).forEach((key) =>  xhr.setRequestHeader(key, headers[key]));
+        };
+      }
     }
 
     return options;
@@ -204,6 +207,40 @@ export default class AjaxRequest {
 
     const detailedMessage = this.generateDetailedMessage(status, headers, payload, requestData);
     return new AjaxError(errors, detailedMessage);
+  }
+
+  /**
+   * Determine whether the headers should be added for this request
+   *
+   * This hook is used to help prevent sending headers to every host, regardless
+   * of the destination, since this could be a security issue if authentication
+   * tokens are accidentally leaked to third parties.
+   *
+   * To avoid that problem, subclasses should utilize the `headers` computed
+   * property to prevent authentication from being sent to third parties, or
+   * implement this hook for more fine-grain control over when headers are sent.
+   *
+   * By default, the headers are sent if the host of the request matches the
+   * `host` property designated on the class.
+   *
+   * @method _shouldSendHeaders
+   * @private
+   * @property {Object} hash request options hash
+   * @returns {Boolean} whether or not headers should be sent
+   */
+  _shouldSendHeaders({ url, host }) {
+    url = url || '';
+    host = host || get(this, 'host') || '';
+
+    const urlObject = new RequestURL(url);
+    // Add headers on relative URLs
+    if (!urlObject.isAbsolute) {
+      return true;
+    }
+
+    // Add headers on matching host
+    const hostObject = new RequestURL(host);
+    return urlObject.sameHost(hostObject);
   }
 
   /**

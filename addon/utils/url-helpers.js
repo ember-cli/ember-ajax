@@ -75,4 +75,10 @@ export class RequestURL {
 
     return this._url;
   }
+
+  sameHost(other) {
+    return ['protocol', 'hostname', 'post'].reduce((previous, prop) => {
+      return previous && (this[prop] === other[prop]);
+    }, true);
+  }
 }

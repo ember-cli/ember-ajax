@@ -28,3 +28,19 @@ test('RequestURL Class: can detect if the url is absolute', function(assert) {
   const obj4 = new RequestURL('test/http/http');
   assert.notOk(obj4.isAbsolute);
 });
+
+test('RequestURL Class: can detect if two hosts are the same', function(assert) {
+  function assertSameHost(urlA, urlB, match = true) {
+    const a = new RequestURL(urlA);
+    const b = new RequestURL(urlB);
+    if (match) {
+      assert.ok(a.sameHost(b), `${urlA} has the same host as ${urlB}`);
+    } else {
+      assert.notOk(a.sameHost(b), `${urlA} does not have the same host as ${urlB}`);
+    }
+  }
+
+  assertSameHost('https://google.com', 'https://google.com');
+  assertSameHost('https://google.com', 'http://google.com', false);
+  assertSameHost('http://google.com', 'google.com', false);
+});

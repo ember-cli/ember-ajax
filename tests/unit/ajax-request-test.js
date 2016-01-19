@@ -28,10 +28,32 @@ module('AjaxRequest class', {
   }
 });
 
-test('options() headers are set', function(assert) {
+test('headers are set if the URL matches the host', function(assert) {
   assert.expect(2);
 
-  server.get('example.com', (req) => {
+  server.get('http://example.com/test', (req) => {
+    const { requestHeaders } = req;
+    assert.equal(requestHeaders['Content-Type'], 'application/json');
+    assert.equal(requestHeaders['Other-key'], 'Other Value');
+    return jsonResponse();
+  });
+
+  class RequestWithHeaders extends AjaxRequest {
+    get host() {
+      return 'http://example.com';
+    }
+    get headers() {
+      return { 'Content-Type': 'application/json', 'Other-key': 'Other Value' };
+    }
+  }
+  const service = new RequestWithHeaders();
+  return service.request('http://example.com/test');
+});
+
+test('headers are set if the URL is relative', function(assert) {
+  assert.expect(2);
+
+  server.get('/some/relative/url', (req) => {
     const { requestHeaders } = req;
     assert.equal(requestHeaders['Content-Type'], 'application/json');
     assert.equal(requestHeaders['Other-key'], 'Other Value');
@@ -44,7 +66,49 @@ test('options() headers are set', function(assert) {
     }
   }
   const service = new RequestWithHeaders();
-  return service.request('example.com');
+  return service.request('/some/relative/url');
+});
+
+test('headers are not set if the URL does not match the host', function(assert) {
+  assert.expect(1);
+
+  server.get('http://example.com', (req) => {
+    const { requestHeaders } = req;
+    assert.notEqual(requestHeaders['Other-key'], 'Other Value');
+    return jsonResponse();
+  });
+
+  class RequestWithHeaders extends AjaxRequest {
+    get host() {
+      return 'some-other-host.com';
+    }
+    get headers() {
+      return { 'Content-Type': 'application/json', 'Other-key': 'Other Value' };
+    }
+  }
+  const service = new RequestWithHeaders();
+  return service.request('http://example.com');
+});
+
+test('a request can force headers to be sent to a mismatching host', function(assert) {
+  assert.expect(1);
+
+  server.get('http://example.com', (req) => {
+    const { requestHeaders } = req;
+    assert.equal(requestHeaders['Other-key'], 'Other Value');
+    return jsonResponse();
+  });
+
+  class RequestWithHeaders extends AjaxRequest {
+    get host() {
+      return 'some-other-host.com';
+    }
+    get headers() {
+      return { 'Content-Type': 'application/json', 'Other-key': 'Other Value' };
+    }
+  }
+  const service = new RequestWithHeaders();
+  return service.request('http://example.com', undefined, true);
 });
 
 test('options() sets raw data', function(assert) {
