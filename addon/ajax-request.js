@@ -16,6 +16,7 @@ import {
   isSuccess
 } from './errors';
 import parseResponseHeaders from './utils/parse-response-headers';
+import { RequestURL } from './utils/url-helpers';
 
 const {
   $,
@@ -142,6 +143,15 @@ export default class AjaxRequest {
 
   _buildURL(url, options) {
     const host = options.host || get(this, 'host');
+    const urlObject = new RequestURL(url);
+
+    // If the URL passed is not relative, return the whole URL
+    if (urlObject.isAbsolute) {
+      return urlObject.href;
+    }
+
+    // If the URL passed is relative, then get the host options from the
+    // configuration
     if (isBlank(host) || host === '/') {
       return url;
     }

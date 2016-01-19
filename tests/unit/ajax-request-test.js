@@ -254,6 +254,28 @@ test('options() host is overridable on a per-request basis', function(assert) {
   assert.equal(ajaxoptions.url, 'https://myurl.com/users/me');
 });
 
+test('explicit host in URL overrides host property of class', function(assert) {
+  class RequestWithHost extends AjaxRequest {
+    get host() {
+      return 'https://discuss.emberjs.com';
+    }
+  }
+  const service = new RequestWithHost();
+  const url = 'http://myurl.com/users/me';
+  const ajaxOptions = service.options(url);
+
+  assert.equal(ajaxOptions.url, 'http://myurl.com/users/me');
+});
+
+test('explicit host in URL overrides host property in request config', function(assert) {
+  const service = new AjaxRequest();
+  const host = 'https://discuss.emberjs.com';
+  const url = 'http://myurl.com/users/me';
+  const ajaxOptions = service.options(url, { host });
+
+  assert.equal(ajaxOptions.url, 'http://myurl.com/users/me');
+});
+
 test('it creates a detailed error message for unmatched server errors with an AJAX payload', function(assert) {
   assert.expect(3);
 
