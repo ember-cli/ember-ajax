@@ -340,6 +340,19 @@ test('explicit host in URL overrides host property in request config', function(
   assert.equal(ajaxOptions.url, 'http://myurl.com/users/me');
 });
 
+test('explicit host in URL without a protocol does not override config property', function(assert) {
+  class RequestWithHost extends AjaxRequest {
+    get host() {
+      return 'https://discuss.emberjs.com';
+    }
+  }
+  const service = new RequestWithHost();
+  const url = 'myurl.com/users/me';
+  const ajaxOptions = service.options(url);
+
+  assert.equal(ajaxOptions.url, 'https://discuss.emberjs.com/myurl.com/users/me');
+});
+
 test('it creates a detailed error message for unmatched server errors with an AJAX payload', function(assert) {
   assert.expect(3);
 
