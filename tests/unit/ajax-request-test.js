@@ -90,27 +90,6 @@ test('headers are not set if the URL does not match the host', function(assert) 
   return service.request('http://example.com');
 });
 
-test('a request can force headers to be sent to a mismatching host', function(assert) {
-  assert.expect(1);
-
-  server.get('http://example.com', (req) => {
-    const { requestHeaders } = req;
-    assert.equal(requestHeaders['Other-key'], 'Other Value');
-    return jsonResponse();
-  });
-
-  class RequestWithHeaders extends AjaxRequest {
-    get host() {
-      return 'some-other-host.com';
-    }
-    get headers() {
-      return { 'Content-Type': 'application/json', 'Other-key': 'Other Value' };
-    }
-  }
-  const service = new RequestWithHeaders();
-  return service.request('http://example.com', undefined, true);
-});
-
 test('options() sets raw data', function(assert) {
   const service = new AjaxRequest();
   const url = 'example.com';

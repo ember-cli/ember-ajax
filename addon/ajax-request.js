@@ -29,10 +29,10 @@ const {
 
 export default class AjaxRequest {
 
-  request(url, options, sendHeaders = false) {
-    const hash = this.options(url, options, sendHeaders);
+  request(url, options) {
+    const hash = this.options(url, options);
     return new Promise((resolve, reject) => {
-      this.raw(url, hash, sendHeaders)
+      this.raw(url, hash)
         .then(({ response }) => {
           resolve(response);
         })
@@ -42,8 +42,8 @@ export default class AjaxRequest {
     }, `ember-ajax: ${hash.type} ${hash.url} response`);
   }
 
-  raw(url, options, sendHeaders = false) {
-    const hash = this.options(url, options, sendHeaders);
+  raw(url, options) {
+    const hash = this.options(url, options);
     const requestData = {
       type: hash.type,
       url: hash.url
@@ -83,32 +83,32 @@ export default class AjaxRequest {
    * calls `request()` but forces `options.type` to `POST`
    * @public
    */
-  post(url, options, sendHeaders = false) {
-    return this.request(url, this._addTypeToOptionsFor(options, 'POST'), sendHeaders);
+  post(url, options) {
+    return this.request(url, this._addTypeToOptionsFor(options, 'POST'));
   }
 
   /**
    * calls `request()` but forces `options.type` to `PUT`
    * @public
    */
-  put(url, options, sendHeaders = false) {
-    return this.request(url, this._addTypeToOptionsFor(options, 'PUT'), sendHeaders);
+  put(url, options) {
+    return this.request(url, this._addTypeToOptionsFor(options, 'PUT'));
   }
 
   /**
    * calls `request()` but forces `options.type` to `PATCH`
    * @public
    */
-  patch(url, options, sendHeaders = false) {
-    return this.request(url, this._addTypeToOptionsFor(options, 'PATCH'), sendHeaders);
+  patch(url, options) {
+    return this.request(url, this._addTypeToOptionsFor(options, 'PATCH'));
   }
 
   /**
    * calls `request()` but forces `options.type` to `DELETE`
    * @public
    */
-  del(url, options, sendHeaders = false) {
-    return this.request(url, this._addTypeToOptionsFor(options, 'DELETE'), sendHeaders);
+  del(url, options) {
+    return this.request(url, this._addTypeToOptionsFor(options, 'DELETE'));
   }
 
   // forcibly manipulates the options hash to include the HTTP method on the type key
@@ -123,16 +123,15 @@ export default class AjaxRequest {
    * @private
    * @param {String} url
    * @param {Object} options
-   * @param {Boolean} sendHeaders whether or not to force including the headers
    * @return {Object}
    */
-  options(url, options = {}, sendHeaders = false) {
+  options(url, options = {}) {
     options.url = this._buildURL(url, options);
     options.type = options.type || 'GET';
     options.dataType = options.dataType || 'json';
     options.context = this;
 
-    if (sendHeaders || this._shouldSendHeaders(options)) {
+    if (this._shouldSendHeaders(options)) {
       const headers = get(this, 'headers');
       if (isPresent(headers)) {
         options.beforeSend = function(xhr) {
