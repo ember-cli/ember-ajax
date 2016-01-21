@@ -1,4 +1,4 @@
-export default function jsonFactory(status, payload) {
+export function jsonFactory(status, payload) {
   return function json() {
     return [
       status,
@@ -6,4 +6,12 @@ export default function jsonFactory(status, payload) {
       JSON.stringify(payload)
     ];
   };
+}
+
+export function jsonResponse(status = 200, payload = {}) {
+  return [
+    status,
+    { 'Content-Type': 'application/json' },
+    JSON.stringify(payload)
+  ];
 }

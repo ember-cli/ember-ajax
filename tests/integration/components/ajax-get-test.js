@@ -5,7 +5,7 @@ import {
 } from 'ember-qunit';
 
 import Pretender from 'pretender';
-import json from 'dummy/tests/helpers/json';
+import { jsonFactory as json } from 'dummy/tests/helpers/json';
 import wait from 'ember-test-helpers/wait';
 
 let server;

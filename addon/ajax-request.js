@@ -16,12 +16,14 @@ import {
   isSuccess
 } from './errors';
 import parseResponseHeaders from './utils/parse-response-headers';
+import { RequestURL } from './utils/url-helpers';
 
 const {
   $,
   RSVP: { Promise },
   get,
   isBlank,
+  isPresent,
   run
 } = Ember;
 
@@ -123,33 +125,39 @@ export default class AjaxRequest {
    * @param {Object} options
    * @return {Object}
    */
-  options(url, options) {
-    const hash = options || {};
-    hash.url = this._buildURL(url, hash);
-    hash.type = hash.type || 'GET';
-    hash.dataType = hash.dataType || 'json';
-    hash.context = this;
+  options(url, options = {}) {
+    options.url = this._buildURL(url, options);
+    options.type = options.type || 'GET';
+    options.dataType = options.dataType || 'json';
+    options.context = this;
 
-    const headers = get(this, 'headers');
-    if (headers !== undefined) {
-      hash.beforeSend = function(xhr) {
-        Object.keys(headers).forEach((key) =>  xhr.setRequestHeader(key, headers[key]));
-      };
+    if (this._shouldSendHeaders(options)) {
+      const headers = get(this, 'headers');
+      if (isPresent(headers)) {
+        options.beforeSend = function(xhr) {
+          Object.keys(headers).forEach((key) =>  xhr.setRequestHeader(key, headers[key]));
+        };
+      }
     }
 
-    return hash;
+    return options;
   }
 
   _buildURL(url, options) {
     const host = options.host || get(this, 'host');
+    const urlObject = new RequestURL(url);
+
+    // If the URL passed is not relative, return the whole URL
+    if (urlObject.isAbsolute) {
+      return urlObject.href;
+    }
+
+    // If the URL passed is relative, then get the host options from the
+    // configuration
     if (isBlank(host) || host === '/') {
       return url;
     }
-    const startsWith = String.prototype.startsWith || function(searchString, position) {
-      position = position || 0;
-      return this.indexOf(searchString, position) === position;
-    };
-    if (startsWith.call(url, '/')) {
+    if (url.charAt(0) === '/') {
       return `${host}${url}`;
     } else {
       return `${host}/${url}`;
@@ -198,6 +206,40 @@ export default class AjaxRequest {
 
     const detailedMessage = this.generateDetailedMessage(status, headers, payload, requestData);
     return new AjaxError(errors, detailedMessage);
+  }
+
+  /**
+   * Determine whether the headers should be added for this request
+   *
+   * This hook is used to help prevent sending headers to every host, regardless
+   * of the destination, since this could be a security issue if authentication
+   * tokens are accidentally leaked to third parties.
+   *
+   * To avoid that problem, subclasses should utilize the `headers` computed
+   * property to prevent authentication from being sent to third parties, or
+   * implement this hook for more fine-grain control over when headers are sent.
+   *
+   * By default, the headers are sent if the host of the request matches the
+   * `host` property designated on the class.
+   *
+   * @method _shouldSendHeaders
+   * @private
+   * @property {Object} hash request options hash
+   * @returns {Boolean} whether or not headers should be sent
+   */
+  _shouldSendHeaders({ url, host }) {
+    url = url || '';
+    host = host || get(this, 'host') || '';
+
+    const urlObject = new RequestURL(url);
+    // Add headers on relative URLs
+    if (!urlObject.isAbsolute) {
+      return true;
+    }
+
+    // Add headers on matching host
+    const hostObject = new RequestURL(host);
+    return urlObject.sameHost(hostObject);
   }
 
   /**

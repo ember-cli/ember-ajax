@@ -14,7 +14,7 @@ import {
  } from 'ember-ajax/errors';
 
 import Pretender from 'pretender';
-import json from 'dummy/tests/helpers/json';
+import { jsonFactory, jsonResponse } from 'dummy/tests/helpers/json';
 
 const { typeOf } = Ember;
 
@@ -28,24 +28,66 @@ module('AjaxRequest class', {
   }
 });
 
-test('options() headers are set', function(assert) {
+test('headers are set if the URL matches the host', function(assert) {
+  assert.expect(2);
+
+  server.get('http://example.com/test', (req) => {
+    const { requestHeaders } = req;
+    assert.equal(requestHeaders['Content-Type'], 'application/json');
+    assert.equal(requestHeaders['Other-key'], 'Other Value');
+    return jsonResponse();
+  });
+
+  class RequestWithHeaders extends AjaxRequest {
+    get host() {
+      return 'http://example.com';
+    }
+    get headers() {
+      return { 'Content-Type': 'application/json', 'Other-key': 'Other Value' };
+    }
+  }
+  const service = new RequestWithHeaders();
+  return service.request('http://example.com/test');
+});
+
+test('headers are set if the URL is relative', function(assert) {
+  assert.expect(2);
+
+  server.get('/some/relative/url', (req) => {
+    const { requestHeaders } = req;
+    assert.equal(requestHeaders['Content-Type'], 'application/json');
+    assert.equal(requestHeaders['Other-key'], 'Other Value');
+    return jsonResponse();
+  });
+
   class RequestWithHeaders extends AjaxRequest {
     get headers() {
       return { 'Content-Type': 'application/json', 'Other-key': 'Other Value' };
     }
   }
   const service = new RequestWithHeaders();
-  const url = 'example.com';
-  const type = 'GET';
-  const ajaxOptions = service.options(url, { type });
-  const receivedHeaders = [];
-  const fakeXHR = {
-    setRequestHeader(key, value) {
-      receivedHeaders.push([key, value]);
+  return service.request('/some/relative/url');
+});
+
+test('headers are not set if the URL does not match the host', function(assert) {
+  assert.expect(1);
+
+  server.get('http://example.com', (req) => {
+    const { requestHeaders } = req;
+    assert.notEqual(requestHeaders['Other-key'], 'Other Value');
+    return jsonResponse();
+  });
+
+  class RequestWithHeaders extends AjaxRequest {
+    get host() {
+      return 'some-other-host.com';
     }
-  };
-  ajaxOptions.beforeSend(fakeXHR);
-  assert.deepEqual(receivedHeaders, [['Content-Type', 'application/json'], ['Other-key', 'Other Value']], 'headers assigned');
+    get headers() {
+      return { 'Content-Type': 'application/json', 'Other-key': 'Other Value' };
+    }
+  }
+  const service = new RequestWithHeaders();
+  return service.request('http://example.com');
 });
 
 test('options() sets raw data', function(assert) {
@@ -255,6 +297,41 @@ test('options() host is overridable on a per-request basis', function(assert) {
   assert.equal(ajaxoptions.url, 'https://myurl.com/users/me');
 });
 
+test('explicit host in URL overrides host property of class', function(assert) {
+  class RequestWithHost extends AjaxRequest {
+    get host() {
+      return 'https://discuss.emberjs.com';
+    }
+  }
+  const service = new RequestWithHost();
+  const url = 'http://myurl.com/users/me';
+  const ajaxOptions = service.options(url);
+
+  assert.equal(ajaxOptions.url, 'http://myurl.com/users/me');
+});
+
+test('explicit host in URL overrides host property in request config', function(assert) {
+  const service = new AjaxRequest();
+  const host = 'https://discuss.emberjs.com';
+  const url = 'http://myurl.com/users/me';
+  const ajaxOptions = service.options(url, { host });
+
+  assert.equal(ajaxOptions.url, 'http://myurl.com/users/me');
+});
+
+test('explicit host in URL without a protocol does not override config property', function(assert) {
+  class RequestWithHost extends AjaxRequest {
+    get host() {
+      return 'https://discuss.emberjs.com';
+    }
+  }
+  const service = new RequestWithHost();
+  const url = 'myurl.com/users/me';
+  const ajaxOptions = service.options(url);
+
+  assert.equal(ajaxOptions.url, 'https://discuss.emberjs.com/myurl.com/users/me');
+});
+
 test('it creates a detailed error message for unmatched server errors with an AJAX payload', function(assert) {
   assert.expect(3);
 
@@ -295,7 +372,7 @@ test('it creates a detailed error message for unmatched server errors with a tex
 
 const errorHandlerTest = (status, errorClass) => {
   test(`${status} handler`, function(assert) {
-    server.get('/posts', json(status));
+    server.get('/posts', jsonFactory(status));
     const service = new AjaxRequest();
     return service.request('/posts')
       .then(function() {

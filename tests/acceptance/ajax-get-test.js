@@ -2,7 +2,7 @@ import { test } from 'qunit';
 import moduleForAcceptance from 'dummy/tests/helpers/module-for-acceptance';
 
 import Pretender from 'pretender';
-import json from 'dummy/tests/helpers/json';
+import { jsonFactory as json } from 'dummy/tests/helpers/json';
 
 let server;
 

@@ -14,7 +14,7 @@ const {
 
 import AjaxService from 'ember-ajax/services/ajax';
 import Pretender from 'pretender';
-import json from 'dummy/tests/helpers/json';
+import { jsonFactory as json } from 'dummy/tests/helpers/json';
 import wait from 'ember-test-helpers/wait';
 
 let server;
