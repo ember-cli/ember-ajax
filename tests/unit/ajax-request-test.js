@@ -92,7 +92,7 @@ test('headers are not set if the URL does not match the host', function(assert) 
 
 test('options() sets raw data', function(assert) {
   const service = new AjaxRequest();
-  const url = 'example.com';
+  const url = 'test';
   const type = 'GET';
   const ajaxOptions = service.options(url, { type, data: { key: 'value' } });
 
@@ -103,13 +103,13 @@ test('options() sets raw data', function(assert) {
     },
     dataType: 'json',
     type: 'GET',
-    url: 'example.com'
+    url: '/test'
   });
 });
 
 test('options() sets options correctly', function(assert) {
   const service = new AjaxRequest();
-  const url  = 'example.com';
+  const url  = 'test';
   const type = 'POST';
   const data = JSON.stringify({ key: 'value' });
   const ajaxOptions = service.options(
@@ -127,13 +127,13 @@ test('options() sets options correctly', function(assert) {
     data: '{"key":"value"}',
     dataType: 'json',
     type: 'POST',
-    url: 'example.com'
+    url: '/test'
   });
 });
 
 test('options() empty data', function(assert) {
   const service = new AjaxRequest();
-  const url = 'example.com';
+  const url = 'test';
   const type = 'POST';
   const ajaxOptions = service.options(url, { type });
 
@@ -141,13 +141,13 @@ test('options() empty data', function(assert) {
     context: service,
     dataType: 'json',
     type: 'POST',
-    url: 'example.com'
+    url: '/test'
   });
 });
 
 test('options() type defaults to GET', function(assert) {
   const service = new AjaxRequest();
-  const url = 'example.com';
+  const url = 'test';
   const ajaxOptions = service.options(url);
 
   assert.equal(ajaxOptions.type, 'GET');
