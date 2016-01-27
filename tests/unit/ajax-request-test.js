@@ -332,6 +332,60 @@ test('explicit host in URL without a protocol does not override config property'
   assert.equal(ajaxOptions.url, 'https://discuss.emberjs.com/myurl.com/users/me');
 });
 
+test('options() namespace is set on the url (namespace starting with `/`)', function(assert) {
+  class RequestWithHost extends AjaxRequest {
+    get namespace() {
+      return '/api/v1';
+    }
+  }
+  const service = new RequestWithHost();
+
+  assert.equal(service.options('/users/me').url, '/api/v1/users/me', 'url starting with `/`)');
+  assert.equal(service.options('users/me').url, '/api/v1/users/me', 'url not starting with `/`)');
+});
+
+test('options() namespace is set on the url (namespace not starting with `/`)', function(assert) {
+  class RequestWithHost extends AjaxRequest {
+    get namespace() {
+      return 'api/v1';
+    }
+  }
+  const service = new RequestWithHost();
+
+  assert.equal(service.options('/users/me').url, '/api/v1/users/me', 'url starting with `/`)');
+  assert.equal(service.options('users/me').url, '/api/v1/users/me', 'url not starting with `/`)');
+});
+
+test('options() namespace is overridable on a per-request basis', function(assert) {
+  class RequestWithHost extends AjaxRequest {
+    get namespace() {
+      return '/api/v1';
+    }
+  }
+  const service = new RequestWithHost();
+  const url = '/users/me';
+  const namespace = '/api/v2';
+  const ajaxoptions = service.options(url, { namespace });
+
+  assert.equal(ajaxoptions.url, '/api/v2/users/me');
+});
+
+test('options() both host and namespace are set on the url', function(assert) {
+  class RequestWithHost extends AjaxRequest {
+    get host() {
+      return 'https://discuss.emberjs.com';
+    }
+    get namespace() {
+      return '/api/v1';
+    }
+  }
+  const service = new RequestWithHost();
+  const url = '/users/me';
+  const ajaxoptions = service.options(url);
+
+  assert.equal(ajaxoptions.url, 'https://discuss.emberjs.com/api/v1/users/me');
+});
+
 test('it creates a detailed error message for unmatched server errors with an AJAX payload', function(assert) {
   assert.expect(3);
 
