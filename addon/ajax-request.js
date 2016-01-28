@@ -144,7 +144,7 @@ export default class AjaxRequest {
 
   _buildURL(url, options) {
     const host = options.host || get(this, 'host');
-    const namespace = options.namespace || get(this, 'namespace');
+    const namespace = get(this, 'namespace');
     const urlObject = new RequestURL(url);
 
     // If the URL passed is not relative, return the whole URL

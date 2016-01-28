@@ -356,20 +356,6 @@ test('options() namespace is set on the url (namespace not starting with `/`)', 
   assert.equal(service.options('users/me').url, '/api/v1/users/me', 'url not starting with `/`)');
 });
 
-test('options() namespace is overridable on a per-request basis', function(assert) {
-  class RequestWithHost extends AjaxRequest {
-    get namespace() {
-      return '/api/v1';
-    }
-  }
-  const service = new RequestWithHost();
-  const url = '/users/me';
-  const namespace = '/api/v2';
-  const ajaxoptions = service.options(url, { namespace });
-
-  assert.equal(ajaxoptions.url, '/api/v2/users/me');
-});
-
 test('options() both host and namespace are set on the url', function(assert) {
   class RequestWithHost extends AjaxRequest {
     get host() {
