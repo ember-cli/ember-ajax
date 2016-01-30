@@ -90,6 +90,32 @@ test('headers are not set if the URL does not match the host', function(assert) 
   return service.request('http://example.com');
 });
 
+test('headers can be supplied on a per-request basis', function(assert) {
+  assert.expect(2);
+
+  server.get('http://example.com', (req) => {
+    const { requestHeaders } = req;
+    assert.equal(requestHeaders['Per-Request-Key'], 'Some value', 'Request had per-request header');
+    assert.equal(requestHeaders['Other-key'], 'Other Value', 'Request had default header');
+    return jsonResponse();
+  });
+
+  class RequestWithHeaders extends AjaxRequest {
+    get host() {
+      return 'http://example.com';
+    }
+    get headers() {
+      return { 'Content-Type': 'application/json', 'Other-key': 'Other Value' };
+    }
+  }
+  const service = new RequestWithHeaders();
+  return service.request('http://example.com', {
+    headers: {
+      'Per-Request-Key': 'Some value'
+    }
+  });
+});
+
 test('options() sets raw data', function(assert) {
   const service = new AjaxRequest();
   const url = 'example.com';
