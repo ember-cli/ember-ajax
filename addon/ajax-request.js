@@ -57,6 +57,10 @@ export default class AjaxRequest {
           requestData
         );
 
+        if (hash.dataType === 'jsonp') {
+          $('body').trigger('ajaxComplete');
+        }
+
         if (response instanceof AjaxError) {
           run.join(null, reject, { payload, textStatus, jqXHR, response });
         } else {
@@ -72,8 +76,17 @@ export default class AjaxRequest {
            payload,
            requestData
         );
+
+        if (hash.dataType === 'jsonp') {
+          $('body').trigger('ajaxComplete');
+        }
+
         run.join(null, reject, { payload, textStatus, jqXHR, errorThrown, response });
       };
+
+      if (hash.dataType === 'jsonp') {
+        $('body').trigger('ajaxSend');
+      }
 
       $.ajax(hash);
     }, `ember-ajax: ${hash.type} ${hash.url}`);
