@@ -101,6 +101,23 @@ export default AjaxService.extend({
 });
 ```
 
+### Custom Endpoint Path
+
+The `namespace` property can be used to prefix requests with a specific url namespace.
+
+```js
+// app/services/ajax.js
+
+import Ember from 'ember';
+import AjaxService from 'ember-ajax/services/ajax';
+
+export default AjaxService.extend({
+  namespace: '/api/v1'
+});
+```
+
+`request('/users/me')` would now target `/api/v1/users/me`
+
 ### Custom Host
 
 `ember-ajax` allows you to specify a host to be used with a request. This is

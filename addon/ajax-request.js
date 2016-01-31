@@ -22,7 +22,6 @@ const {
   $,
   RSVP: { Promise },
   get,
-  isBlank,
   isPresent,
   run
 } = Ember;
@@ -158,6 +157,7 @@ export default class AjaxRequest {
 
   _buildURL(url, options) {
     const host = options.host || get(this, 'host');
+    const namespace = get(this, 'namespace');
     const urlObject = new RequestURL(url);
 
     // If the URL passed is not relative, return the whole URL
@@ -165,16 +165,25 @@ export default class AjaxRequest {
       return urlObject.href;
     }
 
-    // If the URL passed is relative, then get the host options from the
-    // configuration
-    if (isBlank(host) || host === '/') {
-      return url;
+    let _url = this._normalizePath(url);
+    let _namespace = this._normalizePath(namespace);
+
+    return [ host, _namespace, _url ].join('');
+  }
+
+  _normalizePath(path) {
+    if (path) {
+      // make sure path starts with `/`
+      if (path.charAt(0) !== '/') {
+        path = `/${path}`;
+      }
+
+      // remove end `/`
+      if (path.charAt(path.length - 1) === '/') {
+        path = path.slice(0, -1);
+      }
     }
-    if (url.charAt(0) === '/') {
-      return `${host}${url}`;
-    } else {
-      return `${host}/${url}`;
-    }
+    return path;
   }
 
   /**
