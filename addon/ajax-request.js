@@ -274,9 +274,10 @@ export default class AjaxRequest {
     const urlObject = new RequestURL(url);
     const allowedHosts = get(this, 'allowedHosts') || Ember.A();
     // Add headers on relative URLs
+
     if (!urlObject.isAbsolute) {
       return true;
-    } else if (allowedHosts.find(this.matchHosts.bind(this, urlObject.hostname))) {
+    } else if (allowedHosts.find((matcher) => this.matchHosts(urlObject.hostname, matcher))) {
       return true;
     }
 
