@@ -231,7 +231,7 @@ export default class AjaxRequest {
   }
 
   /**
-   * Match the host to a provided array of host or regex's that can match a host
+   * Match the host to a provided array of strings or regexes that can match to a host
    *
    * @method matchHosts
    * @public
