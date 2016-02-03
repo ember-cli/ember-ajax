@@ -69,7 +69,7 @@ test('headers are set if the URL is relative', function(assert) {
   return service.request('/some/relative/url');
 });
 
-test('headers are set if the URL matches one of the allowedHosts', function(assert) {
+test('headers are set if the URL matches one of the RegExp allowedHosts', function(assert) {
   assert.expect(1);
 
   server.get('http://my.example.com', (req) => {
@@ -83,7 +83,11 @@ test('headers are set if the URL matches one of the allowedHosts', function(asse
       return 'some-other-host.com';
     }
     get allowedHosts() {
-      return Ember.A([/example\./]);
+      return Ember.A([
+        4,
+        'notmy.example.com',
+        /example\./
+      ]);
     }
     get headers() {
       return { 'Content-Type': 'application/json', 'Other-key': 'Other Value' };
@@ -91,6 +95,34 @@ test('headers are set if the URL matches one of the allowedHosts', function(asse
   }
   const service = new RequestWithHeaders();
   return service.request('http://my.example.com');
+});
+
+test('headers are set if the URL matches one of the string allowedHosts', function(assert) {
+  assert.expect(1);
+
+  server.get('http://foo.bar.com', (req) => {
+    const { requestHeaders } = req;
+    assert.equal(requestHeaders['Other-key'], 'Other Value');
+    return jsonResponse();
+  });
+
+  class RequestWithHeaders extends AjaxRequest {
+    get host() {
+      return 'some-other-host.com';
+    }
+    get allowedHosts() {
+      return Ember.A([
+        'notmy.example.com',
+        /example\./,
+        'foo.bar.com'
+      ]);
+    }
+    get headers() {
+      return { 'Content-Type': 'application/json', 'Other-key': 'Other Value' };
+    }
+  }
+  const service = new RequestWithHeaders();
+  return service.request('http://foo.bar.com');
 });
 
 test('headers are not set if the URL does not match the host', function(assert) {

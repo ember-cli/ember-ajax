@@ -243,8 +243,11 @@ export default class AjaxRequest {
   matchHosts(host, matcher) {
     if (matcher.constructor === RegExp) {
       return matcher.test(host);
-    } else {
+    } else if (typeof matcher === 'string') {
       return matcher === host;
+    } else {
+      Ember.Logger.warn('allowedHosts only handles strings or regexes.', matcher, 'is neither.');
+      return false;
     }
   }
 
