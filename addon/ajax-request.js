@@ -234,13 +234,13 @@ export default class AjaxRequest {
    * Match the host to a provided array of strings or regexes that can match to a host
    *
    * @method matchHosts
-   * @public
+   * @private
    * @param {String} host the host you are sending too
    * @param {RegExp | String} matcher a string or regex that you can match the host to.
    * @returns {Boolean} if the host passed the matcher
    */
 
-  matchHosts(host, matcher) {
+  _matchHosts(host, matcher) {
     if (matcher.constructor === RegExp) {
       return matcher.test(host);
     } else if (typeof matcher === 'string') {
