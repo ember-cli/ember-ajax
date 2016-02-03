@@ -246,7 +246,7 @@ export default class AjaxRequest {
     } else if (typeof matcher === 'string') {
       return matcher === host;
     } else {
-      Ember.Logger.warn('allowedHosts only handles strings or regexes.', matcher, 'is neither.');
+      Ember.Logger.warn('trustedHosts only handles strings or regexes.', matcher, 'is neither.');
       return false;
     }
   }
@@ -275,12 +275,12 @@ export default class AjaxRequest {
     host = host || get(this, 'host') || '';
 
     const urlObject = new RequestURL(url);
-    const allowedHosts = get(this, 'allowedHosts') || Ember.A();
+    const trustedHosts = get(this, 'trustedHosts') || Ember.A();
     // Add headers on relative URLs
 
     if (!urlObject.isAbsolute) {
       return true;
-    } else if (allowedHosts.find((matcher) => this._matchHosts(urlObject.hostname, matcher))) {
+    } else if (trustedHosts.find((matcher) => this._matchHosts(urlObject.hostname, matcher))) {
       return true;
     }
 

@@ -69,7 +69,7 @@ test('headers are set if the URL is relative', function(assert) {
   return service.request('/some/relative/url');
 });
 
-test('headers are set if the URL matches one of the RegExp allowedHosts', function(assert) {
+test('headers are set if the URL matches one of the RegExp trustedHosts', function(assert) {
   assert.expect(1);
 
   server.get('http://my.example.com', (req) => {
@@ -82,7 +82,7 @@ test('headers are set if the URL matches one of the RegExp allowedHosts', functi
     get host() {
       return 'some-other-host.com';
     }
-    get allowedHosts() {
+    get trustedHosts() {
       return Ember.A([
         4,
         'notmy.example.com',
@@ -97,7 +97,7 @@ test('headers are set if the URL matches one of the RegExp allowedHosts', functi
   return service.request('http://my.example.com');
 });
 
-test('headers are set if the URL matches one of the string allowedHosts', function(assert) {
+test('headers are set if the URL matches one of the string trustedHosts', function(assert) {
   assert.expect(1);
 
   server.get('http://foo.bar.com', (req) => {
@@ -110,7 +110,7 @@ test('headers are set if the URL matches one of the string allowedHosts', functi
     get host() {
       return 'some-other-host.com';
     }
-    get allowedHosts() {
+    get trustedHosts() {
       return Ember.A([
         'notmy.example.com',
         /example\./,
