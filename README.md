@@ -101,10 +101,10 @@ export default AjaxService.extend({
 });
 ```
 
-Headers by default are only passed if the hosts match, or the request is a relitive path.
+Headers by default are only passed if the hosts match, or the request is a relative path.
 You can overwrite this behavior by either passing a host in with the request, setting the
-host for the ajax service, or by setting an array of allowedHosts that can be either
-strings or regular expressions.
+host for the ajax service, or by setting an array of `allowedHosts` that can be either
+an array of strings or regexes.
 
 ```js
 // app/services/ajax.js

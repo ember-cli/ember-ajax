@@ -237,7 +237,7 @@ export default class AjaxRequest {
    * @public
    * @param {String} host the host you are sending too
    * @param {RegExp | String} matcher a string or regex that you can match the host to.
-   * @returns {Boolrsn} if the host passed the matcher
+   * @returns {Boolean} if the host passed the matcher
    */
 
   matchHosts(host, matcher) {
