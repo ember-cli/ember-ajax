@@ -280,7 +280,7 @@ export default class AjaxRequest {
 
     if (!urlObject.isAbsolute) {
       return true;
-    } else if (allowedHosts.find((matcher) => this.matchHosts(urlObject.hostname, matcher))) {
+    } else if (allowedHosts.find((matcher) => this._matchHosts(urlObject.hostname, matcher))) {
       return true;
     }
 
