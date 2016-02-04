@@ -101,6 +101,26 @@ export default AjaxService.extend({
 });
 ```
 
+Headers by default are only passed if the hosts match, or the request is a relative path.
+You can overwrite this behavior by either passing a host in with the request, setting the
+host for the ajax service, or by setting an array of `trustedHosts` that can be either
+an array of strings or regexes.
+
+```js
+// app/services/ajax.js
+
+import Ember from 'ember';
+import AjaxService from 'ember-ajax/services/ajax';
+
+export default AjaxService.extend({
+  trustedHosts: [
+    /\.example\./,
+    'foo.bar.com',
+  ]
+});
+```
+
+
 ### Custom Endpoint Path
 
 The `namespace` property can be used to prefix requests with a specific url namespace.

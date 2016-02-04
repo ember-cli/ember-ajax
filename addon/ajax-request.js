@@ -231,6 +231,27 @@ export default class AjaxRequest {
   }
 
   /**
+   * Match the host to a provided array of strings or regexes that can match to a host
+   *
+   * @method matchHosts
+   * @private
+   * @param {String} host the host you are sending too
+   * @param {RegExp | String} matcher a string or regex that you can match the host to.
+   * @returns {Boolean} if the host passed the matcher
+   */
+
+  _matchHosts(host, matcher) {
+    if (matcher.constructor === RegExp) {
+      return matcher.test(host);
+    } else if (typeof matcher === 'string') {
+      return matcher === host;
+    } else {
+      Ember.Logger.warn('trustedHosts only handles strings or regexes.', matcher, 'is neither.');
+      return false;
+    }
+  }
+
+  /**
    * Determine whether the headers should be added for this request
    *
    * This hook is used to help prevent sending headers to every host, regardless
@@ -254,8 +275,12 @@ export default class AjaxRequest {
     host = host || get(this, 'host') || '';
 
     const urlObject = new RequestURL(url);
+    const trustedHosts = get(this, 'trustedHosts') || Ember.A();
     // Add headers on relative URLs
+
     if (!urlObject.isAbsolute) {
+      return true;
+    } else if (trustedHosts.find((matcher) => this._matchHosts(urlObject.hostname, matcher))) {
       return true;
     }
 
