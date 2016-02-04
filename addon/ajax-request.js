@@ -26,6 +26,7 @@ const {
   isPresent,
   run
 } = Ember;
+const JSONAPIContentType = 'application/vnd.api+json';
 
 export default class AjaxRequest {
 
@@ -48,6 +49,14 @@ export default class AjaxRequest {
       type: hash.type,
       url: hash.url
     };
+
+    const allHeaders = this._getFullHeadersHash(hash.headers);
+    if (allHeaders['Content-Type'] === JSONAPIContentType) {
+      if (typeof hash.data === 'object') {
+        hash.data = JSON.stringify(hash.data);
+      }
+    }
+
     return new Promise((resolve, reject) => {
       hash.success = (payload, textStatus, jqXHR) => {
         let response = this.handleResponse(
@@ -145,6 +154,17 @@ export default class AjaxRequest {
     options = options || {};
     options.type = method;
     return options;
+  }
+
+  /**
+   * @method _getFullHeadersHash
+   * @private
+   * @param {Object} headers
+   * @return {Object}
+   */
+  _getFullHeadersHash(headers) {
+    const classHeaders = get(this, 'headers') || {};
+    return $.extend(classHeaders, headers);
   }
 
   /**
