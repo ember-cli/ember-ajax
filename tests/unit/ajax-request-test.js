@@ -436,6 +436,24 @@ test('it creates a detailed error message for unmatched server errors with a tex
     });
 });
 
+test('it throws an error when the user tries to use `.get` to make a request', function(assert) {
+  assert.expect(3);
+
+  const service = new AjaxRequest();
+
+  assert.throws(function() {
+    service.get('someProperty');
+  }, 'Throws an error when using `.get` on the class with any property');
+
+  assert.throws(function() {
+    service.get('/users');
+  }, 'Throws an error when using `.get` on the class with a relative URL');
+
+  assert.throws(function() {
+    service.get('/users', {});
+  }, 'Throws an error when using `.get` with multiple parameters');
+});
+
 const errorHandlerTest = (status, errorClass) => {
   test(`${status} handler`, function(assert) {
     server.get('/posts', jsonFactory(status));

@@ -20,6 +20,7 @@ import { RequestURL } from './utils/url-helpers';
 
 const {
   $,
+  Error: EmberError,
   RSVP: { Promise },
   get,
   isPresent,
@@ -121,6 +122,22 @@ export default class AjaxRequest {
    */
   del(url, options) {
     return this.request(url, this._addTypeToOptionsFor(options, 'DELETE'));
+  }
+
+  /**
+   * Wrap the `.get` method so that we issue a warning if
+   *
+   * Since `.get` is both an AJAX pattern _and_ an Ember pattern, we want to try
+   * to warn users when they try using `.get` to make a request
+   *
+   * @method get
+   * @public
+   */
+  get(url) {
+    if (arguments.length > 1 || url.charAt(0) === '/') {
+      throw new EmberError('It seems you tried to use `.get` to make a request! Use the `.request` method instead.');
+    }
+    return this._super(...arguments);
   }
 
   // forcibly manipulates the options hash to include the HTTP method on the type key
