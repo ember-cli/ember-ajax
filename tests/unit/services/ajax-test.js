@@ -37,3 +37,21 @@ test('allows headers to be specified as a computed property', function(assert) {
   service = CustomService.create();
   return service.request('example.com');
 });
+
+test('it throws an error when the user tries to use `.get` to make a request', function(assert) {
+  assert.expect(3);
+
+  service = Service.create({
+    someProperty: 'some value'
+  });
+
+  assert.equal(service.get('someProperty'), 'some value', 'Retrieved a regular property');
+
+  assert.throws(function() {
+    service.get('/users');
+  }, 'Throws an error when using `.get` on the class with a relative URL');
+
+  assert.throws(function() {
+    service.get('/users', {});
+  }, 'Throws an error when using `.get` with multiple parameters');
+});
