@@ -23,7 +23,6 @@ const {
   Error: EmberError,
   RSVP: { Promise },
   get,
-  isPresent,
   isNone,
   merge,
   run
@@ -59,8 +58,7 @@ export default class AjaxRequest {
       url: hash.url
     };
 
-    const allHeaders = this._getFullHeadersHash(hash.headers);
-    if (isJSONAPIContentType(allHeaders['Content-Type'])) {
+    if (isJSONAPIContentType(hash.headers['Content-Type'])) {
       if (typeof hash.data === 'object') {
         hash.data = JSON.stringify(hash.data);
       }
@@ -190,12 +188,9 @@ export default class AjaxRequest {
     options.context = this;
 
     if (this._shouldSendHeaders(options)) {
-      const headers = get(this, 'headers');
-      if (isPresent(headers)) {
-        options.beforeSend = function(xhr) {
-          Object.keys(headers).forEach((key) =>  xhr.setRequestHeader(key, headers[key]));
-        };
-      }
+      options.headers = this._getFullHeadersHash(options.headers);
+    } else {
+      options.headers = options.headers || {};
     }
 
     return options;

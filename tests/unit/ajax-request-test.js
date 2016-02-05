@@ -184,6 +184,7 @@ test('options() sets raw data', function(assert) {
       key: 'value'
     },
     dataType: 'json',
+    headers: {},
     type: 'GET',
     url: '/test'
   });
@@ -208,6 +209,7 @@ test('options() sets options correctly', function(assert) {
     context: service,
     data: '{"key":"value"}',
     dataType: 'json',
+    headers: {},
     type: 'POST',
     url: '/test'
   });
@@ -222,6 +224,7 @@ test('options() empty data', function(assert) {
   assert.deepEqual(ajaxOptions, {
     context: service,
     dataType: 'json',
+    headers: {},
     type: 'POST',
     url: '/test'
   });
