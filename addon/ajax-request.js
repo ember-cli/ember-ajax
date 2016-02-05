@@ -24,9 +24,18 @@ const {
   RSVP: { Promise },
   get,
   isPresent,
+  isNone,
+  merge,
   run
 } = Ember;
 const JSONAPIContentType = 'application/vnd.api+json';
+
+function isJSONAPIContentType(header) {
+  if (isNone(header)) {
+    return false;
+  }
+  return header.indexOf(JSONAPIContentType) === 0;
+}
 
 export default class AjaxRequest {
 
@@ -51,7 +60,7 @@ export default class AjaxRequest {
     };
 
     const allHeaders = this._getFullHeadersHash(hash.headers);
-    if (allHeaders['Content-Type'] === JSONAPIContentType) {
+    if (isJSONAPIContentType(allHeaders['Content-Type'])) {
       if (typeof hash.data === 'object') {
         hash.data = JSON.stringify(hash.data);
       }
@@ -164,7 +173,7 @@ export default class AjaxRequest {
    */
   _getFullHeadersHash(headers) {
     const classHeaders = get(this, 'headers') || {};
-    return $.extend(classHeaders, headers);
+    return merge(classHeaders, headers);
   }
 
   /**

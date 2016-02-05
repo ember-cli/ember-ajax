@@ -549,6 +549,30 @@ test('it JSON encodes JSON:API request data automatically', function(assert) {
   });
 });
 
+test('it JSON encodes JSON:API "extension" request data automatically', function(assert) {
+  assert.expect(1);
+
+  server.post('/test', ({ requestBody }) => {
+    const { foo } = JSON.parse(requestBody);
+    assert.equal(foo, 'bar', 'Recieved JSON-encoded data');
+    return jsonResponse();
+  });
+
+  class RequestWithHeaders extends AjaxRequest {
+    get headers() {
+      return {
+        'Content-Type': 'application/vnd.api+json; ext="ext1,ext2"'
+      };
+    }
+  }
+  const service = new RequestWithHeaders();
+  return service.post('/test', {
+    data: {
+      foo: 'bar'
+    }
+  });
+});
+
 const errorHandlerTest = (status, errorClass) => {
   test(`${status} handler`, function(assert) {
     server.get('/posts', jsonFactory(status));
