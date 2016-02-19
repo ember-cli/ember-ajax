@@ -171,7 +171,8 @@ export default class AjaxRequest {
    */
   _getFullHeadersHash(headers) {
     const classHeaders = get(this, 'headers') || {};
-    return merge(classHeaders, headers);
+    const _headers = merge({}, classHeaders);
+    return merge(_headers, headers);
   }
 
   /**

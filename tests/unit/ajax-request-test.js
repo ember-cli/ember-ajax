@@ -470,6 +470,7 @@ test('it can get the full header list from class and request options', function(
   const headers = { 'Third-Value': 'Other Thing' };
   assert.equal(Object.keys(service._getFullHeadersHash()).length, 2, 'Works without options');
   assert.equal(Object.keys(service._getFullHeadersHash(headers)).length, 3, 'Includes passed-in headers');
+  assert.equal(Object.keys(service.headers).length, 2, 'Provided headers did not change default ones');
 });
 
 test('it creates a detailed error message for unmatched server errors with an AJAX payload', function(assert) {
