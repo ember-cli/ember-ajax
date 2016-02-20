@@ -6,6 +6,8 @@ import {
   ForbiddenError,
   BadRequestError,
   NotFoundError,
+  TimeoutError,
+  AbortError,
   ServerError,
   isUnauthorizedError,
   isForbiddenError,
@@ -86,12 +88,22 @@ export default class AjaxRequest {
 
       hash.error = (jqXHR, textStatus, errorThrown) => {
         const payload = this.parseErrorResponse(jqXHR.responseText) || errorThrown;
-        const response = this.handleResponse(
-           jqXHR.status,
-           parseResponseHeaders(jqXHR.getAllResponseHeaders()),
-           payload,
-           requestData
-        );
+        let response;
+
+        if (errorThrown instanceof Error) {
+          response = errorThrown;
+        } else if (textStatus === 'timeout') {
+          response = new TimeoutError();
+        } else if (textStatus === 'abort') {
+          response = new AbortError();
+        } else {
+          response = this.handleResponse(
+             jqXHR.status,
+             parseResponseHeaders(jqXHR.getAllResponseHeaders()),
+             payload,
+             requestData
+          );
+        }
 
         if (hash.dataType === 'jsonp') {
           $('body').trigger('ajaxComplete');
