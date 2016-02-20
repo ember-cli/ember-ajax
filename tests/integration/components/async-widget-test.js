@@ -41,12 +41,9 @@ test('service injected in component', function(assert) {
   this.register('service:fajax', AjaxService.extend({
     options() {
       let options = this._super(...arguments);
-      const fakeXHR = {
-        setRequestHeader(key, value) {
-          receivedHeaders.push([key, value]);
-        }
-      };
-      options.beforeSend(fakeXHR);
+      Object.keys(options.headers).forEach((key) => {
+        receivedHeaders.push([key, options.headers[key]]);
+      });
       return options;
     },
     session: inject.service(),

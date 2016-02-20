@@ -184,6 +184,7 @@ test('options() sets raw data', function(assert) {
       key: 'value'
     },
     dataType: 'json',
+    headers: {},
     type: 'GET',
     url: '/test'
   });
@@ -208,6 +209,7 @@ test('options() sets options correctly', function(assert) {
     context: service,
     data: '{"key":"value"}',
     dataType: 'json',
+    headers: {},
     type: 'POST',
     url: '/test'
   });
@@ -222,6 +224,7 @@ test('options() empty data', function(assert) {
   assert.deepEqual(ajaxOptions, {
     context: service,
     dataType: 'json',
+    headers: {},
     type: 'POST',
     url: '/test'
   });
@@ -454,6 +457,22 @@ test('options() both host and namespace are set on the url', function(assert) {
   assert.equal(ajaxoptions.url, 'https://discuss.emberjs.com/api/v1/users/me');
 });
 
+test('it can get the full header list from class and request options', function(assert) {
+  class RequestWithHeaders extends AjaxRequest {
+    get headers() {
+      return {
+        'Content-Type': 'application/vnd.api+json',
+        'Other-Value': 'Some Value'
+      };
+    }
+  }
+  const service = new RequestWithHeaders();
+  const headers = { 'Third-Value': 'Other Thing' };
+  assert.equal(Object.keys(service._getFullHeadersHash()).length, 2, 'Works without options');
+  assert.equal(Object.keys(service._getFullHeadersHash(headers)).length, 3, 'Includes passed-in headers');
+  assert.equal(Object.keys(service.headers).length, 2, 'Provided headers did not change default ones');
+});
+
 test('it creates a detailed error message for unmatched server errors with an AJAX payload', function(assert) {
   assert.expect(3);
 
@@ -508,6 +527,54 @@ test('it throws an error when the user tries to use `.get` to make a request', f
   assert.throws(function() {
     service.get('/users', {});
   }, 'Throws an error when using `.get` with multiple parameters');
+});
+
+test('it JSON encodes JSON:API request data automatically', function(assert) {
+  assert.expect(1);
+
+  server.post('/test', ({ requestBody }) => {
+    const { foo } = JSON.parse(requestBody);
+    assert.equal(foo, 'bar', 'Recieved JSON-encoded data');
+    return jsonResponse();
+  });
+
+  class RequestWithHeaders extends AjaxRequest {
+    get headers() {
+      return {
+        'Content-Type': 'application/vnd.api+json'
+      };
+    }
+  }
+  const service = new RequestWithHeaders();
+  return service.post('/test', {
+    data: {
+      foo: 'bar'
+    }
+  });
+});
+
+test('it JSON encodes JSON:API "extension" request data automatically', function(assert) {
+  assert.expect(1);
+
+  server.post('/test', ({ requestBody }) => {
+    const { foo } = JSON.parse(requestBody);
+    assert.equal(foo, 'bar', 'Recieved JSON-encoded data');
+    return jsonResponse();
+  });
+
+  class RequestWithHeaders extends AjaxRequest {
+    get headers() {
+      return {
+        'Content-Type': 'application/vnd.api+json; ext="ext1,ext2"'
+      };
+    }
+  }
+  const service = new RequestWithHeaders();
+  return service.post('/test', {
+    data: {
+      foo: 'bar'
+    }
+  });
 });
 
 const errorHandlerTest = (status, errorClass) => {

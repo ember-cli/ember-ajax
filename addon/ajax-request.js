@@ -23,9 +23,18 @@ const {
   Error: EmberError,
   RSVP: { Promise },
   get,
-  isPresent,
+  isNone,
+  merge,
   run
 } = Ember;
+const JSONAPIContentType = 'application/vnd.api+json';
+
+function isJSONAPIContentType(header) {
+  if (isNone(header)) {
+    return false;
+  }
+  return header.indexOf(JSONAPIContentType) === 0;
+}
 
 export default class AjaxRequest {
 
@@ -48,6 +57,13 @@ export default class AjaxRequest {
       type: hash.type,
       url: hash.url
     };
+
+    if (isJSONAPIContentType(hash.headers['Content-Type'])) {
+      if (typeof hash.data === 'object') {
+        hash.data = JSON.stringify(hash.data);
+      }
+    }
+
     return new Promise((resolve, reject) => {
       hash.success = (payload, textStatus, jqXHR) => {
         let response = this.handleResponse(
@@ -148,6 +164,18 @@ export default class AjaxRequest {
   }
 
   /**
+   * @method _getFullHeadersHash
+   * @private
+   * @param {Object} headers
+   * @return {Object}
+   */
+  _getFullHeadersHash(headers) {
+    const classHeaders = get(this, 'headers') || {};
+    const _headers = merge({}, classHeaders);
+    return merge(_headers, headers);
+  }
+
+  /**
    * @method options
    * @private
    * @param {String} url
@@ -161,12 +189,9 @@ export default class AjaxRequest {
     options.context = this;
 
     if (this._shouldSendHeaders(options)) {
-      const headers = get(this, 'headers');
-      if (isPresent(headers)) {
-        options.beforeSend = function(xhr) {
-          Object.keys(headers).forEach((key) =>  xhr.setRequestHeader(key, headers[key]));
-        };
-      }
+      options.headers = this._getFullHeadersHash(options.headers);
+    } else {
+      options.headers = options.headers || {};
     }
 
     return options;
