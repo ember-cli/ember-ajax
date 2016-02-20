@@ -3,20 +3,9 @@ import {
   module,
   test
 } from 'qunit';
-
 import AjaxRequest from 'ember-ajax/ajax-request';
-import {
-  InvalidError,
-  UnauthorizedError,
-  ForbiddenError,
-  BadRequestError,
-  ServerError
- } from 'ember-ajax/errors';
-
 import Pretender from 'pretender';
-import { jsonFactory, jsonResponse } from 'dummy/tests/helpers/json';
-
-const { typeOf } = Ember;
+import { jsonResponse } from 'dummy/tests/helpers/json';
 
 let server;
 module('AjaxRequest class', {
@@ -576,27 +565,3 @@ test('it JSON encodes JSON:API "extension" request data automatically', function
     }
   });
 });
-
-const errorHandlerTest = (status, errorClass) => {
-  test(`${status} handler`, function(assert) {
-    server.get('/posts', jsonFactory(status));
-    const service = new AjaxRequest();
-    return service.request('/posts')
-      .then(function() {
-        assert.ok(false, 'success handler should not be called');
-      })
-      .catch(function(reason) {
-        assert.ok(reason instanceof errorClass);
-        assert.ok(reason.errors && typeOf(reason.errors) === 'array',
-          'has errors array');
-      });
-  });
-};
-
-errorHandlerTest(401, UnauthorizedError);
-errorHandlerTest(403, ForbiddenError);
-errorHandlerTest(422, InvalidError);
-errorHandlerTest(400, BadRequestError);
-errorHandlerTest(500, ServerError);
-errorHandlerTest(502, ServerError);
-errorHandlerTest(510, ServerError);

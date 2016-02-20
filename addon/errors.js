@@ -71,6 +71,26 @@ export function NotFoundError(errors) {
 NotFoundError.prototype = Object.create(AjaxError.prototype);
 
 /**
+ * @class TimeoutError
+ * @public
+ */
+export function TimeoutError() {
+  AjaxError.call(this, null, 'The ajax operation timed out');
+}
+
+TimeoutError.prototype = Object.create(AjaxError.prototype);
+
+/**
+ * @class AbortError
+ * @public
+ */
+export function AbortError() {
+  AjaxError.call(this, null, 'The ajax operation was aborted');
+}
+
+AbortError.prototype = Object.create(AjaxError.prototype);
+
+/**
  * @class ServerError
  * @public
  */
@@ -158,6 +178,30 @@ export function isNotFoundError(error) {
   } else {
     return error === 404;
   }
+}
+
+/**
+ * Checks if the given status code or AjaxError object represents a
+ * "timeout" error
+ * @method isTimeoutError
+ * @public
+ * @param  {AjaxError} error
+ * @return {Boolean}
+ */
+export function isTimeoutError(error) {
+  return error instanceof TimeoutError;
+}
+
+/**
+ * Checks if the given status code or AjaxError object represents an
+ * "abort" error
+ * @method isAbortError
+ * @public
+ * @param  {AjaxError} error
+ * @return {Boolean}
+ */
+export function isAbortError(error) {
+  return error instanceof AbortError;
 }
 
 /**

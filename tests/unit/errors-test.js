@@ -11,12 +11,16 @@ import {
   ForbiddenError,
   BadRequestError,
   ServerError,
+  TimeoutError,
+  AbortError,
   isUnauthorizedError,
   isForbiddenError,
   isInvalidError,
   isBadRequestError,
   isServerError,
-  isSuccess
+  isSuccess,
+  isTimeoutError,
+  isAbortError
 } from 'ember-ajax/errors';
 
 module('unit/errors-test - AjaxError');
@@ -55,6 +59,18 @@ test('ServerError', function(assert) {
   const error = new ServerError();
   assert.ok(error instanceof Error);
   assert.ok(error instanceof ServerError);
+});
+
+test('TimeoutError', function(assert) {
+  const error = new TimeoutError();
+  assert.ok(error instanceof Error);
+  assert.ok(error instanceof TimeoutError);
+});
+
+test('AbortError', function(assert) {
+  const error = new AbortError();
+  assert.ok(error instanceof Error);
+  assert.ok(error instanceof AbortError);
 });
 
 test('isUnauthorizedError: detects error code correctly', function(assert) {
@@ -103,6 +119,16 @@ test('isServerError: detects error code correctly', function(assert) {
 test('isServerError: detects error class correctly', function(assert) {
   const error = new ServerError();
   assert.ok(isServerError(error));
+});
+
+test('isTimeoutError: detects error class correctly', function(assert) {
+  const error = new TimeoutError();
+  assert.ok(isTimeoutError(error));
+});
+
+test('isAbortError: detects error class correctly', function(assert) {
+  const error = new AbortError();
+  assert.ok(isAbortError(error));
 });
 
 test('detects successful request correctly', function(assert) {
