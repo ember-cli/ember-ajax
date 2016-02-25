@@ -227,5 +227,6 @@ export function isServerError(error) {
  * @return {Boolean}
  */
 export function isSuccess(status) {
-  return status >= 200 && status < 300 || status === 304;
+  let s = parseInt(status, 10);
+  return s >= 200 && s < 300 || s === 304;
 }

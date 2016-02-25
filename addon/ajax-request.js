@@ -505,7 +505,19 @@ export default class AjaxRequest {
    */
   normalizeErrorResponse(status, headers, payload) {
     if (payload && typeof payload === 'object' && payload.errors) {
-      return payload.errors;
+      if (!Ember.isArray(payload.errors)) {
+        return payload.errors;
+      }
+
+      return payload.errors.map(function(error) {
+        let ret = merge({}, error);
+
+        if (typeof ret.status === 'number') {
+          ret.status = `${ret.status}`;
+        }
+
+        return ret;
+      });
     } else {
       return [
         {
