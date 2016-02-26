@@ -206,11 +206,14 @@ export default AjaxService.extend({
 `ember-ajax` has some built in error types that you can use to check error with
 instanceof rather than by comparing to a number. The built in types are:
 
-* `InvalidError`(422)
+* `BadRequestError` (400)
 * `UnauthorizedError`(401)
 * `ForbiddenError`(403)
-* `BadRequestError` (400)
+* `NotFoundError` (404)
+* `InvalidError`(422)
 * `ServerError` (5XX)
+* `AbortError`
+* `TimeoutError`
 
 Each of these types has a corresponding is* method (like `isBadRequest`) to
 allow you to customize how error is determined.
