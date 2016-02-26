@@ -282,7 +282,7 @@ moduleForAcceptance('ajax-get component', {
 
 test('waiting for a route with async widget', function(assert) {
 
-  const PAYLOAD = [{title: 'Foo'}, {title: 'Bar'}, {title: 'Baz'}];
+  const PAYLOAD = [{ title: 'Foo' }, { title: 'Bar' }, { title: 'Baz' }];
 
   server.get('/posts', function(){
     return [ 200, {"Content-Type": "application/json"}, JSON.stringify(PAYLOAD) ];
@@ -330,7 +330,7 @@ moduleForComponent('ajax-get', {
 });
 
 test('clicking Load Data loads data', function(assert) {
-  const PAYLOAD = [{title: 'Foo'}, {title: 'Bar'}, {title: 'Baz'}];
+  const PAYLOAD = [{ title: 'Foo' }, { title: 'Bar' }, { title: 'Baz' }];
 
   server.get('/foo', json(200, PAYLOAD), 300);
 
