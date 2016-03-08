@@ -231,11 +231,6 @@ export default class AjaxRequest {
       if (path.charAt(0) !== '/') {
         path = `/${path}`;
       }
-
-      // remove end `/`
-      if (path.charAt(path.length - 1) === '/') {
-        path = path.slice(0, -1);
-      }
     }
     return path;
   }

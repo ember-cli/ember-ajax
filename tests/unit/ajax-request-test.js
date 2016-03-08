@@ -565,3 +565,17 @@ test('it JSON encodes JSON:API "extension" request data automatically', function
     }
   });
 });
+
+test('it does not remove trailing slashes, when building a relative url', function(assert) {
+  assert.expect(2);
+
+  const service = new AjaxRequest();
+  let url = '/testurl';
+  let options = { host: 'somehost' };
+  let builtUrl = service._buildURL(url, options);
+
+  assert.equal(builtUrl, 'somehost/testurl');
+  url = '/testurl/';
+  builtUrl = service._buildURL(url, options);
+  assert.equal(builtUrl, 'somehost/testurl/');
+});
