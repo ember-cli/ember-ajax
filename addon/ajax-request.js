@@ -221,8 +221,9 @@ export default class AjaxRequest {
 
     let _url = this._normalizePath(url);
     let _namespace = this._normalizePath(namespace);
+    let namespacedPath = [ _namespace, _url ].join('').replace(/\/{2,}/g, '/');
 
-    return [ host, _namespace, _url ].join('');
+    return [ host, namespacedPath ].join('');
   }
 
   _normalizePath(path) {
