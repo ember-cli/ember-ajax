@@ -19,6 +19,7 @@ import {
 } from './errors';
 import parseResponseHeaders from './utils/parse-response-headers';
 import { RequestURL } from './utils/url-helpers';
+import ajax from './utils/ajax';
 
 const {
   $,
@@ -123,7 +124,7 @@ export default class AjaxRequest {
 
       this.pendingRequestCount++;
 
-      $.ajax(hash);
+      ajax(hash);
     }, `ember-ajax: ${hash.type} ${hash.url}`);
   }
 
@@ -489,7 +490,7 @@ export default class AjaxRequest {
     let json = responseText;
 
     try {
-      json = Ember.$.parseJSON(responseText);
+      json = $.parseJSON(responseText);
     } catch (e) {}
 
     return json;
