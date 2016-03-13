@@ -565,3 +565,55 @@ test('it JSON encodes JSON:API "extension" request data automatically', function
     }
   });
 });
+
+test('it creates the correct URL given different segment configurations', function(assert) {
+  class OneSlashNamespace extends AjaxRequest {
+    get namespace() {
+      return 'somenamespace/';
+    }
+  }
+
+  class TwoSlashNamespace extends AjaxRequest {
+    get namespace() {
+      return '/somenamespace/';
+    }
+  }
+
+  let service = new AjaxRequest();
+  let url = '/testurl';
+  let options = { host: 'somehost' };
+  let builtUrl = service._buildURL(url, options);
+  assert.equal(builtUrl, 'somehost/testurl');
+
+  url = '/testurl/';
+  builtUrl = service._buildURL(url, options);
+  assert.equal(builtUrl, 'somehost/testurl/');
+
+  service = new OneSlashNamespace();
+  builtUrl = service._buildURL(url, options);
+  assert.equal(builtUrl, 'somehost/somenamespace/testurl/', 'One slash namespace, no slash host');
+
+  service = new TwoSlashNamespace();
+  builtUrl = service._buildURL(url, options);
+  assert.equal(builtUrl, 'somehost/somenamespace/testurl/', 'Two slash namespace, no slash host');
+
+  options = { host: 'somehost/' };
+
+  service = new OneSlashNamespace();
+  builtUrl = service._buildURL(url, options);
+  assert.equal(builtUrl, 'somehost/somenamespace/testurl/', 'One slash namespace, one slash host');
+
+  service = new TwoSlashNamespace();
+  builtUrl = service._buildURL(url, options);
+  assert.equal(builtUrl, 'somehost/somenamespace/testurl/', 'Two slash namespace, one slash host');
+
+  options = { host: '/somehost/' };
+
+  service = new OneSlashNamespace();
+  builtUrl = service._buildURL(url, options);
+  assert.equal(builtUrl, 'somehost/somenamespace/testurl/', 'One slash namespace, two slash host');
+
+  service = new TwoSlashNamespace();
+  builtUrl = service._buildURL(url, options);
+  assert.equal(builtUrl, 'somehost/somenamespace/testurl/', 'Two slash namespace, two slash host');
+});

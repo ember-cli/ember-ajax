@@ -221,8 +221,9 @@ export default class AjaxRequest {
 
     let _url = this._normalizePath(url);
     let _namespace = this._normalizePath(namespace);
+    let namespacedPath = [ _namespace, _url ].join('').replace(/\/{2,}/g, '/');
 
-    return [ host, _namespace, _url ].join('');
+    return [ host, namespacedPath ].join('');
   }
 
   _normalizePath(path) {
@@ -230,11 +231,6 @@ export default class AjaxRequest {
       // make sure path starts with `/`
       if (path.charAt(0) !== '/') {
         path = `/${path}`;
-      }
-
-      // remove end `/`
-      if (path.charAt(path.length - 1) === '/') {
-        path = path.slice(0, -1);
       }
     }
     return path;
