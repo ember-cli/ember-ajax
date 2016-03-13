@@ -566,12 +566,16 @@ test('it JSON encodes JSON:API "extension" request data automatically', function
   });
 });
 
-test('it does not remove trailing slashes, when building a relative url', function(assert) {
-  assert.expect(3);
-
-  class AjaxRequestWithNamespace extends AjaxRequest {
+test('it creates the correct URL given different segment configurations', function(assert) {
+  class OneSlashNamespace extends AjaxRequest {
     get namespace() {
       return 'somenamespace/';
+    }
+  }
+
+  class TwoSlashNamespace extends AjaxRequest {
+    get namespace() {
+      return '/somenamespace/';
     }
   }
 
@@ -585,7 +589,31 @@ test('it does not remove trailing slashes, when building a relative url', functi
   builtUrl = service._buildURL(url, options);
   assert.equal(builtUrl, 'somehost/testurl/');
 
-  service = new AjaxRequestWithNamespace();
+  service = new OneSlashNamespace();
   builtUrl = service._buildURL(url, options);
-  assert.equal(builtUrl, 'somehost/somenamespace/testurl/');
+  assert.equal(builtUrl, 'somehost/somenamespace/testurl/', 'One slash namespace, no slash host');
+
+  service = new TwoSlashNamespace();
+  builtUrl = service._buildURL(url, options);
+  assert.equal(builtUrl, 'somehost/somenamespace/testurl/', 'Two slash namespace, no slash host');
+
+  options = { host: 'somehost/' };
+
+  service = new OneSlashNamespace();
+  builtUrl = service._buildURL(url, options);
+  assert.equal(builtUrl, 'somehost/somenamespace/testurl/', 'One slash namespace, one slash host');
+
+  service = new TwoSlashNamespace();
+  builtUrl = service._buildURL(url, options);
+  assert.equal(builtUrl, 'somehost/somenamespace/testurl/', 'Two slash namespace, one slash host');
+
+  options = { host: '/somehost/' };
+
+  service = new OneSlashNamespace();
+  builtUrl = service._buildURL(url, options);
+  assert.equal(builtUrl, 'somehost/somenamespace/testurl/', 'One slash namespace, two slash host');
+
+  service = new TwoSlashNamespace();
+  builtUrl = service._buildURL(url, options);
+  assert.equal(builtUrl, 'somehost/somenamespace/testurl/', 'Two slash namespace, two slash host');
 });
