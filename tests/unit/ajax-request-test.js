@@ -331,6 +331,26 @@ test('del() promise label is correct', function(assert) {
   });
 });
 
+test('request with method option makes the correct type of request', function(assert) {
+  assert.expect(1);
+
+  const service = new AjaxRequest();
+  const url = '/posts/1';
+  const serverResponse = [200, { 'Content-Type': 'application/json' }, JSON.stringify({})];
+
+  server.get(url, () => {
+    assert.ok(false, 'Made a GET request');
+    return serverResponse;
+  });
+
+  server.post(url, () => {
+    assert.ok(true, 'Made a POST request');
+    return serverResponse;
+  });
+
+  return service.request(url, { method: 'POST' });
+});
+
 test('options() host is set on the url (url starting with `/`)', function(assert) {
   class RequestWithHost extends AjaxRequest {
     get host() {
