@@ -27,7 +27,9 @@ const {
   get,
   isNone,
   merge,
-  run
+  run,
+  Test,
+  testing
 } = Ember;
 const JSONAPIContentType = 'application/vnd.api+json';
 
@@ -39,6 +41,17 @@ function isJSONAPIContentType(header) {
 }
 
 export default class AjaxRequest {
+
+  constructor() {
+    this.init();
+  }
+
+  init() {
+    this.pendingRequestCount = 0;
+    if (testing) {
+      Test.registerWaiter(() => this.pendingRequestCount === 0);
+    }
+  }
 
   request(url, options) {
     const hash = this.options(url, options);
@@ -75,9 +88,7 @@ export default class AjaxRequest {
           requestData
         );
 
-        if (hash.dataType === 'jsonp') {
-          $('body').trigger('ajaxComplete');
-        }
+        this.pendingRequestCount--;
 
         if (response instanceof AjaxError) {
           run.join(null, reject, { payload, textStatus, jqXHR, response });
@@ -105,16 +116,12 @@ export default class AjaxRequest {
           );
         }
 
-        if (hash.dataType === 'jsonp') {
-          $('body').trigger('ajaxComplete');
-        }
+        this.pendingRequestCount--;
 
         run.join(null, reject, { payload, textStatus, jqXHR, errorThrown, response });
       };
 
-      if (hash.dataType === 'jsonp') {
-        $('body').trigger('ajaxSend');
-      }
+      this.pendingRequestCount++;
 
       $.ajax(hash);
     }, `ember-ajax: ${hash.type} ${hash.url}`);
