@@ -174,6 +174,7 @@ test('options() sets raw data', function(assert) {
     },
     dataType: 'json',
     headers: {},
+    method: 'GET',
     type: 'GET',
     url: '/test'
   });
@@ -199,6 +200,7 @@ test('options() sets options correctly', function(assert) {
     data: '{"key":"value"}',
     dataType: 'json',
     headers: {},
+    method: 'POST',
     type: 'POST',
     url: '/test'
   });
@@ -214,6 +216,7 @@ test('options() empty data', function(assert) {
     context: service,
     dataType: 'json',
     headers: {},
+    method: 'POST',
     type: 'POST',
     url: '/test'
   });
@@ -224,13 +227,14 @@ test('options() type defaults to GET', function(assert) {
   const url = 'test';
   const ajaxOptions = service.options(url);
 
-  assert.equal(ajaxOptions.type, 'GET');
+  assert.equal(ajaxOptions.method, 'GET');
 });
 
 test('request() promise label is correct', function(assert) {
   const service = new AjaxRequest();
   let url = '/posts';
   let data = {
+    method: 'POST',
     type: 'POST',
     data: {
       post: { title: 'Title', description: 'Some description.' }
