@@ -43,4 +43,6 @@ test('RequestURL Class: can detect if two hosts are the same', function(assert) 
   assertSameHost('https://google.com', 'https://google.com');
   assertSameHost('https://google.com', 'http://google.com', false);
   assertSameHost('http://google.com', 'google.com', false);
+  assertSameHost('http://google.com:8080', 'http://google.com:8080');
+  assertSameHost('http://google.com:8080', 'http://google.com:8081', false);
 });
