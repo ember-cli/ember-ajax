@@ -1,7 +1,7 @@
 {
   "name": "ember-ajax",
   "version": "2.0.0-beta.3",
-  "description": "The default blueprint for ember-cli addons.",
+  "description": "Service for making AJAX requests in Ember 1.13+ applications.",
   "directories": {
     "doc": "doc",
     "test": "tests"
