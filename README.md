@@ -1,4 +1,4 @@
-# ember-ajax [![Build Status](https://travis-ci.org/ember-cli/ember-ajax.svg)](https://travis-ci.org/ember-cli/ember-ajax) [![Ember Observer Score](http://emberobserver.com/badges/ember-ajax.svg)](http://emberobserver.com/addons/ember-ajax)
+# ember-ajax [![Travis CI Build Status](https://travis-ci.org/ember-cli/ember-ajax.svg)](https://travis-ci.org/ember-cli/ember-ajax) ![AppVeyor Build Stauts](https://ci.appveyor.com/api/projects/status/github/ember-cli/ember-ajax?branch=master&svg=true) [![Ember Observer Score](http://emberobserver.com/badges/ember-ajax.svg)](http://emberobserver.com/addons/ember-ajax)
 
 Service for making AJAX requests in Ember 1.13+ applications.
 
