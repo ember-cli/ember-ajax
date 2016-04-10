@@ -164,8 +164,8 @@ export default class AjaxRequest {
    * alias for `del()`
    * @public
    */
-  delete(...args) {
-    return this.del(...args);
+  delete() {
+    return this.del(...arguments);
   }
 
   /**
