@@ -331,6 +331,21 @@ test('del() promise label is correct', function(assert) {
   });
 });
 
+test('delete() promise label is correct', function(assert) {
+  const service = new AjaxRequest();
+  const url = '/posts/1';
+  const serverResponse = [200, { 'Content-Type': 'application/json' }, JSON.stringify({})];
+
+  server.delete(url, () => serverResponse);
+
+  const deletePromise = service.delete(url);
+  assert.equal(deletePromise._label, 'ember-ajax: DELETE /posts/1 response');
+
+  return deletePromise.then(function(response) {
+    assert.deepEqual(response, {});
+  });
+});
+
 test('request with method option makes the correct type of request', function(assert) {
   assert.expect(1);
 

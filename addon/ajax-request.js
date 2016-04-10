@@ -160,6 +160,15 @@ export default class AjaxRequest {
   }
 
   /**
+   * calls `request()` but forces `options.type` to `DELETE`
+   * alias for `del()`
+   * @public
+   */
+  delete() {
+    return this.del(...arguments);
+  }
+
+  /**
    * Wrap the `.get` method so that we issue a warning if
    *
    * Since `.get` is both an AJAX pattern _and_ an Ember pattern, we want to try
