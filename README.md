@@ -203,8 +203,7 @@ export default AjaxService.extend({
 
 #### Built in error types
 
-`ember-ajax` has some built in error types that you can use to check error with
-instanceof rather than by comparing to a number. The built in types are:
+`ember-ajax` has built-in error types that will be returned from the service in the event of an error:
 
 * `BadRequestError` (400)
 * `UnauthorizedError`(401)
@@ -215,30 +214,42 @@ instanceof rather than by comparing to a number. The built in types are:
 * `AbortError`
 * `TimeoutError`
 
-Each of these types has a corresponding is* method (like `isBadRequest`) to
-allow you to customize how error is determined.
+#### Error detection helpers
+
+`ember-ajax` comes with helper functions for matching response errors to their respective `ember-ajax` error type. Each of the errors listed above has a corresponding `is*` function (e.g., `isBadRequestError`).
+
+Use of these functions is **strongly encouraged** to help eliminate the need for boilerplate error detection code.
 
 ```js
 import Ember from 'ember';
-import {UnauthorizedError, ForbiddenError} from 'ember-ajax/errors';
+import {isNotFoundError, isForbiddenError} from 'ember-ajax/errors';
 
 export default Ember.Route.extend({
   ajax: Ember.inject.service(),
   model() {
-    return this.get('ajax').request('/user/me')
-      .catch(function(error){
-        if (error instanceof UnauthorizedError) {
-          // user is not logged in
-          this.transitionTo('login');
-        } else if (error instanceof ForbiddenError) {
-          // user doesn't have access to
-          this.transitionTo('index');
+    const ajax = this.get('ajax');
+
+    return ajax.request('/user/doesnotexist')
+      .catch(function(error) {
+        if (isNotFoundError(error)) {
+          // handle 404 errors here
+          return;
         }
+
+        if (isForbiddenError(error)) {
+          // handle 403 errors here
+          return;
+        }
+
+        // other errors are handled elsewhere
         throw error;
       });
   }
 });
 ```
+
+If your errors aren't standard, the helper function for that error type can be used as the base to build your custom detection function.
+
 
 ## Testing
 
