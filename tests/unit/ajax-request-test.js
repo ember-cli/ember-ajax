@@ -520,6 +520,44 @@ test('it creates a detailed error message for unmatched server errors with a tex
     });
 });
 
+test('it always returns error objects with status codes as strings', function(assert) {
+  assert.expect(1);
+
+  const response = [404, { 'Content-Type': 'application/json' }, ''];
+  server.get('/posts', () => response);
+
+  const service = new AjaxRequest();
+  return service.request('/posts')
+    .then(function() {
+      assert.ok(false, 'success handler should not be called');
+    })
+    .catch(function(result) {
+      assert.strictEqual(result.errors[0].status, '404', 'status must be a string');
+    });
+});
+
+test('it coerces payload error response status codes to strings', function(assert) {
+  assert.expect(2);
+
+  const body = {
+    errors: [
+      { status: 403, message: 'Permission Denied' }
+    ]
+  };
+  const response = [403, { 'Content-Type': 'application/json' }, JSON.stringify(body)];
+  server.get('/posts', () => response);
+
+  const service = new AjaxRequest();
+  return service.request('/posts')
+    .then(function() {
+      assert.ok(false, 'success handler should not be called');
+    })
+    .catch(function(result) {
+      assert.strictEqual(result.errors[0].status, '403', 'status must be a string');
+      assert.strictEqual(result.errors[0].message, 'Permission Denied');
+    });
+});
+
 test('it throws an error when the user tries to use `.get` to make a request', function(assert) {
   assert.expect(3);
 
