@@ -13,6 +13,7 @@ import {
   ServerError,
   TimeoutError,
   AbortError,
+  isAjaxError,
   isUnauthorizedError,
   isForbiddenError,
   isInvalidError,
@@ -114,6 +115,15 @@ test('isServerError: detects error code correctly', function(assert) {
   assert.ok(isServerError(500));
   assert.ok(isServerError(599));
   assert.notOk(isServerError(600));
+});
+
+test('isAjaxError: detects error class correctly', function(assert) {
+  const ajaxError = new AjaxError();
+  const notAjaxError = new Error();
+  const ajaxErrorSubtype = new BadRequestError();
+  assert.ok(isAjaxError(ajaxError));
+  assert.notOk(isAjaxError(notAjaxError));
+  assert.ok(isAjaxError(ajaxErrorSubtype));
 });
 
 test('isServerError: detects error class correctly', function(assert) {

@@ -101,7 +101,18 @@ export function ServerError(errors) {
 ServerError.prototype = Object.create(AjaxError.prototype);
 
 /**
- * Checks if the given status code or AjaxError obejct represents an
+ * Checks if the given error is or inherits from AjaxError
+ * @method isAjaxError
+ * @public
+ * @param  {Error} error
+ * @return {Boolean}
+ */
+export function isAjaxError(error) {
+  return error instanceof AjaxError;
+}
+
+/**
+ * Checks if the given status code or AjaxError object represents an
  * unauthorized request error
  * @method isUnauthorizedError
  * @public
@@ -109,7 +120,7 @@ ServerError.prototype = Object.create(AjaxError.prototype);
  * @return {Boolean}
  */
 export function isUnauthorizedError(error) {
-  if (error instanceof AjaxError) {
+  if (isAjaxError(error)) {
     return error instanceof UnauthorizedError;
   } else {
     return error === 401;
@@ -125,7 +136,7 @@ export function isUnauthorizedError(error) {
  * @return {Boolean}
  */
 export function isForbiddenError(error) {
-  if (error instanceof AjaxError) {
+  if (isAjaxError(error)) {
     return error instanceof ForbiddenError;
   } else {
     return error === 403;
@@ -141,7 +152,7 @@ export function isForbiddenError(error) {
  * @return {Boolean}
  */
 export function isInvalidError(error) {
-  if (error instanceof AjaxError) {
+  if (isAjaxError(error)) {
     return error instanceof InvalidError;
   } else {
     return error === 422;
@@ -157,7 +168,7 @@ export function isInvalidError(error) {
  * @return {Boolean}
  */
 export function isBadRequestError(error) {
-  if (error instanceof AjaxError) {
+  if (isAjaxError(error)) {
     return error instanceof BadRequestError;
   } else {
     return error === 400;
@@ -173,7 +184,7 @@ export function isBadRequestError(error) {
  * @return {Boolean}
  */
 export function isNotFoundError(error) {
-  if (error instanceof AjaxError) {
+  if (isAjaxError(error)) {
     return error instanceof NotFoundError;
   } else {
     return error === 404;
@@ -212,7 +223,7 @@ export function isAbortError(error) {
  * @return {Boolean}
  */
 export function isServerError(error) {
-  if (error instanceof AjaxError) {
+  if (isAjaxError(error)) {
     return error instanceof ServerError;
   } else {
     return error >= 500 && error < 600;

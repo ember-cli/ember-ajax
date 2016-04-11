@@ -171,12 +171,6 @@ You can even leave off the forward slash if you'd like:
 request('users/me')
 ```
 
-### Error handling
-
-`ember-ajax` provides built in error classes that you can use to check the error
-that was returned by the response. This allows you to restrict determination of
-error result to the service instead of sprinkling it around your code.
-
 #### Customize isSuccess
 
 Some APIs respond with status code 200, even though an error has occurred and
@@ -201,6 +195,12 @@ export default AjaxService.extend({
 });
 ```
 
+### Error handling
+
+`ember-ajax` provides built in error classes that you can use to check the error
+that was returned by the response. This allows you to restrict determination of
+error result to the service instead of sprinkling it around your code.
+
 #### Built in error types
 
 `ember-ajax` has built-in error types that will be returned from the service in the event of an error:
@@ -214,6 +214,8 @@ export default AjaxService.extend({
 * `AbortError`
 * `TimeoutError`
 
+All of the above errors are subtypes of `AjaxError`.
+
 #### Error detection helpers
 
 `ember-ajax` comes with helper functions for matching response errors to their respective `ember-ajax` error type. Each of the errors listed above has a corresponding `is*` function (e.g., `isBadRequestError`).
@@ -222,7 +224,7 @@ Use of these functions is **strongly encouraged** to help eliminate the need for
 
 ```js
 import Ember from 'ember';
-import {isNotFoundError, isForbiddenError} from 'ember-ajax/errors';
+import {isAjaxError, isNotFoundError, isForbiddenError} from 'ember-ajax/errors';
 
 export default Ember.Route.extend({
   ajax: Ember.inject.service(),
@@ -238,6 +240,11 @@ export default Ember.Route.extend({
 
         if (isForbiddenError(error)) {
           // handle 403 errors here
+          return;
+        }
+
+        if(isAjaxError(error)) {
+          // handle all other AjaxErrors here
           return;
         }
 
