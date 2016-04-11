@@ -9,6 +9,7 @@ import {
   InvalidError,
   UnauthorizedError,
   ForbiddenError,
+  NotFoundError,
   BadRequestError,
   ServerError,
   TimeoutError,
@@ -16,6 +17,7 @@ import {
   isAjaxError,
   isUnauthorizedError,
   isForbiddenError,
+  isNotFoundError,
   isInvalidError,
   isBadRequestError,
   isServerError,
@@ -48,6 +50,12 @@ test('ForbiddenError', function(assert) {
   const error = new ForbiddenError();
   assert.ok(error instanceof Error);
   assert.ok(error instanceof ForbiddenError);
+});
+
+test('NotFoundError', function(assert) {
+  const error = new NotFoundError();
+  assert.ok(error instanceof Error);
+  assert.ok(error instanceof NotFoundError);
 });
 
 test('BadRequestError', function(assert) {
@@ -90,6 +98,18 @@ test('isForbiddenError: detects error code correctly', function(assert) {
 test('isForbiddenError: detects error class correctly', function(assert) {
   const error = new ForbiddenError();
   assert.ok(isForbiddenError(error));
+});
+
+test('isNotFoundError: detects error code correctly', function(assert) {
+  assert.ok(isNotFoundError(404));
+  assert.notOk(isNotFoundError(400));
+});
+
+test('isNotFoundError: detects error class correctly', function(assert) {
+  const error = new NotFoundError();
+  const otherError = new Error();
+  assert.ok(isNotFoundError(error));
+  assert.notOk(isNotFoundError(otherError));
 });
 
 test('isInvalidError: detects error code correctly', function(assert) {
