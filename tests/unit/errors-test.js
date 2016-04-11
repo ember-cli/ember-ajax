@@ -9,12 +9,15 @@ import {
   InvalidError,
   UnauthorizedError,
   ForbiddenError,
+  NotFoundError,
   BadRequestError,
   ServerError,
   TimeoutError,
   AbortError,
+  isAjaxError,
   isUnauthorizedError,
   isForbiddenError,
+  isNotFoundError,
   isInvalidError,
   isBadRequestError,
   isServerError,
@@ -47,6 +50,12 @@ test('ForbiddenError', function(assert) {
   const error = new ForbiddenError();
   assert.ok(error instanceof Error);
   assert.ok(error instanceof ForbiddenError);
+});
+
+test('NotFoundError', function(assert) {
+  const error = new NotFoundError();
+  assert.ok(error instanceof Error);
+  assert.ok(error instanceof NotFoundError);
 });
 
 test('BadRequestError', function(assert) {
@@ -91,6 +100,18 @@ test('isForbiddenError: detects error class correctly', function(assert) {
   assert.ok(isForbiddenError(error));
 });
 
+test('isNotFoundError: detects error code correctly', function(assert) {
+  assert.ok(isNotFoundError(404));
+  assert.notOk(isNotFoundError(400));
+});
+
+test('isNotFoundError: detects error class correctly', function(assert) {
+  const error = new NotFoundError();
+  const otherError = new Error();
+  assert.ok(isNotFoundError(error));
+  assert.notOk(isNotFoundError(otherError));
+});
+
 test('isInvalidError: detects error code correctly', function(assert) {
   assert.ok(isInvalidError(422));
 });
@@ -114,6 +135,15 @@ test('isServerError: detects error code correctly', function(assert) {
   assert.ok(isServerError(500));
   assert.ok(isServerError(599));
   assert.notOk(isServerError(600));
+});
+
+test('isAjaxError: detects error class correctly', function(assert) {
+  const ajaxError = new AjaxError();
+  const notAjaxError = new Error();
+  const ajaxErrorSubtype = new BadRequestError();
+  assert.ok(isAjaxError(ajaxError));
+  assert.notOk(isAjaxError(notAjaxError));
+  assert.ok(isAjaxError(ajaxErrorSubtype));
 });
 
 test('isServerError: detects error class correctly', function(assert) {

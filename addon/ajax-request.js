@@ -9,6 +9,7 @@ import {
   TimeoutError,
   AbortError,
   ServerError,
+  isAjaxError,
   isUnauthorizedError,
   isForbiddenError,
   isInvalidError,
@@ -90,7 +91,7 @@ export default class AjaxRequest {
 
         this.pendingRequestCount--;
 
-        if (response instanceof AjaxError) {
+        if (isAjaxError(response)) {
           run.join(null, reject, { payload, textStatus, jqXHR, response });
         } else {
           run.join(null, resolve, { payload, textStatus, jqXHR, response });
