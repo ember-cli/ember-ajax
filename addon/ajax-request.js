@@ -1,4 +1,6 @@
 import Ember from 'ember';
+import fetch from "ember-network/fetch";
+
 import {
   AjaxError,
   UnauthorizedError,
@@ -63,15 +65,12 @@ export default class AjaxRequest {
         .catch(({ response }) => {
           reject(response);
         });
-    }, `ember-ajax: ${hash.type} ${hash.url} response`);
+    }, `ember-ajax: ${hash.method} ${hash.url} response`);
   }
 
   raw(url, options) {
-    const hash = this.options(url, options);
-    const requestData = {
-      type: hash.type,
-      url: hash.url
-    };
+    let hash = this.options(url, options);
+    let { method } = hash;
 
     if (isJSONAPIContentType(hash.headers['Content-Type'])) {
       if (typeof hash.data === 'object') {
@@ -79,21 +78,77 @@ export default class AjaxRequest {
       }
     }
 
+    if (options && options.fetch) {
+      return this.rawFetch(url, method, hash);
+    } else {
+      return this.rawAjax(url, method, hash);
+    }
+  }
+
+  rawFetch(url, method, hash) {
+    this.pendingRequestCount++;
+
+    return fetch(url, hash).then((response) => {
+      let headers = this.handleFetchHeaders(response);
+      let payload = this.handleFetchPayload(response);
+      let { status, statusText } = response;
+
+      response = { payload, textStatus: statusText, raw: response };
+
+      response.response = this.handleResponse(
+        status,
+        headers,
+        payload,
+        { url, method }
+      );
+
+      this.pendingRequestCount--;
+
+      if (response.response instanceof AjaxError) {
+        throw response;
+      } else {
+        return response;
+      }
+    }, (response) => {
+      let headers = this.handleFetchHeaders(response);
+      let payload = this.handleFetchPayload(response);
+      let { status, statusText } = response;
+
+      response = { payload, textStatus: statusText, raw: response };
+
+      if (statusText === 'timeout') {
+        response.response = new TimeoutError();
+      } else {
+        response.response = this.handleResponse(
+          status,
+          headers,
+          payload,
+          { url, method }
+        );
+      }
+
+      this.pendingRequestCount--;
+
+      throw response;
+    });
+  }
+
+  rawAjax(url, method, hash) {
     return new Promise((resolve, reject) => {
       hash.success = (payload, textStatus, jqXHR) => {
         let response = this.handleResponse(
           jqXHR.status,
           parseResponseHeaders(jqXHR.getAllResponseHeaders()),
           payload,
-          requestData
+          { url, method }
         );
 
         this.pendingRequestCount--;
 
         if (response instanceof AjaxError) {
-          run.join(null, reject, { payload, textStatus, jqXHR, response });
+          run.join(null, reject, { payload, textStatus, raw: jqXHR, jqXHR, response });
         } else {
-          run.join(null, resolve, { payload, textStatus, jqXHR, response });
+          run.join(null, resolve, { payload, textStatus, raw: jqXHR, jqXHR, response });
         }
       };
 
@@ -109,26 +164,26 @@ export default class AjaxRequest {
           response = new AbortError();
         } else {
           response = this.handleResponse(
-             jqXHR.status,
-             parseResponseHeaders(jqXHR.getAllResponseHeaders()),
-             payload,
-             requestData
+            jqXHR.status,
+            parseResponseHeaders(jqXHR.getAllResponseHeaders()),
+            payload,
+            { url, method }
           );
         }
 
         this.pendingRequestCount--;
 
-        run.join(null, reject, { payload, textStatus, jqXHR, errorThrown, response });
+        run.join(null, reject, { payload, textStatus, raw: jqXHR, jqXHR, errorThrown, response });
       };
 
       this.pendingRequestCount++;
 
       $.ajax(hash);
-    }, `ember-ajax: ${hash.type} ${hash.url}`);
+    }, `ember-ajax: ${method} ${url}`);
   }
 
   /**
-   * calls `request()` but forces `options.type` to `POST`
+   * calls `request()` but forces `options.method` to `POST`
    * @public
    */
   post(url, options) {
@@ -136,7 +191,7 @@ export default class AjaxRequest {
   }
 
   /**
-   * calls `request()` but forces `options.type` to `PUT`
+   * calls `request()` but forces `options.method` to `PUT`
    * @public
    */
   put(url, options) {
@@ -144,7 +199,7 @@ export default class AjaxRequest {
   }
 
   /**
-   * calls `request()` but forces `options.type` to `PATCH`
+   * calls `request()` but forces `options.method` to `PATCH`
    * @public
    */
   patch(url, options) {
@@ -152,7 +207,7 @@ export default class AjaxRequest {
   }
 
   /**
-   * calls `request()` but forces `options.type` to `DELETE`
+   * calls `request()` but forces `options.method` to `DELETE`
    * @public
    */
   del(url, options) {
@@ -184,10 +239,10 @@ export default class AjaxRequest {
     return this._super(...arguments);
   }
 
-  // forcibly manipulates the options hash to include the HTTP method on the type key
+  // forcibly manipulates the options hash to include the HTTP method on the method key
   _addTypeToOptionsFor(options, method) {
     options = options || {};
-    options.type = method;
+    options.method = method;
     return options;
   }
 
@@ -212,7 +267,8 @@ export default class AjaxRequest {
    */
   options(url, options = {}) {
     options.url = this._buildURL(url, options);
-    options.type = options.type || 'GET';
+    options.method = options.method || options.type || 'GET';
+    options.type = options.method;
     options.dataType = options.dataType || 'json';
     options.context = this;
 
@@ -276,7 +332,7 @@ export default class AjaxRequest {
    * @param  {Object} requestData the original request information
    * @return {Object | AjaxError} response
    */
-  handleResponse(status, headers, payload, requestData) {
+  handleResponse(status, headers, payload, { method, url }) {
     payload = payload || {};
     const errors = this.normalizeErrorResponse(status, headers, payload);
 
@@ -296,8 +352,26 @@ export default class AjaxRequest {
       return new ServerError(errors);
     }
 
-    const detailedMessage = this.generateDetailedMessage(status, headers, payload, requestData);
+    const detailedMessage = this.generateDetailedMessage(method, url, status, headers, payload);
     return new AjaxError(errors, detailedMessage);
+  }
+
+  handleFetchHeaders(response) {
+    let headers = {};
+
+    response.headers.forEach((value, name) => {
+      headers[name] = value;
+    });
+
+    return headers;
+  }
+
+  handleFetchPayload(response) {
+    if (isJSONAPIContentType(response.headers.get('Content-Type'))) {
+      return response.json();
+    } else {
+      return response.text();
+    }
   }
 
   /**
@@ -364,13 +438,15 @@ export default class AjaxRequest {
    * of information for debugging (good luck!)
    * @method generateDetailedMessage
    * @private
+   * @param  {String} method HTTP verb
+   * @param  {String} url
    * @param  {Number} status
    * @param  {Object} headers
    * @param  {Object} payload
    * @param  {Object} requestData the original request information
    * @return {Object} request information
    */
-  generateDetailedMessage(status, headers, payload, requestData) {
+  generateDetailedMessage(method, url, status, headers, payload) {
     let shortenedPayload;
     const payloadContentType = headers['Content-Type'] || 'Empty Content-Type';
 
@@ -380,11 +456,11 @@ export default class AjaxRequest {
       shortenedPayload = JSON.stringify(payload);
     }
 
-    const requestDescription = `${requestData.type} ${requestData.url}`;
+    const requestDescription = `${method} ${url}`;
     const payloadDescription = `Payload (${payloadContentType})`;
 
     return [
-      `Ember Data Request ${requestDescription} returned a ${status}`,
+      `Ember Ajax Request ${requestDescription} returned a ${status}`,
       payloadDescription,
       shortenedPayload
     ].join('\n');
