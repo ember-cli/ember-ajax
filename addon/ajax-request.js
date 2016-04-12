@@ -27,11 +27,11 @@ const {
   RSVP: { Promise },
   get,
   isNone,
-  merge,
   run,
   Test,
   testing
 } = Ember;
+const assign = Ember.assign || Ember.merge;
 const JSONAPIContentType = 'application/vnd.api+json';
 
 function isJSONAPIContentType(header) {
@@ -200,8 +200,8 @@ export default class AjaxRequest {
    */
   _getFullHeadersHash(headers) {
     const classHeaders = get(this, 'headers') || {};
-    const _headers = merge({}, classHeaders);
-    return merge(_headers, headers);
+    const _headers = assign({}, classHeaders);
+    return assign(_headers, headers);
   }
 
   /**
@@ -520,7 +520,7 @@ export default class AjaxRequest {
       }
 
       return payload.errors.map(function(error) {
-        let ret = merge({}, error);
+        let ret = assign({}, error);
 
         if (typeof ret.status === 'number') {
           ret.status = `${ret.status}`;
