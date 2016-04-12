@@ -1,4 +1,5 @@
-/* global require, module */
+/* global require, module, URL */
+import isFastBoot from './is-fastboot';
 
 const absoluteUrlRegex = /^(http|https)/;
 
@@ -8,7 +9,26 @@ const absoluteUrlRegex = /^(http|https)/;
  * http://www.sitepoint.com/url-parsing-isomorphic-javascript/
  */
 const isNode = (typeof module === 'object' && module.exports);
-const url = (isNode ? require('url') : document.createElement('a'));
+const url = getUrlModule();
+
+/**
+ * Get the node url module or an anchor element
+ *
+ * @private
+ * @return {Object|HTMLAnchorElement} Object to parse urls
+ */
+function getUrlModule() {
+  if (isFastBoot) {
+    // ember-fastboot-server provides the node url module as URL global
+    return URL;
+  }
+
+  if (isNode) {
+    return require('url');
+  }
+
+  return document.createElement('a');
+}
 
 /**
  * Parse a URL string into an object that defines its structure
@@ -28,7 +48,7 @@ const url = (isNode ? require('url') : document.createElement('a'));
  */
 function parseUrl(str) {
   let fullObject;
-  if (isNode) {
+  if (isNode || isFastBoot) {
     fullObject = url.parse(str);
   } else {
     url.href = str;
