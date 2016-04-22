@@ -15,18 +15,18 @@ test('RequestURL Class: parses the parts of a URL correctly', function(assert) {
   assert.equal(obj.hash, '#hash');
 });
 
-test('RequestURL Class: can detect if the url is absolute', function(assert) {
+test('RequestURL Class: can detect if the url is complete', function(assert) {
   const obj = new RequestURL('http://google.com/test');
-  assert.ok(obj.isAbsolute);
+  assert.ok(obj.isComplete);
 
   const obj2 = new RequestURL('google.com/test');
-  assert.notOk(obj2.isAbsolute);
+  assert.notOk(obj2.isComplete);
 
   const obj3 = new RequestURL('/test');
-  assert.notOk(obj3.isAbsolute);
+  assert.notOk(obj3.isComplete);
 
   const obj4 = new RequestURL('test/http/http');
-  assert.notOk(obj4.isAbsolute);
+  assert.notOk(obj4.isComplete);
 });
 
 test('RequestURL Class: can detect if two hosts are the same', function(assert) {

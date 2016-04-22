@@ -43,6 +43,27 @@ function isJSONAPIContentType(header) {
   return header.indexOf(JSONAPIContentType) === 0;
 }
 
+function startsWithSlash(string) {
+  return string.charAt(0) === '/';
+}
+
+function endsWithSlash(string) {
+  return string.charAt(string.length - 1) === '/';
+}
+
+function stripSlashes(path) {
+  // make sure path starts with `/`
+  if (startsWithSlash(path)) {
+    path = path.substring(1);
+  }
+
+  // remove end `/`
+  if (endsWithSlash(path)) {
+    path = path.slice(0, -1);
+  }
+  return path;
+}
+
 let pendingRequestCount = 0;
 if (testing) {
   Test.registerWaiter(function() {
@@ -223,20 +244,55 @@ export default Mixin.create({
     return options;
   },
 
-  _buildURL(url, options) {
-    const host = options.host || get(this, 'host');
-    const namespace = get(this, 'namespace');
+  /**
+   * Build a URL for a request
+   *
+   * If the provided `url` is deemed to be a complete URL, it will be returned
+   * directly.  If it is not complete, then the segment provided will be combined
+   * with the `host` and `namespace` options of the request class to create the
+   * full URL.
+   *
+   * @private
+   * @param {string} url the url, or url segment, to request
+   * @param {object} [options] the options for the request being made
+   * @param {object.host} [host] the host to use for this request
+   * @returns {string} the URL to make a request to
+   */
+  _buildURL(url, options = {}) {
     const urlObject = new RequestURL(url);
 
     // If the URL passed is not relative, return the whole URL
-    if (urlObject.isAbsolute) {
+    if (urlObject.isComplete) {
       return urlObject.href;
     }
 
-    let _url = this._normalizePath(url);
-    let _namespace = this._normalizePath(namespace);
+    const host = options.host || get(this, 'host');
+    let namespace = get(this, 'namespace');
+    if (namespace) {
+      namespace = stripSlashes(namespace);
+    }
 
-    return [ host, _namespace, _url ].join('');
+    let fullUrl = '';
+    // Add the host, if it exists
+    if (host) {
+      fullUrl += host;
+    }
+    // Add the namespace, if it exists
+    if (namespace) {
+      if (!endsWithSlash(fullUrl)) {
+        fullUrl += '/';
+      }
+      fullUrl += namespace;
+    }
+    // Add the URL segment, if it exists
+    if (url) {
+      if (!startsWithSlash(url)) {
+        fullUrl += '/';
+      }
+      fullUrl += url;
+    }
+
+    return fullUrl;
   },
 
   _normalizePath(path) {
@@ -348,9 +404,9 @@ export default Mixin.create({
 
     const urlObject = new RequestURL(url);
     const trustedHosts = get(this, 'trustedHosts') || Ember.A();
-    // Add headers on relative URLs
 
-    if (!urlObject.isAbsolute) {
+    // Add headers on relative URLs
+    if (!urlObject.isComplete) {
       return true;
     } else if (trustedHosts.find((matcher) => this._matchHosts(urlObject.hostname, matcher))) {
       return true;
