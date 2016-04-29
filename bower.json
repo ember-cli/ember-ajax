@@ -6,5 +6,8 @@
     "ember-cli-test-loader": "0.2.2",
     "ember-qunit-notifications": "0.1.0",
     "pretender": "^0.10.1"
+  },
+  "resolutions": {
+    "ember": "~2.5.0"
   }
 }
