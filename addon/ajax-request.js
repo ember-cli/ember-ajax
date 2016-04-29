@@ -75,7 +75,7 @@ export default class AjaxRequest {
       url: hash.url
     };
 
-    if (isJSONAPIContentType(hash.headers['Content-Type'])) {
+    if (isJSONAPIContentType(hash.headers['Content-Type']) && requestData.type !== 'GET') {
       if (typeof hash.data === 'object') {
         hash.data = JSON.stringify(hash.data);
       }
