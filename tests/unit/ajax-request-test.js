@@ -615,6 +615,30 @@ test('it JSON encodes JSON:API request data automatically', function(assert) {
   });
 });
 
+test('it does not JSON encode query parameters when JSON:API headers are present', function(assert) {
+  assert.expect(1);
+
+  server.get('/test', ({ queryParams }) => {
+    const { foo } = queryParams;
+    assert.equal(foo, 'bar', 'Correctly received query param');
+    return jsonResponse();
+  });
+
+  class RequestWithHeaders extends AjaxRequest {
+    get headers() {
+      return {
+        'Content-Type': 'application/vnd.api+json'
+      };
+    }
+  }
+  const service = new RequestWithHeaders();
+  return service.request('/test', {
+    data: {
+      foo: 'bar'
+    }
+  });
+});
+
 test('it JSON encodes JSON:API "extension" request data automatically', function(assert) {
   assert.expect(1);
 
