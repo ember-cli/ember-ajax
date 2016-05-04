@@ -216,7 +216,6 @@ export default class AjaxRequest {
     options.url = this._buildURL(url, options);
     options.type = options.type || 'GET';
     options.dataType = options.dataType || 'json';
-    options.context = this;
 
     if (this._shouldSendHeaders(options)) {
       options.headers = this._getFullHeadersHash(options.headers);
