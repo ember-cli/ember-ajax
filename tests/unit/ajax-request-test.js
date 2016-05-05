@@ -168,7 +168,6 @@ test('options() sets raw data', function(assert) {
   const ajaxOptions = service.options(url, { type, data: { key: 'value' } });
 
   assert.deepEqual(ajaxOptions, {
-    context: service,
     data: {
       key: 'value'
     },
@@ -195,7 +194,6 @@ test('options() sets options correctly', function(assert) {
 
   assert.deepEqual(ajaxOptions, {
     contentType: 'application/json; charset=utf-8',
-    context: service,
     data: '{"key":"value"}',
     dataType: 'json',
     headers: {},
@@ -211,7 +209,6 @@ test('options() empty data', function(assert) {
   const ajaxOptions = service.options(url, { type });
 
   assert.deepEqual(ajaxOptions, {
-    context: service,
     dataType: 'json',
     headers: {},
     type: 'POST',

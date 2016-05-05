@@ -42,18 +42,14 @@ function isJSONAPIContentType(header) {
   return header.indexOf(JSONAPIContentType) === 0;
 }
 
+let pendingRequestCount = 0;
+if (testing) {
+  Test.registerWaiter(function() {
+    return pendingRequestCount === 0;
+  });
+}
+
 export default class AjaxRequest {
-
-  constructor() {
-    this.init();
-  }
-
-  init() {
-    this.pendingRequestCount = 0;
-    if (testing) {
-      Test.registerWaiter(() => this.pendingRequestCount === 0);
-    }
-  }
 
   request(url, options) {
     const hash = this.options(url, options);
@@ -90,7 +86,7 @@ export default class AjaxRequest {
           requestData
         );
 
-        this.pendingRequestCount--;
+        pendingRequestCount--;
 
         if (isAjaxError(response)) {
           run.join(null, reject, { payload, textStatus, jqXHR, response });
@@ -118,12 +114,12 @@ export default class AjaxRequest {
           );
         }
 
-        this.pendingRequestCount--;
+        pendingRequestCount--;
 
         run.join(null, reject, { payload, textStatus, jqXHR, errorThrown, response });
       };
 
-      this.pendingRequestCount++;
+      pendingRequestCount++;
 
       ajax(hash);
     }, `ember-ajax: ${hash.type} ${hash.url}`);
@@ -216,7 +212,6 @@ export default class AjaxRequest {
     options.url = this._buildURL(url, options);
     options.type = options.type || 'GET';
     options.dataType = options.dataType || 'json';
-    options.context = this;
 
     if (this._shouldSendHeaders(options)) {
       options.headers = this._getFullHeadersHash(options.headers);
