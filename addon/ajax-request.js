@@ -42,6 +42,8 @@ function isJSONAPIContentType(header) {
   return header.indexOf(JSONAPIContentType) === 0;
 }
 
+let pendingRequestCount = 0;
+
 export default class AjaxRequest {
 
   constructor() {
@@ -49,9 +51,8 @@ export default class AjaxRequest {
   }
 
   init() {
-    this.pendingRequestCount = 0;
     if (testing) {
-      Test.registerWaiter(() => this.pendingRequestCount === 0);
+      Test.registerWaiter(() => (pendingRequestCount === 0));
     }
   }
 
@@ -90,7 +91,7 @@ export default class AjaxRequest {
           requestData
         );
 
-        this.pendingRequestCount--;
+        pendingRequestCount--;
 
         if (isAjaxError(response)) {
           run.join(null, reject, { payload, textStatus, jqXHR, response });
@@ -118,12 +119,12 @@ export default class AjaxRequest {
           );
         }
 
-        this.pendingRequestCount--;
+        pendingRequestCount--;
 
         run.join(null, reject, { payload, textStatus, jqXHR, errorThrown, response });
       };
 
-      this.pendingRequestCount++;
+      pendingRequestCount++;
 
       ajax(hash);
     }, `ember-ajax: ${hash.type} ${hash.url}`);
