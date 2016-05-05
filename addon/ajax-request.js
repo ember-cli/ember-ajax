@@ -52,7 +52,9 @@ export default class AjaxRequest {
 
   init() {
     if (testing) {
-      Test.registerWaiter(() => (pendingRequestCount === 0));
+      Test.registerWaiter(function() {
+        return pendingRequestCount === 0;
+      });
     }
   }
 
