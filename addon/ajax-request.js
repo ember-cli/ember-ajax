@@ -43,20 +43,13 @@ function isJSONAPIContentType(header) {
 }
 
 let pendingRequestCount = 0;
+if (testing) {
+  Test.registerWaiter(function() {
+    return pendingRequestCount === 0;
+  });
+}
 
 export default class AjaxRequest {
-
-  constructor() {
-    this.init();
-  }
-
-  init() {
-    if (testing) {
-      Test.registerWaiter(function() {
-        return pendingRequestCount === 0;
-      });
-    }
-  }
 
   request(url, options) {
     const hash = this.options(url, options);
