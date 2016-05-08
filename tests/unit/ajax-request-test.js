@@ -8,7 +8,7 @@ import Pretender from 'pretender';
 import { jsonResponse } from 'dummy/tests/helpers/json';
 
 let server;
-module('AjaxRequest class', {
+module('AjaxRequest', {
   beforeEach() {
     server = new Pretender();
   },
@@ -27,14 +27,11 @@ test('headers are set if the URL matches the host', function(assert) {
     return jsonResponse();
   });
 
-  class RequestWithHeaders extends AjaxRequest {
-    get host() {
-      return 'http://example.com';
-    }
-    get headers() {
-      return { 'Content-Type': 'application/json', 'Other-key': 'Other Value' };
-    }
-  }
+  const RequestWithHeaders = AjaxRequest.extend({
+    host: 'http://example.com',
+    headers: { 'Content-Type': 'application/json', 'Other-key': 'Other Value' }
+  });
+
   const service = new RequestWithHeaders();
   return service.request('http://example.com/test');
 });
@@ -49,11 +46,10 @@ test('headers are set if the URL is relative', function(assert) {
     return jsonResponse();
   });
 
-  class RequestWithHeaders extends AjaxRequest {
-    get headers() {
-      return { 'Content-Type': 'application/json', 'Other-key': 'Other Value' };
-    }
-  }
+  const RequestWithHeaders = AjaxRequest.extend({
+    headers: { 'Content-Type': 'application/json', 'Other-key': 'Other Value' }
+  });
+
   const service = new RequestWithHeaders();
   return service.request('/some/relative/url');
 });
@@ -67,21 +63,16 @@ test('headers are set if the URL matches one of the RegExp trustedHosts', functi
     return jsonResponse();
   });
 
-  class RequestWithHeaders extends AjaxRequest {
-    get host() {
-      return 'some-other-host.com';
-    }
-    get trustedHosts() {
-      return Ember.A([
-        4,
-        'notmy.example.com',
-        /example\./
-      ]);
-    }
-    get headers() {
-      return { 'Content-Type': 'application/json', 'Other-key': 'Other Value' };
-    }
-  }
+  const RequestWithHeaders = AjaxRequest.extend({
+    host: 'some-other-host.com',
+    trustedHosts: Ember.A([
+      4,
+      'notmy.example.com',
+      /example\./
+    ]),
+    headers: { 'Content-Type': 'application/json', 'Other-key': 'Other Value' }
+  });
+
   const service = new RequestWithHeaders();
   return service.request('http://my.example.com');
 });
@@ -95,21 +86,16 @@ test('headers are set if the URL matches one of the string trustedHosts', functi
     return jsonResponse();
   });
 
-  class RequestWithHeaders extends AjaxRequest {
-    get host() {
-      return 'some-other-host.com';
-    }
-    get trustedHosts() {
-      return Ember.A([
-        'notmy.example.com',
-        /example\./,
-        'foo.bar.com'
-      ]);
-    }
-    get headers() {
-      return { 'Content-Type': 'application/json', 'Other-key': 'Other Value' };
-    }
-  }
+  const RequestWithHeaders = AjaxRequest.extend({
+    host: 'some-other-host.com',
+    trustedHosts: Ember.A([
+      'notmy.example.com',
+      /example\./,
+      'foo.bar.com'
+    ]),
+    headers: { 'Content-Type': 'application/json', 'Other-key': 'Other Value' }
+  });
+
   const service = new RequestWithHeaders();
   return service.request('http://foo.bar.com');
 });
@@ -123,14 +109,11 @@ test('headers are not set if the URL does not match the host', function(assert) 
     return jsonResponse();
   });
 
-  class RequestWithHeaders extends AjaxRequest {
-    get host() {
-      return 'some-other-host.com';
-    }
-    get headers() {
-      return { 'Content-Type': 'application/json', 'Other-key': 'Other Value' };
-    }
-  }
+  const RequestWithHeaders = AjaxRequest.extend({
+    host: 'some-other-host.com',
+    headers: { 'Content-Type': 'application/json', 'Other-key': 'Other Value' }
+  });
+
   const service = new RequestWithHeaders();
   return service.request('http://example.com');
 });
@@ -145,14 +128,11 @@ test('headers can be supplied on a per-request basis', function(assert) {
     return jsonResponse();
   });
 
-  class RequestWithHeaders extends AjaxRequest {
-    get host() {
-      return 'http://example.com';
-    }
-    get headers() {
-      return { 'Content-Type': 'application/json', 'Other-key': 'Other Value' };
-    }
-  }
+  const RequestWithHeaders = AjaxRequest.extend({
+    host: 'http://example.com',
+    headers: { 'Content-Type': 'application/json', 'Other-key': 'Other Value' }
+  });
+
   const service = new RequestWithHeaders();
   return service.request('http://example.com', {
     headers: {
@@ -364,11 +344,10 @@ test('request with method option makes the correct type of request', function(as
 });
 
 test('options() host is set on the url (url starting with `/`)', function(assert) {
-  class RequestWithHost extends AjaxRequest {
-    get host() {
-      return 'https://discuss.emberjs.com';
-    }
-  }
+  const RequestWithHost = AjaxRequest.extend({
+    host: 'https://discuss.emberjs.com'
+  });
+
   const service = new RequestWithHost();
   const url = '/users/me';
   const ajaxoptions = service.options(url);
@@ -377,11 +356,10 @@ test('options() host is set on the url (url starting with `/`)', function(assert
 });
 
 test('options() host is set on the url (url not starting with `/`)', function(assert) {
-  class RequestWithHost extends AjaxRequest {
-    get host() {
-      return 'https://discuss.emberjs.com';
-    }
-  }
+  const RequestWithHost = AjaxRequest.extend({
+    host: 'https://discuss.emberjs.com'
+  });
+
   const service = new RequestWithHost();
   const url = 'users/me';
   const ajaxoptions = service.options(url);
@@ -390,11 +368,10 @@ test('options() host is set on the url (url not starting with `/`)', function(as
 });
 
 test('options() host is overridable on a per-request basis', function(assert) {
-  class RequestWithHost extends AjaxRequest {
-    get host() {
-      return 'https://discuss.emberjs.com';
-    }
-  }
+  const RequestWithHost = AjaxRequest.extend({
+    host: 'https://discuss.emberjs.com'
+  });
+
   const service = new RequestWithHost();
   const url = 'users/me';
   const host = 'https://myurl.com';
@@ -404,11 +381,10 @@ test('options() host is overridable on a per-request basis', function(assert) {
 });
 
 test('explicit host in URL overrides host property of class', function(assert) {
-  class RequestWithHost extends AjaxRequest {
-    get host() {
-      return 'https://discuss.emberjs.com';
-    }
-  }
+  const RequestWithHost = AjaxRequest.extend({
+    host: 'https://discuss.emberjs.com'
+  });
+
   const service = new RequestWithHost();
   const url = 'http://myurl.com/users/me';
   const ajaxOptions = service.options(url);
@@ -426,11 +402,10 @@ test('explicit host in URL overrides host property in request config', function(
 });
 
 test('explicit host in URL without a protocol does not override config property', function(assert) {
-  class RequestWithHost extends AjaxRequest {
-    get host() {
-      return 'https://discuss.emberjs.com';
-    }
-  }
+  const RequestWithHost = AjaxRequest.extend({
+    host: 'https://discuss.emberjs.com'
+  });
+
   const service = new RequestWithHost();
   const url = 'myurl.com/users/me';
   const ajaxOptions = service.options(url);
@@ -439,11 +414,10 @@ test('explicit host in URL without a protocol does not override config property'
 });
 
 test('options() namespace is set on the url (namespace starting with `/`)', function(assert) {
-  class RequestWithHost extends AjaxRequest {
-    get namespace() {
-      return '/api/v1';
-    }
-  }
+  const RequestWithHost = AjaxRequest.extend({
+    namespace: '/api/v1'
+  });
+
   const service = new RequestWithHost();
 
   assert.equal(service.options('/users/me').url, '/api/v1/users/me', 'url starting with `/`)');
@@ -451,11 +425,10 @@ test('options() namespace is set on the url (namespace starting with `/`)', func
 });
 
 test('options() namespace is set on the url (namespace not starting with `/`)', function(assert) {
-  class RequestWithHost extends AjaxRequest {
-    get namespace() {
-      return 'api/v1';
-    }
-  }
+  const RequestWithHost = AjaxRequest.extend({
+    namespace: 'api/v1'
+  });
+
   const service = new RequestWithHost();
 
   assert.equal(service.options('/users/me').url, '/api/v1/users/me', 'url starting with `/`)');
@@ -463,14 +436,11 @@ test('options() namespace is set on the url (namespace not starting with `/`)', 
 });
 
 test('options() both host and namespace are set on the url', function(assert) {
-  class RequestWithHost extends AjaxRequest {
-    get host() {
-      return 'https://discuss.emberjs.com';
-    }
-    get namespace() {
-      return '/api/v1';
-    }
-  }
+  const RequestWithHost = AjaxRequest.extend({
+    host: 'https://discuss.emberjs.com',
+    namespace: '/api/v1'
+  });
+
   const service = new RequestWithHost();
   const url = '/users/me';
   const ajaxoptions = service.options(url);
@@ -479,14 +449,13 @@ test('options() both host and namespace are set on the url', function(assert) {
 });
 
 test('it can get the full header list from class and request options', function(assert) {
-  class RequestWithHeaders extends AjaxRequest {
-    get headers() {
-      return {
-        'Content-Type': 'application/vnd.api+json',
-        'Other-Value': 'Some Value'
-      };
+  const RequestWithHeaders = AjaxRequest.extend({
+    headers: {
+      'Content-Type': 'application/vnd.api+json',
+      'Other-Value': 'Some Value'
     }
-  }
+  });
+
   const service = new RequestWithHeaders();
   const headers = { 'Third-Value': 'Other Thing' };
   assert.equal(Object.keys(service._getFullHeadersHash()).length, 2, 'Works without options');
@@ -574,10 +543,9 @@ test('it throws an error when the user tries to use `.get` to make a request', f
   assert.expect(3);
 
   const service = new AjaxRequest();
+  service.set('someProperty', 'foo');
 
-  assert.throws(function() {
-    service.get('someProperty');
-  }, 'Throws an error when using `.get` on the class with any property');
+  assert.equal(service.get('someProperty'), 'foo', 'Can get a property');
 
   assert.throws(function() {
     service.get('/users');
@@ -597,13 +565,12 @@ test('it JSON encodes JSON:API request data automatically', function(assert) {
     return jsonResponse();
   });
 
-  class RequestWithHeaders extends AjaxRequest {
-    get headers() {
-      return {
-        'Content-Type': 'application/vnd.api+json'
-      };
+  const RequestWithHeaders = AjaxRequest.extend({
+    headers: {
+      'Content-Type': 'application/vnd.api+json'
     }
-  }
+  });
+
   const service = new RequestWithHeaders();
   return service.post('/test', {
     data: {
@@ -621,13 +588,12 @@ test('it does not JSON encode query parameters when JSON:API headers are present
     return jsonResponse();
   });
 
-  class RequestWithHeaders extends AjaxRequest {
-    get headers() {
-      return {
-        'Content-Type': 'application/vnd.api+json'
-      };
+  const RequestWithHeaders = AjaxRequest.extend({
+    headers: {
+      'Content-Type': 'application/vnd.api+json'
     }
-  }
+  });
+
   const service = new RequestWithHeaders();
   return service.request('/test', {
     data: {
@@ -645,13 +611,12 @@ test('it JSON encodes JSON:API "extension" request data automatically', function
     return jsonResponse();
   });
 
-  class RequestWithHeaders extends AjaxRequest {
-    get headers() {
-      return {
-        'Content-Type': 'application/vnd.api+json; ext="ext1,ext2"'
-      };
+  const RequestWithHeaders = AjaxRequest.extend({
+    headers: {
+      'Content-Type': 'application/vnd.api+json; ext="ext1,ext2"'
     }
-  }
+  });
+
   const service = new RequestWithHeaders();
   return service.post('/test', {
     data: {
