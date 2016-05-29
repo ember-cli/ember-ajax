@@ -1,6 +1,6 @@
 {
   "name": "ember-ajax",
-  "version": "2.3.2",
+  "version": "2.4.0",
   "description": "Service for making AJAX requests in Ember 1.13+ applications.",
   "directories": {
     "doc": "doc",
