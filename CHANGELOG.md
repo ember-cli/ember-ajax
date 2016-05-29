@@ -1,3 +1,7 @@
+## 2.4.0
+
+- Move implementation to a Mixin (#107) @alexlafroscia
+
 ## 2.3.2
 
 - Fix memory leak in tests (#105) @alexlafroscia
