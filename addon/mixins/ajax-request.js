@@ -267,7 +267,7 @@ export default Mixin.create({
     }
 
     const host = options.host || get(this, 'host');
-    let namespace = get(this, 'namespace');
+    let namespace = options.namespace || get(this, 'namespace');
     if (namespace) {
       namespace = stripSlashes(namespace);
     }
