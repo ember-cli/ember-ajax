@@ -1,7 +1,7 @@
 /* global require, module, URL */
 import isFastBoot from './is-fastboot';
 
-const absoluteUrlRegex = /^(http|https)/;
+const completeUrlRegex = /^(http|https)/;
 
 /*
  * Isomorphic URL parsing
@@ -81,8 +81,8 @@ export class RequestURL {
     return this._url;
   }
 
-  get isAbsolute() {
-    return this.url.match(absoluteUrlRegex);
+  get isComplete() {
+    return this.url.match(completeUrlRegex);
   }
 
   set url(value) {

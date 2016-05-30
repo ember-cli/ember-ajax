@@ -624,3 +624,72 @@ test('it JSON encodes JSON:API "extension" request data automatically', function
     }
   });
 });
+
+test('it correctly creates the URL to request', function(assert) {
+  class NamespaceLeadingSlash extends AjaxRequest {
+    static get slashType() {
+      return 'leading slash';
+    }
+    get namespace() {
+      return '/bar';
+    }
+  }
+
+  class NamespaceTrailingSlash extends AjaxRequest {
+    static get slashType() {
+      return 'trailing slash';
+    }
+    get namespace() {
+      return 'bar/';
+    }
+  }
+
+  class NamespaceTwoSlash extends AjaxRequest {
+    static get slashType() {
+      return 'leading and trailing slash';
+    }
+    get namespace() {
+      return '/bar/';
+    }
+  }
+
+  class NamespaceNoSlash extends AjaxRequest {
+    static get slashType() {
+      return 'no slashes';
+    }
+    get namespace() {
+      return 'bar';
+    }
+  }
+
+  const hosts = [
+    { hostType: 'trailing slash', host: 'http://foo.com/' },
+    { hostType: 'no trailing slash', host: 'http://foo.com' }
+  ];
+
+  [NamespaceLeadingSlash, NamespaceTrailingSlash, NamespaceTwoSlash, NamespaceNoSlash].forEach((Klass) => {
+    let req = new Klass();
+
+    hosts.forEach((exampleHost) => {
+      const { hostType, host } = exampleHost;
+      ['/baz', 'baz'].forEach((segment) => {
+        assert.equal(
+          req._buildURL(segment, { host }),
+          'http://foo.com/bar/baz',
+          `Host with ${hostType}, Namespace with ${Klass.slashType}, segment: ${segment}`
+        );
+      });
+      ['/baz/', 'baz/'].forEach((segment) => {
+        assert.equal(
+          req._buildURL(segment, { host }),
+          'http://foo.com/bar/baz/',
+          `Host with ${hostType}, Namespace with ${Klass.slashType}, segment: ${segment}`
+        );
+      });
+    });
+  });
+
+  let req = new AjaxRequest();
+  assert.equal(req._buildURL('/baz', { host: 'http://foo.com' }), 'http://foo.com/baz', 'Builds URL correctly without namespace');
+  assert.equal(req._buildURL('/baz'), '/baz', 'Builds URL correctly without namespace or host');
+});
