@@ -1,3 +1,7 @@
+## 2.4.1
+
+- Prevent removing trailing slash in request URL (#96) @alexlafroscia
+
 ## 2.4.0
 
 - Move implementation to a Mixin (#107) @alexlafroscia
