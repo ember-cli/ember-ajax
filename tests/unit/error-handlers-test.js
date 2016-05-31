@@ -2,6 +2,7 @@ import Ember from 'ember';
 import { module, test } from 'qunit';
 import AjaxRequest from 'ember-ajax/ajax-request';
 import {
+  ConflictError,
   InvalidError,
   UnauthorizedError,
   ForbiddenError,
@@ -55,6 +56,7 @@ function errorHandlerTest(status, errorClass) {
 
 errorHandlerTest(401, UnauthorizedError);
 errorHandlerTest(403, ForbiddenError);
+errorHandlerTest(409, ConflictError);
 errorHandlerTest(422, InvalidError);
 errorHandlerTest(400, BadRequestError);
 errorHandlerTest(500, ServerError);
