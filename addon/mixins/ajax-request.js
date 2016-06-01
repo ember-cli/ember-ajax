@@ -8,6 +8,7 @@ import {
   NotFoundError,
   TimeoutError,
   AbortError,
+  ConflictError,
   ServerError,
   isAjaxError,
   isUnauthorizedError,
@@ -15,6 +16,8 @@ import {
   isInvalidError,
   isBadRequestError,
   isNotFoundError,
+  isConflictError,
+  isAbortError,
   isServerError,
   isSuccess
 } from '../errors';
@@ -346,6 +349,10 @@ export default Mixin.create({
       return new BadRequestError(errors);
     } else if (this.isNotFoundError(status, headers, payload)) {
       return new NotFoundError(errors);
+    } else if (this.isAbortError(status, headers, payload)) {
+      return new AbortError(errors);
+    } else if (this.isConflictError(status, headers, payload)) {
+      return new ConflictError(errors);
     } else if (this.isServerError(status, headers, payload)) {
       return new ServerError(errors);
     }
@@ -516,6 +523,34 @@ export default Mixin.create({
    */
   isNotFoundError(status) {
     return isNotFoundError(status);
+  },
+
+  /**
+   * Default `handleResponse` implementation uses this hook to decide if the
+   * response is an "abort" error.
+   * @method isAbortError
+   * @private
+   * @param {Number} status
+   * @param {Object} headers
+   * @param {Object} payload
+   * @return {Boolean}
+   */
+  isAbortError(status) {
+    return isAbortError(status);
+  },
+
+  /**
+   * Default `handleResponse` implementation uses this hook to decide if the
+   * response is a "conflict" error.
+   * @method isConflictError
+   * @private
+   * @param {Number} status
+   * @param {Object} headers
+   * @param {Object} payload
+   * @return {Boolean}
+   */
+  isConflictError(status) {
+    return isConflictError(status);
   },
 
   /**

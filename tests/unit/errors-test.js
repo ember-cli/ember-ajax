@@ -14,6 +14,7 @@ import {
   ServerError,
   TimeoutError,
   AbortError,
+  ConflictError,
   isAjaxError,
   isUnauthorizedError,
   isForbiddenError,
@@ -23,7 +24,8 @@ import {
   isServerError,
   isSuccess,
   isTimeoutError,
-  isAbortError
+  isAbortError,
+  isConflictError
 } from 'ember-ajax/errors';
 
 module('unit/errors-test - AjaxError');
@@ -80,6 +82,12 @@ test('AbortError', function(assert) {
   const error = new AbortError();
   assert.ok(error instanceof Error);
   assert.ok(error instanceof AbortError);
+});
+
+test('ConflictError', function(assert) {
+  const error = new ConflictError();
+  assert.ok(error instanceof Error);
+  assert.ok(error instanceof ConflictError);
 });
 
 test('isUnauthorizedError: detects error code correctly', function(assert) {
@@ -159,6 +167,10 @@ test('isTimeoutError: detects error class correctly', function(assert) {
 test('isAbortError: detects error class correctly', function(assert) {
   const error = new AbortError();
   assert.ok(isAbortError(error));
+});
+
+test('isConflictError: detects error code correctly', function(assert) {
+  assert.ok(isConflictError(409));
 });
 
 test('detects successful request correctly', function(assert) {

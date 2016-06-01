@@ -91,6 +91,16 @@ export function AbortError() {
 AbortError.prototype = Object.create(AjaxError.prototype);
 
 /**
+ * @class ConflictError
+ * @public
+ */
+export function ConflictError() {
+  AjaxError.call(this, null, 'The ajax operation failed due to a conflict');
+}
+
+ConflictError.prototype = Object.create(AjaxError.prototype);
+
+/**
  * @class ServerError
  * @public
  */
@@ -213,6 +223,22 @@ export function isTimeoutError(error) {
  */
 export function isAbortError(error) {
   return error instanceof AbortError;
+}
+
+/**
+ * Checks if the given status code or AjaxError object represents a
+ * conflict error
+ * @method isConflictError
+ * @public
+ * @param  {Number | AjaxError} error
+ * @return {Boolean}
+ */
+export function isConflictError(error) {
+  if (isAjaxError(error)) {
+    return error instanceof ConflictError;
+  } else {
+    return error === 409;
+  }
 }
 
 /**
