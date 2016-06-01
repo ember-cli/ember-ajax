@@ -424,6 +424,12 @@ test('options() namespace is set on the url (namespace starting with `/`)', func
   assert.equal(service.options('users/me').url, '/api/v1/users/me', 'url not starting with `/`)');
 });
 
+test('namespace can be set on a per-request basis', function(assert) {
+  const service = new AjaxRequest();
+
+  assert.equal(service.options('users/me', { namespace: 'api' }).url, '/api/users/me', 'url contains namespace');
+});
+
 test('options() namespace is set on the url (namespace not starting with `/`)', function(assert) {
   const RequestWithHost = AjaxRequest.extend({
     namespace: 'api/v1'
