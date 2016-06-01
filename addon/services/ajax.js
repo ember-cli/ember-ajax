@@ -8,7 +8,7 @@ const { Service } = Ember;
  *
  * Some APIs require HTTP headers, e.g. to provide an API key. Arbitrary
  * headers can be set as key/value pairs on the `RESTAdapter`'s `headers`
- * object and Ember Data will send them along with each ajax request.
+ * object and Ember AJAX will send them along with each ajax request.
  *
  * ```app/services/ajax
  * import AjaxService from 'ember-ajax/services/ajax';

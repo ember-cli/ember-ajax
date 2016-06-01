@@ -442,7 +442,7 @@ export default Mixin.create({
     const payloadDescription = `Payload (${payloadContentType})`;
 
     return [
-      `Ember Data Request ${requestDescription} returned a ${status}`,
+      `Ember AJAX Request ${requestDescription} returned a ${status}`,
       payloadDescription,
       shortenedPayload
     ].join('\n');
