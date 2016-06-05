@@ -257,6 +257,32 @@ export default Ember.Route.extend({
 
 If your errors aren't standard, the helper function for that error type can be used as the base to build your custom detection function.
 
+## Usage with Ember Data
+
+Ember AJAX provides a mixin that can be used in an Ember Data Adapter to avoid the networking code provided by Ember Data and rely on Ember AJAX instead. This serves as a first step toward true integration of Ember AJAX into Ember Data.
+
+To use the mixin, you can include the mixin into an Adapter, like so:
+
+```javascript
+// app/adapters/application.js
+import Ember from 'ember';
+import DS from 'ember-data';
+import AjaxServiceSupport from 'ember-ajax/mixins/ajax-support';
+
+const {
+  inject: { service }
+} = Ember;
+const { JSONAPIAdapter } = DS;
+
+export default JSONAPIAdapter.extend(AjaxServiceSupport, {
+  ajaxService: service('ajax'),
+  namespace: 'api'
+});
+```
+
+In the example, we import the mixin and include it in the `ApplicationAdapter` used by Ember Data. You could also include it in a model-specific adapter. By default, the `ajax` service is used, but you can also inject your own service subclass by overriding the `ajaxService` property. `namespace`, `host` and `headers` can be specified on either the service or adapter.
+
+Note that instead of using the Ember Data error checking code in your application, you should use the ones provided by Ember AJAX.
 
 ## Testing
 
