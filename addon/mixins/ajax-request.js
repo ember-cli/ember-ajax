@@ -76,6 +76,17 @@ if (testing) {
 
 export default Mixin.create({
 
+  /**
+   * The default value for the request `contentType`
+   *
+   * For now, defaults to the same value that jQuery would assign.  In the
+   * future, the default value will be for JSON requests.
+   * @property {string} contentType
+   * @public
+   * @default
+   */
+  contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+
   request(url, options) {
     const hash = this.options(url, options);
     return new Promise((resolve, reject) => {
@@ -237,6 +248,7 @@ export default Mixin.create({
     options.url = this._buildURL(url, options);
     options.type = options.type || 'GET';
     options.dataType = options.dataType || 'json';
+    options.contentType = options.contentType || get(this, 'contentType');
 
     if (this._shouldSendHeaders(options)) {
       options.headers = this._getFullHeadersHash(options.headers);
