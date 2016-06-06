@@ -387,21 +387,6 @@ export default Mixin.create({
     return fullUrl;
   },
 
-  _normalizePath(path) {
-    if (path) {
-      // make sure path starts with `/`
-      if (path.charAt(0) !== '/') {
-        path = `/${path}`;
-      }
-
-      // remove end `/`
-      if (path.charAt(path.length - 1) === '/') {
-        path = path.slice(0, -1);
-      }
-    }
-    return path;
-  },
-
   /**
    * Takes an ajax response, and returns the json payload or an error.
    *
