@@ -12,7 +12,7 @@ export default Mixin.create({
 
   host: alias('ajaxService.host'),
 
-  namespace: alias('ajaxService.host'),
+  namespace: alias('ajaxService.namespace'),
 
   headers: alias('ajaxService.headers'),
 
