@@ -148,6 +148,7 @@ test('options() sets raw data', function(assert) {
   const ajaxOptions = service.options(url, { type, data: { key: 'value' } });
 
   assert.deepEqual(ajaxOptions, {
+    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
     data: {
       key: 'value'
     },
@@ -189,11 +190,26 @@ test('options() empty data', function(assert) {
   const ajaxOptions = service.options(url, { type });
 
   assert.deepEqual(ajaxOptions, {
+    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
     dataType: 'json',
     headers: {},
     type: 'POST',
     url: '/test'
   });
+});
+
+test('can override the default `contentType` for the service', function(assert) {
+  const defaultContentType = 'application/json';
+
+  class AjaxServiceWithDefaultContentType extends AjaxRequest {
+    get contentType() {
+      return defaultContentType;
+    }
+  }
+
+  const service = new AjaxServiceWithDefaultContentType();
+  const options = service.options('');
+  assert.equal(options.contentType, defaultContentType);
 });
 
 test('options() type defaults to GET', function(assert) {
