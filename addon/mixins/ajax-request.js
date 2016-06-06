@@ -87,6 +87,83 @@ export default Mixin.create({
    */
   contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
 
+  /**
+   * Headers to include on the request
+   *
+   * Some APIs require HTTP headers, e.g. to provide an API key. Arbitrary
+   * headers can be set as key/value pairs on the `RESTAdapter`'s `headers`
+   * object and Ember Data will send them along with each ajax request.
+   *
+   * ```javascript
+   * // app/services/ajax.js
+   * import AjaxService from 'ember-ajax/services/ajax';
+   *
+   * export default AjaxService.extend({
+   *   headers: {
+   *     'API_KEY': 'secret key',
+   *     'ANOTHER_HEADER': 'Some header value'
+   *   }
+   * });
+   * ```
+   *
+   * `headers` can also be used as a computed property to support dynamic
+   * headers.
+   *
+   * ```javascript
+   * // app/services/ajax.js
+   * import Ember from 'ember';
+   * import AjaxService from 'ember-ajax/services/ajax';
+   *
+   * const {
+   *   computed,
+   *   get,
+   *   inject: { service }
+   * } = Ember;
+   *
+   * export default AjaxService.extend({
+   *   session: service(),
+   *   headers: computed('session.authToken', function() {
+   *     return {
+   *       'API_KEY': get(this, 'session.authToken'),
+   *       'ANOTHER_HEADER': 'Some header value'
+   *     };
+   *   })
+   * });
+   * ```
+   *
+   * In some cases, your dynamic headers may require data from some object
+   * outside of Ember's observer system (for example `document.cookie`). You
+   * can use the `volatile` function to set the property into a non-cached mode
+   * causing the headers to be recomputed with every request.
+   *
+   * ```javascript
+   * // app/services/ajax.js
+   * import Ember from 'ember';
+   * import AjaxService from 'ember-ajax/services/ajax';
+   *
+   * const {
+   *   computed,
+   *   get,
+   *   inject: { service }
+   * } = Ember;
+   *
+   * export default AjaxService.extend({
+   *   session: service(),
+   *   headers: computed('session.authToken', function() {
+   *     return {
+   *       'API_KEY': get(document.cookie.match(/apiKey\=([^;]*)/), '1'),
+   *       'ANOTHER_HEADER': 'Some header value'
+   *     };
+   *   }).volatile()
+   * });
+   * ```
+   *
+   * @property {object} headers
+   * @public
+   * @default
+   */
+  headers: {},
+
   request(url, options) {
     const hash = this.options(url, options);
     return new Promise((resolve, reject) => {
@@ -232,7 +309,7 @@ export default Mixin.create({
    * @return {Object}
    */
   _getFullHeadersHash(headers) {
-    const classHeaders = get(this, 'headers') || {};
+    const classHeaders = get(this, 'headers');
     const _headers = merge({}, classHeaders);
     return merge(_headers, headers);
   },
