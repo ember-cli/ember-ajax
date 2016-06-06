@@ -14,6 +14,7 @@ const url = getUrlModule();
 /**
  * Get the node url module or an anchor element
  *
+ * @function getUrlModule
  * @private
  * @return {Object|HTMLAnchorElement} Object to parse urls
  */
@@ -43,7 +44,9 @@ function getUrlModule() {
  *   search: query parameters
  *   hash: the URL hash
  *
+ * @function parseUrl
  * @private
+ * @param {string} str The string to parse
  * @return {Object} URL structure
  */
 function parseUrl(str) {

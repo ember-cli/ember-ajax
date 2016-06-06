@@ -22,6 +22,7 @@ AjaxError.prototype = Object.create(EmberError.prototype);
 /**
  * @class InvalidError
  * @public
+ * @extends AjaxError
  */
 export function InvalidError(errors) {
   AjaxError.call(this, errors, 'Request was rejected because it was invalid');
@@ -32,6 +33,7 @@ InvalidError.prototype = Object.create(AjaxError.prototype);
 /**
  * @class UnauthorizedError
  * @public
+ * @extends AjaxError
  */
 export function UnauthorizedError(errors) {
   AjaxError.call(this, errors, 'Ajax authorization failed');
@@ -42,6 +44,7 @@ UnauthorizedError.prototype = Object.create(AjaxError.prototype);
 /**
  * @class ForbiddenError
  * @public
+ * @extends AjaxError
  */
 export function ForbiddenError(errors) {
   AjaxError.call(this, errors,
@@ -53,6 +56,7 @@ ForbiddenError.prototype = Object.create(AjaxError.prototype);
 /**
  * @class BadRequestError
  * @public
+ * @extends AjaxError
  */
 export function BadRequestError(errors) {
   AjaxError.call(this, errors, 'Request was formatted incorrectly.');
@@ -63,6 +67,7 @@ BadRequestError.prototype = Object.create(AjaxError.prototype);
 /**
  * @class NotFoundError
  * @public
+ * @extends AjaxError
  */
 export function NotFoundError(errors) {
   AjaxError.call(this, errors, 'Resource was not found.');
@@ -73,6 +78,7 @@ NotFoundError.prototype = Object.create(AjaxError.prototype);
 /**
  * @class TimeoutError
  * @public
+ * @extends AjaxError
  */
 export function TimeoutError() {
   AjaxError.call(this, null, 'The ajax operation timed out');
@@ -83,6 +89,7 @@ TimeoutError.prototype = Object.create(AjaxError.prototype);
 /**
  * @class AbortError
  * @public
+ * @extends AjaxError
  */
 export function AbortError() {
   AjaxError.call(this, null, 'The ajax operation was aborted');
@@ -93,6 +100,7 @@ AbortError.prototype = Object.create(AjaxError.prototype);
 /**
  * @class ConflictError
  * @public
+ * @extends AjaxError
  */
 export function ConflictError() {
   AjaxError.call(this, null, 'The ajax operation failed due to a conflict');
@@ -103,6 +111,7 @@ ConflictError.prototype = Object.create(AjaxError.prototype);
 /**
  * @class ServerError
  * @public
+ * @extends AjaxError
  */
 export function ServerError(errors) {
   AjaxError.call(this, errors, 'Request was rejected due to server error');
@@ -112,6 +121,7 @@ ServerError.prototype = Object.create(AjaxError.prototype);
 
 /**
  * Checks if the given error is or inherits from AjaxError
+ *
  * @method isAjaxError
  * @public
  * @param  {Error} error
@@ -124,6 +134,7 @@ export function isAjaxError(error) {
 /**
  * Checks if the given status code or AjaxError object represents an
  * unauthorized request error
+ *
  * @method isUnauthorizedError
  * @public
  * @param  {Number | AjaxError} error
@@ -140,6 +151,7 @@ export function isUnauthorizedError(error) {
 /**
  * Checks if the given status code or AjaxError object represents a forbidden
  * request error
+ *
  * @method isForbiddenError
  * @public
  * @param  {Number | AjaxError} error
@@ -156,6 +168,7 @@ export function isForbiddenError(error) {
 /**
  * Checks if the given status code or AjaxError object represents an invalid
  * request error
+ *
  * @method isInvalidError
  * @public
  * @param  {Number | AjaxError} error
@@ -172,6 +185,7 @@ export function isInvalidError(error) {
 /**
  * Checks if the given status code or AjaxError object represents a bad request
  * error
+ *
  * @method isBadRequestError
  * @public
  * @param  {Number | AjaxError} error
@@ -188,6 +202,7 @@ export function isBadRequestError(error) {
 /**
  * Checks if the given status code or AjaxError object represents a
  * "not found" error
+ *
  * @method isNotFoundError
  * @public
  * @param  {Number | AjaxError} error
@@ -204,6 +219,7 @@ export function isNotFoundError(error) {
 /**
  * Checks if the given status code or AjaxError object represents a
  * "timeout" error
+ *
  * @method isTimeoutError
  * @public
  * @param  {AjaxError} error
@@ -216,6 +232,7 @@ export function isTimeoutError(error) {
 /**
  * Checks if the given status code or AjaxError object represents an
  * "abort" error
+ *
  * @method isAbortError
  * @public
  * @param  {AjaxError} error
@@ -228,6 +245,7 @@ export function isAbortError(error) {
 /**
  * Checks if the given status code or AjaxError object represents a
  * conflict error
+ *
  * @method isConflictError
  * @public
  * @param  {Number | AjaxError} error
@@ -243,6 +261,7 @@ export function isConflictError(error) {
 
 /**
  * Checks if the given status code or AjaxError object represents a server error
+ *
  * @method isServerError
  * @public
  * @param  {Number | AjaxError} error
@@ -258,6 +277,7 @@ export function isServerError(error) {
 
 /**
  * Checks if the given status code represents a successful request
+ *
  * @method isSuccess
  * @public
  * @param  {Number} status
