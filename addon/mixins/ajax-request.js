@@ -39,11 +39,27 @@ const {
 } = Ember;
 const JSONAPIContentType = 'application/vnd.api+json';
 
+// Header names are case-insensitive
+// https://www.w3.org/Protocols/rfc2616/rfc2616.html
+function retrieveHeader(headers, name) {
+  let found = null;
+  
+  Object.keys(headers).find((key) => {
+    let value = headers[key];
+    
+    if (value.toLowerCase() === name.toLowerCase()) {
+      found = value;
+    }
+  });
+  
+  return found;
+}
+
 function isJSONAPIContentType(header) {
   if (isNone(header)) {
     return false;
   }
-  return header.indexOf(JSONAPIContentType) === 0;
+  return header.toLowerCase().indexOf(JSONAPIContentType) === 0;
 }
 
 function startsWithSlash(string) {
@@ -107,7 +123,7 @@ export default Mixin.create({
       url: hash.url
     };
 
-    if (isJSONAPIContentType(hash.headers['Content-Type']) && requestData.type !== 'GET') {
+    if (isJSONAPIContentType(retrieveHeader(hash.headers, 'Content-Type')) && requestData.type !== 'GET') {
       if (typeof hash.data === 'object') {
         hash.data = JSON.stringify(hash.data);
       }
@@ -449,7 +465,7 @@ export default Mixin.create({
    */
   generateDetailedMessage(status, headers, payload, requestData) {
     let shortenedPayload;
-    const payloadContentType = headers['Content-Type'] || 'Empty Content-Type';
+    const payloadContentType = retrieveHeader(headers, 'Content-Type') || 'Empty Content-Type';
 
     if (payloadContentType === 'text/html' && payload.length > 250) {
       shortenedPayload = '[Omitted Lengthy HTML]';
