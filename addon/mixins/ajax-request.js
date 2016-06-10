@@ -44,7 +44,7 @@ const JSONAPIContentType = 'application/vnd.api+json';
 function retrieveHeader(headers, name) {
   let found = null;
   
-  Object.keys(headers).find((key) => {
+  Object.keys(headers).forEach((key) => {
     let value = headers[key];
     
     if (value.toLowerCase() === name.toLowerCase()) {
