@@ -40,9 +40,9 @@ test('clicking Load Data loads data', function(assert) {
 
   this.$(`.ajax-get button`).click();
 
-  return wait().then(function() {
-    assert.equal($('.ajax-get li:eq(0)').text(), 'Foo');
-    assert.equal($('.ajax-get li:eq(1)').text(), 'Bar');
-    assert.equal($('.ajax-get li:eq(2)').text(), 'Baz');
+  return wait().then(() => {
+    assert.equal(this.$('.ajax-get li:eq(0)').text(), 'Foo');
+    assert.equal(this.$('.ajax-get li:eq(1)').text(), 'Bar');
+    assert.equal(this.$('.ajax-get li:eq(2)').text(), 'Baz');
   });
 });

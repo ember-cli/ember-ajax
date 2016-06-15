@@ -116,15 +116,12 @@ test('waiting for promises to complete', function(assert) {
 
   server.get('/foo', json(200, { foo: 'bar' }), 300);
 
-  let component;
-
   this.register('component:async-widget', Ember.Component.extend({
     layout: hbs`{{yield foo}}`,
     ajax: inject.service(),
     foo: 'foo',
     click() {
       this.get('ajax').request('/foo').then(({ foo }) => {
-        component = this;
         this.set('foo', foo);
       });
     }

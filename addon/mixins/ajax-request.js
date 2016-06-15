@@ -122,7 +122,7 @@ export default Mixin.create({
           requestData
         );
 
-        pendingRequestCount--;
+        pendingRequestCount = pendingRequestCount - 1;
 
         if (isAjaxError(response)) {
           run.join(null, reject, { payload, textStatus, jqXHR, response });
@@ -150,12 +150,12 @@ export default Mixin.create({
           );
         }
 
-        pendingRequestCount--;
+        pendingRequestCount = pendingRequestCount - 1;
 
         run.join(null, reject, { payload, textStatus, jqXHR, errorThrown, response });
       };
 
-      pendingRequestCount++;
+      pendingRequestCount = pendingRequestCount + 1;
 
       ajax(hash);
     }, `ember-ajax: ${hash.type} ${hash.url}`);
@@ -600,13 +600,11 @@ export default Mixin.create({
    * @return {Object}
    */
   parseErrorResponse(responseText) {
-    let json = responseText;
-
     try {
-      json = $.parseJSON(responseText);
-    } catch (e) {}
-
-    return json;
+      return $.parseJSON(responseText);
+    } catch (e) {
+      return responseText;
+    }
   },
 
   /**
