@@ -24,15 +24,15 @@ test('waiting for a route with async widget', function(assert) {
 
   andThen(function() {
     assert.equal(currentURL(), '/');
-    assert.ok($('.ajax-get').length === 1, 'ajax-get component is rendered');
+    assert.ok(find('.ajax-get').length === 1, 'ajax-get component is rendered');
   });
 
   click('button:contains(Load Data)');
 
   andThen(function() {
-    assert.equal($('.ajax-get li:eq(0)').text(), 'Foo');
-    assert.equal($('.ajax-get li:eq(1)').text(), 'Bar');
-    assert.equal($('.ajax-get li:eq(2)').text(), 'Baz');
+    assert.equal(find('.ajax-get li:eq(0)').text(), 'Foo');
+    assert.equal(find('.ajax-get li:eq(1)').text(), 'Bar');
+    assert.equal(find('.ajax-get li:eq(2)').text(), 'Baz');
   });
 });
 
@@ -44,12 +44,12 @@ test(`Ajax failure doesn't bubble up to console.` , function(assert) {
 
   andThen(function() {
     assert.equal(currentURL(), '/');
-    assert.ok($('.ajax-get').length === 1, 'ajax-get component is rendered');
+    assert.ok(find('.ajax-get').length === 1, 'ajax-get component is rendered');
   });
 
   click('button:contains(Load Data)');
 
   andThen(function() {
-    assert.equal($('.ajax-get .error').text(), errorMessage);
+    assert.equal(find('.ajax-get .error').text(), errorMessage);
   });
 });

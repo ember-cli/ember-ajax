@@ -90,7 +90,9 @@ export class RequestURL {
 
     const explodedUrl = parseUrl(value);
     for (let prop in explodedUrl) {
-      this[prop] = explodedUrl[prop];
+      if ({}.hasOwnProperty.call(explodedUrl, prop)) {
+        this[prop] = explodedUrl[prop];
+      }
     }
 
     return this._url;
