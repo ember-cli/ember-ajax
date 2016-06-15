@@ -74,6 +74,12 @@ if (testing) {
   });
 }
 
+/**
+ * AjaxRequest Mixin
+ *
+ * @public
+ * @mixin
+ */
 export default Mixin.create({
 
   /**
@@ -87,6 +93,93 @@ export default Mixin.create({
    */
   contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
 
+  /**
+   * Headers to include on the request
+   *
+   * Some APIs require HTTP headers, e.g. to provide an API key. Arbitrary
+   * headers can be set as key/value pairs on the `RESTAdapter`'s `headers`
+   * object and Ember Data will send them along with each ajax request.
+   *
+   * ```javascript
+   * // app/services/ajax.js
+   * import AjaxService from 'ember-ajax/services/ajax';
+   *
+   * export default AjaxService.extend({
+   *   headers: {
+   *     'API_KEY': 'secret key',
+   *     'ANOTHER_HEADER': 'Some header value'
+   *   }
+   * });
+   * ```
+   *
+   * `headers` can also be used as a computed property to support dynamic
+   * headers.
+   *
+   * ```javascript
+   * // app/services/ajax.js
+   * import Ember from 'ember';
+   * import AjaxService from 'ember-ajax/services/ajax';
+   *
+   * const {
+   *   computed,
+   *   get,
+   *   inject: { service }
+   * } = Ember;
+   *
+   * export default AjaxService.extend({
+   *   session: service(),
+   *   headers: computed('session.authToken', function() {
+   *     return {
+   *       'API_KEY': get(this, 'session.authToken'),
+   *       'ANOTHER_HEADER': 'Some header value'
+   *     };
+   *   })
+   * });
+   * ```
+   *
+   * In some cases, your dynamic headers may require data from some object
+   * outside of Ember's observer system (for example `document.cookie`). You
+   * can use the `volatile` function to set the property into a non-cached mode
+   * causing the headers to be recomputed with every request.
+   *
+   * ```javascript
+   * // app/services/ajax.js
+   * import Ember from 'ember';
+   * import AjaxService from 'ember-ajax/services/ajax';
+   *
+   * const {
+   *   computed,
+   *   get,
+   *   inject: { service }
+   * } = Ember;
+   *
+   * export default AjaxService.extend({
+   *   session: service(),
+   *   headers: computed('session.authToken', function() {
+   *     return {
+   *       'API_KEY': get(document.cookie.match(/apiKey\=([^;]*)/), '1'),
+   *       'ANOTHER_HEADER': 'Some header value'
+   *     };
+   *   }).volatile()
+   * });
+   * ```
+   *
+   * @property {Object} headers
+   * @public
+   * @default
+   */
+  headers: {},
+
+  /**
+   * Make an AJAX request, ignoring the raw XHR object and dealing only with
+   * the response
+   *
+   * @method request
+   * @public
+   * @param {string} url The url to make a request to
+   * @param {Object} options The options for the request
+   * @return {Promise} The result of the request
+   */
   request(url, options) {
     const hash = this.options(url, options);
     return new Promise((resolve, reject) => {
@@ -100,6 +193,15 @@ export default Mixin.create({
     }, `ember-ajax: ${hash.type} ${hash.url} response`);
   },
 
+  /**
+   * Make an AJAX request, returning the raw XHR object along with the response
+   *
+   * @method raw
+   * @public
+   * @param {string} url The url to make a request to
+   * @param {Object} options The options for the request
+   * @return {Promise} The result of the request
+   */
   raw(url, options) {
     const hash = this.options(url, options);
     const requestData = {
@@ -163,7 +265,12 @@ export default Mixin.create({
 
   /**
    * calls `request()` but forces `options.type` to `POST`
+   *
+   * @method post
    * @public
+   * @param {string} url The url to make a request to
+   * @param {Object} options The options for the request
+   * @return {Promise} The result of the request
    */
   post(url, options) {
     return this.request(url, this._addTypeToOptionsFor(options, 'POST'));
@@ -171,7 +278,12 @@ export default Mixin.create({
 
   /**
    * calls `request()` but forces `options.type` to `PUT`
+   *
+   * @method put
    * @public
+   * @param {string} url The url to make a request to
+   * @param {Object} options The options for the request
+   * @return {Promise} The result of the request
    */
   put(url, options) {
     return this.request(url, this._addTypeToOptionsFor(options, 'PUT'));
@@ -179,7 +291,12 @@ export default Mixin.create({
 
   /**
    * calls `request()` but forces `options.type` to `PATCH`
+   *
+   * @method patch
    * @public
+   * @param {string} url The url to make a request to
+   * @param {Object} options The options for the request
+   * @return {Promise} The result of the request
    */
   patch(url, options) {
     return this.request(url, this._addTypeToOptionsFor(options, 'PATCH'));
@@ -187,7 +304,12 @@ export default Mixin.create({
 
   /**
    * calls `request()` but forces `options.type` to `DELETE`
+   *
+   * @method del
    * @public
+   * @param {string} url The url to make a request to
+   * @param {Object} options The options for the request
+   * @return {Promise} The result of the request
    */
   del(url, options) {
     return this.request(url, this._addTypeToOptionsFor(options, 'DELETE'));
@@ -195,8 +317,14 @@ export default Mixin.create({
 
   /**
    * calls `request()` but forces `options.type` to `DELETE`
-   * alias for `del()`
+   *
+   * Alias for `del()`
+   *
+   * @method delete
    * @public
+   * @param {string} url The url to make a request to
+   * @param {Object} options The options for the request
+   * @return {Promise} The result of the request
    */
   delete() {
     return this.del(...arguments);
@@ -218,7 +346,15 @@ export default Mixin.create({
     return this._super(...arguments);
   },
 
-  // forcibly manipulates the options hash to include the HTTP method on the type key
+  /**
+   * Manipulates the options hash to include the HTTP method on the type key
+   *
+   * @method _addTypeToOptionsFor
+   * @private
+   * @param {Object} options The original request options
+   * @param {string} method The method to enforce
+   * @return {Object} The new options, with the method set
+   */
   _addTypeToOptionsFor(options, method) {
     options = options || {};
     options.type = method;
@@ -226,13 +362,16 @@ export default Mixin.create({
   },
 
   /**
+   * Get the full "headers" hash, combining the service-defined headers with
+   * the ones provided for the request
+   *
    * @method _getFullHeadersHash
    * @private
    * @param {Object} headers
    * @return {Object}
    */
   _getFullHeadersHash(headers) {
-    const classHeaders = get(this, 'headers') || {};
+    const classHeaders = get(this, 'headers');
     const _headers = merge({}, classHeaders);
     return merge(_headers, headers);
   },
@@ -240,7 +379,7 @@ export default Mixin.create({
   /**
    * @method options
    * @private
-   * @param {String} url
+   * @param {string} url
    * @param {Object} options
    * @return {Object}
    */
@@ -269,8 +408,8 @@ export default Mixin.create({
    *
    * @private
    * @param {string} url the url, or url segment, to request
-   * @param {object} [options] the options for the request being made
-   * @param {object.host} [host] the host to use for this request
+   * @param {Object} [options={}] the options for the request being made
+   * @param {string} [options.host] the host to use for this request
    * @returns {string} the URL to make a request to
    */
   _buildURL(url, options = {}) {
@@ -308,21 +447,6 @@ export default Mixin.create({
     }
 
     return fullUrl;
-  },
-
-  _normalizePath(path) {
-    if (path) {
-      // make sure path starts with `/`
-      if (path.charAt(0) !== '/') {
-        path = `/${path}`;
-      }
-
-      // remove end `/`
-      if (path.charAt(path.length - 1) === '/') {
-        path = path.slice(0, -1);
-      }
-    }
-    return path;
   },
 
   /**
@@ -383,8 +507,8 @@ export default Mixin.create({
    *
    * @method matchHosts
    * @private
-   * @param {String} host the host you are sending too
-   * @param {RegExp | String} matcher a string or regex that you can match the host to.
+   * @param {string} host the host you are sending too
+   * @param {RegExp | string} matcher a string or regex that you can match the host to.
    * @returns {Boolean} if the host passed the matcher
    */
   _matchHosts(host, matcher) {
@@ -439,6 +563,7 @@ export default Mixin.create({
   /**
    * Generates a detailed ("friendly") error message, with plenty
    * of information for debugging (good luck!)
+   *
    * @method generateDetailedMessage
    * @private
    * @param  {Number} status
@@ -470,6 +595,7 @@ export default Mixin.create({
   /**
    * Default `handleResponse` implementation uses this hook to decide if the
    * response is a an authorized error.
+   *
    * @method isUnauthorizedError
    * @private
    * @param {Number} status
@@ -484,6 +610,7 @@ export default Mixin.create({
   /**
    * Default `handleResponse` implementation uses this hook to decide if the
    * response is a forbidden error.
+   *
    * @method isForbiddenError
    * @private
    * @param {Number} status
@@ -498,6 +625,7 @@ export default Mixin.create({
   /**
    * Default `handleResponse` implementation uses this hook to decide if the
    * response is a an invalid error.
+   *
    * @method isInvalidError
    * @private
    * @param {Number} status
@@ -512,6 +640,7 @@ export default Mixin.create({
   /**
    * Default `handleResponse` implementation uses this hook to decide if the
    * response is a bad request error.
+   *
    * @method isBadRequestError
    * @private
    * @param {Number} status
@@ -526,6 +655,7 @@ export default Mixin.create({
   /**
    * Default `handleResponse` implementation uses this hook to decide if the
    * response is a "not found" error.
+   *
    * @method isNotFoundError
    * @private
    * @param {Number} status
@@ -540,6 +670,7 @@ export default Mixin.create({
   /**
    * Default `handleResponse` implementation uses this hook to decide if the
    * response is an "abort" error.
+   *
    * @method isAbortError
    * @private
    * @param {Number} status
@@ -554,6 +685,7 @@ export default Mixin.create({
   /**
    * Default `handleResponse` implementation uses this hook to decide if the
    * response is a "conflict" error.
+   *
    * @method isConflictError
    * @private
    * @param {Number} status
@@ -568,6 +700,7 @@ export default Mixin.create({
   /**
    * Default `handleResponse` implementation uses this hook to decide if the
    * response is a server error.
+   *
    * @method isServerError
    * @private
    * @param {Number} status
@@ -582,6 +715,7 @@ export default Mixin.create({
   /**
    * Default `handleResponse` implementation uses this hook to decide if the
    * response is a success.
+   *
    * @method isSuccess
    * @private
    * @param {Number} status
@@ -596,7 +730,7 @@ export default Mixin.create({
   /**
    * @method parseErrorResponse
    * @private
-   * @param {String} responseText
+   * @param {string} responseText
    * @return {Object}
    */
   parseErrorResponse(responseText) {
