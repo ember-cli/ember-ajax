@@ -42,16 +42,13 @@ const JSONAPIContentType = 'application/vnd.api+json';
 // Header names are case-insensitive
 // https://www.w3.org/Protocols/rfc2616/rfc2616.html
 function retrieveHeader(headers, name) {
-  let found = null;
-  
+  var found = null;
   Object.keys(headers).forEach((key) => {
     let value = headers[key];
-    
     if (value.toLowerCase() === name.toLowerCase()) {
       found = value;
     }
   });
-  
   return found;
 }
 
