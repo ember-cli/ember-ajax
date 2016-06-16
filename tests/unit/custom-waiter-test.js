@@ -8,7 +8,6 @@ import Pretender from 'pretender';
 import { jsonResponse } from 'dummy/tests/helpers/json';
 import wait from 'ember-test-helpers/wait';
 
-let server;
 let requestMade = false;
 
 function handleRequest() {
@@ -18,13 +17,13 @@ function handleRequest() {
 
 describe('Custom waiter', function() {
   beforeEach(function() {
-    server = new Pretender();
+    this.server = new Pretender();
 
-    server.get('/test', handleRequest);
-    server.post('/test', handleRequest);
+    this.server.get('/test', handleRequest);
+    this.server.post('/test', handleRequest);
   });
   afterEach(function() {
-    server.shutdown();
+    this.server.shutdown();
     requestMade = false;
   });
 
@@ -49,7 +48,7 @@ describe('Custom waiter', function() {
   it('a JSONP request can be waited on', function() {
     let response;
 
-    server.get('/jsonp', function(req) {
+    this.server.get('/jsonp', function(req) {
       return [200, {}, `${req.queryParams.callback}({ "foo": "bar" })`];
     });
 

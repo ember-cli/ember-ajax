@@ -6,13 +6,12 @@ const { deepEqual, equal, ok } = assert;
 import Pretender from 'pretender';
 import raw from 'ember-ajax/raw';
 
-let api;
 describe('raw', function() {
   beforeEach(function() {
-    api = new Pretender();
+    this.api = new Pretender();
   });
   afterEach(function() {
-    api.shutdown();
+    this.api.shutdown();
   });
 
   it('raw() returns jqXHR', function() {
@@ -20,7 +19,7 @@ describe('raw', function() {
       { id: 10, src: 'http://media.giphy.com/media/UdqUo8xvEcvgA/giphy.gif' },
       { id: 42, src: 'http://media0.giphy.com/media/Ko2pyD26RdYRi/giphy.gif' }
     ];
-    api.get('/photos', function() {
+    this.api.get('/photos', function() {
       return [200, { 'Content-Type': 'application/json' }, JSON.stringify(photos)];
     });
     return raw('/photos')
@@ -32,7 +31,7 @@ describe('raw', function() {
   });
 
   it('raw() rejects promise when 404 is returned', function() {
-    api.get('/photos', function() {
+    this.api.get('/photos', function() {
       return [404, { 'Content-Type': 'application/json' }];
     });
 

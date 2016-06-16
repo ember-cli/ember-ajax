@@ -7,13 +7,12 @@ import { isNotFoundError } from 'ember-ajax/errors';
 import Pretender from 'pretender';
 import request from 'ember-ajax/request';
 
-let server;
 describe('request', function() {
   beforeEach(function() {
-    server = new Pretender();
+    this.server = new Pretender();
   });
   afterEach(function() {
-    server.shutdown();
+    this.server.shutdown();
   });
 
   it('request() produces data', function() {
@@ -21,7 +20,7 @@ describe('request', function() {
       { id: 10, src: 'http://media.giphy.com/media/UdqUo8xvEcvgA/giphy.gif' },
       { id: 42, src: 'http://media0.giphy.com/media/Ko2pyD26RdYRi/giphy.gif' }
     ];
-    server.get('/photos', function() {
+    this.server.get('/photos', function() {
       return [200, { 'Content-Type': 'application/json' }, JSON.stringify(photos)];
     });
     return request('/photos').then(function(data) {
@@ -30,7 +29,7 @@ describe('request', function() {
   });
 
   it('request() rejects promise when 404 is returned', function() {
-    server.get('/photos', function() {
+    this.server.get('/photos', function() {
       return [404, { 'Content-Type': 'application/json' }];
     });
 

@@ -14,18 +14,17 @@ import { jsonResponse } from 'dummy/tests/helpers/json';
 
 const { A } = Ember;
 
-let server;
 describe('AjaxRequest', function() {
   beforeEach(function() {
-    server = new Pretender();
+    this.server = new Pretender();
   });
 
   afterEach(function() {
-    server.shutdown();
+    this.server.shutdown();
   });
 
   it('headers are set if the URL matches the host', function() {
-    server.get('http://example.com/test', (req) => {
+    this.server.get('http://example.com/test', (req) => {
       const { requestHeaders } = req;
       equal(requestHeaders['Content-Type'], 'application/json');
       equal(requestHeaders['Other-key'], 'Other Value');
@@ -42,7 +41,7 @@ describe('AjaxRequest', function() {
   });
 
   it('headers are set if the URL is relative', function() {
-    server.get('/some/relative/url', (req) => {
+    this.server.get('/some/relative/url', (req) => {
       const { requestHeaders } = req;
       equal(requestHeaders['Content-Type'], 'application/json');
       equal(requestHeaders['Other-key'], 'Other Value');
@@ -58,7 +57,7 @@ describe('AjaxRequest', function() {
   });
 
   it('headers are set if the URL matches one of the RegExp trustedHosts', function() {
-    server.get('http://my.example.com', (req) => {
+    this.server.get('http://my.example.com', (req) => {
       const { requestHeaders } = req;
       equal(requestHeaders['Other-key'], 'Other Value');
       return jsonResponse();
@@ -79,7 +78,7 @@ describe('AjaxRequest', function() {
   });
 
   it('headers are set if the URL matches one of the string trustedHosts', function() {
-    server.get('http://foo.bar.com', (req) => {
+    this.server.get('http://foo.bar.com', (req) => {
       const { requestHeaders } = req;
       equal(requestHeaders['Other-key'], 'Other Value');
       return jsonResponse();
@@ -100,7 +99,7 @@ describe('AjaxRequest', function() {
   });
 
   it('headers are not set if the URL does not match the host', function() {
-    server.get('http://example.com', (req) => {
+    this.server.get('http://example.com', (req) => {
       const { requestHeaders } = req;
       notEqual(requestHeaders['Other-key'], 'Other Value');
       return jsonResponse();
@@ -116,7 +115,7 @@ describe('AjaxRequest', function() {
   });
 
   it('headers can be supplied on a per-request basis', function() {
-    server.get('http://example.com', (req) => {
+    this.server.get('http://example.com', (req) => {
       const { requestHeaders } = req;
       equal(requestHeaders['Per-Request-Key'], 'Some value', 'Request had per-request header');
       equal(requestHeaders['Other-key'], 'Other Value', 'Request had default header');
@@ -226,8 +225,8 @@ describe('AjaxRequest', function() {
     };
     const serverResponse = [200, { 'Content-Type': 'application/json' }, JSON.stringify(data.data)];
 
-    server.get(url, () => serverResponse);
-    server.post(url, () => serverResponse);
+    this.server.get(url, () => serverResponse);
+    this.server.post(url, () => serverResponse);
 
     const getPromise = service.request(url);
     equal(getPromise._label, 'ember-ajax: GET /posts response');
@@ -248,7 +247,7 @@ describe('AjaxRequest', function() {
     };
     const serverResponse = [200, { 'Content-Type': 'application/json' }, JSON.stringify(options.data)];
 
-    server.post(url, () => serverResponse);
+    this.server.post(url, () => serverResponse);
 
     const postPromise = service.post(url, options);
     equal(postPromise._label, 'ember-ajax: POST /posts response');
@@ -272,7 +271,7 @@ describe('AjaxRequest', function() {
 
     const serverResponse = [200, { 'Content-Type': 'application/json' }, JSON.stringify(options.data)];
 
-    server.put(url, () => serverResponse);
+    this.server.put(url, () => serverResponse);
 
     const putPromise = service.put(url, options);
     equal(putPromise._label, 'ember-ajax: PUT /posts/1 response');
@@ -294,7 +293,7 @@ describe('AjaxRequest', function() {
 
     const serverResponse = [200, { 'Content-Type': 'application/json' }, JSON.stringify(options.data)];
 
-    server.patch(url, () => serverResponse);
+    this.server.patch(url, () => serverResponse);
 
     const patchPromise = service.patch(url, options);
     equal(patchPromise._label, 'ember-ajax: PATCH /posts/1 response');
@@ -309,7 +308,7 @@ describe('AjaxRequest', function() {
     const url = '/posts/1';
     const serverResponse = [200, { 'Content-Type': 'application/json' }, JSON.stringify({})];
 
-    server.delete(url, () => serverResponse);
+    this.server.delete(url, () => serverResponse);
 
     const delPromise = service.del(url);
     equal(delPromise._label, 'ember-ajax: DELETE /posts/1 response');
@@ -324,7 +323,7 @@ describe('AjaxRequest', function() {
     const url = '/posts/1';
     const serverResponse = [200, { 'Content-Type': 'application/json' }, JSON.stringify({})];
 
-    server.delete(url, () => serverResponse);
+    this.server.delete(url, () => serverResponse);
 
     const deletePromise = service.delete(url);
     equal(deletePromise._label, 'ember-ajax: DELETE /posts/1 response');
@@ -339,12 +338,12 @@ describe('AjaxRequest', function() {
     const url = '/posts/1';
     const serverResponse = [200, { 'Content-Type': 'application/json' }, JSON.stringify({})];
 
-    server.get(url, () => {
+    this.server.get(url, () => {
       ok(false, 'Made a GET request');
       return serverResponse;
     });
 
-    server.post(url, () => {
+    this.server.post(url, () => {
       ok(true, 'Made a POST request');
       return serverResponse;
     });
@@ -484,7 +483,7 @@ describe('AjaxRequest', function() {
     const response = [408, { 'Content-Type': 'application/json' }, JSON.stringify(
       { errors: [ 'Some error response' ] }
     )];
-    server.get('/posts', () => response);
+    this.server.get('/posts', () => response);
 
     const service = new AjaxRequest();
     return service.request('/posts')
@@ -500,7 +499,7 @@ describe('AjaxRequest', function() {
 
   it('it creates a detailed error message for unmatched server errors with a text payload', function() {
     const response = [408, { 'Content-Type': 'text/html' }, 'Some error response'];
-    server.get('/posts', () => response);
+    this.server.get('/posts', () => response);
 
     const service = new AjaxRequest();
     return service.request('/posts')
@@ -516,7 +515,7 @@ describe('AjaxRequest', function() {
 
   it('it always returns error objects with status codes as strings', function() {
     const response = [404, { 'Content-Type': 'application/json' }, ''];
-    server.get('/posts', () => response);
+    this.server.get('/posts', () => response);
 
     const service = new AjaxRequest();
     return service.request('/posts')
@@ -535,7 +534,7 @@ describe('AjaxRequest', function() {
       ]
     };
     const response = [403, { 'Content-Type': 'application/json' }, JSON.stringify(body)];
-    server.get('/posts', () => response);
+    this.server.get('/posts', () => response);
 
     const service = new AjaxRequest();
     return service.request('/posts')
@@ -564,7 +563,7 @@ describe('AjaxRequest', function() {
   });
 
   it('it JSON encodes JSON:API request data automatically', function() {
-    server.post('/test', ({ requestBody }) => {
+    this.server.post('/test', ({ requestBody }) => {
       const { foo } = JSON.parse(requestBody);
       equal(foo, 'bar', 'Recieved JSON-encoded data');
       return jsonResponse();
@@ -585,7 +584,7 @@ describe('AjaxRequest', function() {
   });
 
   it('it does not JSON encode query parameters when JSON:API headers are present', function() {
-    server.get('/test', ({ queryParams }) => {
+    this.server.get('/test', ({ queryParams }) => {
       const { foo } = queryParams;
       equal(foo, 'bar', 'Correctly received query param');
       return jsonResponse();
@@ -606,7 +605,7 @@ describe('AjaxRequest', function() {
   });
 
   it('it JSON encodes JSON:API "extension" request data automatically', function() {
-    server.post('/test', ({ requestBody }) => {
+    this.server.post('/test', ({ requestBody }) => {
       const { foo } = JSON.parse(requestBody);
       equal(foo, 'bar', 'Recieved JSON-encoded data');
       return jsonResponse();

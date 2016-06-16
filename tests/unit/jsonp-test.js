@@ -6,17 +6,16 @@ const { deepEqual } = assert;
 import AjaxRequest from 'ember-ajax/ajax-request';
 import Pretender from 'pretender';
 
-let server;
 describe('JSONP Requests', function() {
   beforeEach(function() {
-    server = new Pretender();
+    this.server = new Pretender();
   });
   afterEach(function() {
-    server.shutdown();
+    this.server.shutdown();
   });
 
   it('it should make JSONP requests', function() {
-    server.get('/jsonp', function(req) {
+    this.server.get('/jsonp', function(req) {
       return [200, {}, `${req.queryParams.callback}({ "foo": "bar" })`];
     });
 
