@@ -7,6 +7,8 @@ import AjaxRequest from 'ember-ajax/ajax-request';
 import Pretender from 'pretender';
 import { jsonResponse } from 'dummy/tests/helpers/json';
 
+const { A } = Ember;
+
 let server;
 module('AjaxRequest', {
   beforeEach() {
@@ -65,7 +67,7 @@ test('headers are set if the URL matches one of the RegExp trustedHosts', functi
 
   const RequestWithHeaders = AjaxRequest.extend({
     host: 'some-other-host.com',
-    trustedHosts: Ember.A([
+    trustedHosts: A([
       4,
       'notmy.example.com',
       /example\./
@@ -88,7 +90,7 @@ test('headers are set if the URL matches one of the string trustedHosts', functi
 
   const RequestWithHeaders = AjaxRequest.extend({
     host: 'some-other-host.com',
-    trustedHosts: Ember.A([
+    trustedHosts: A([
       'notmy.example.com',
       /example\./,
       'foo.bar.com'

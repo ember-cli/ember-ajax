@@ -1,8 +1,13 @@
 import Ember from 'ember';
 
-export default Ember.Component.extend({
+const {
+  Component,
+  inject: { service }
+} = Ember;
+
+export default Component.extend({
   classNames: 'ajax-get',
-  ajax: Ember.inject.service(),
+  ajax: service(),
   actions: {
     load() {
       let url = this.get('url');
@@ -13,7 +18,9 @@ export default Ember.Component.extend({
             isLoaded: true
           });
         })
-        .catch((error) => this.set('errors', error.errors));
+        .catch((error) => {
+          this.set('errors', error.errors);
+        });
     }
   }
 });
