@@ -1,12 +1,13 @@
-import {
-  module,
-  test
-} from 'qunit';
+import { describe, it } from 'mocha';
+import { assert } from 'chai';
+
 import ajax from 'ember-ajax';
 import request from 'ember-ajax/request';
 
-module('export');
+const { equal } = assert;
 
-test('ember-ajax exports request function', function(assert) {
-  assert.equal(ajax, request);
+describe('export', function() {
+  it('ember-ajax exports request function', function() {
+    equal(ajax, request);
+  });
 });
