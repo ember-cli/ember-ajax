@@ -647,6 +647,70 @@ test('it JSON encodes JSON:API "extension" request data automatically', function
   });
 });
 
+test('it normalizes errors into the appropriate format', function(assert) {
+  const service = new AjaxRequest();
+
+  const jsonApiError = service.normalizeErrorResponse(400, {}, {
+    errors: [
+      { status: 400, title: 'Foo' },
+      { status: 400, title: 'Foo' }
+    ]
+  });
+  assert.deepEqual(jsonApiError, [
+      { status: '400', title: 'Foo' },
+      { status: '400', title: 'Foo' }
+  ], 'Normalizes an error in the JSON API format');
+
+  const payloadWithErrorStrings = service.normalizeErrorResponse(400, {}, {
+    errors: [
+      'This is an error',
+      'This is another error'
+    ]
+  });
+  assert.deepEqual(payloadWithErrorStrings, [
+    { status: '400', title: 'This is an error' },
+    { status: '400', title: 'This is another error' }
+  ], 'Normalizes error payload with strings in errors property');
+
+  const payloadArrayOfObjects = service.normalizeErrorResponse(400, {}, [
+    { status: 400, title: 'Foo' },
+    { status: 400, title: 'Bar' }
+  ]);
+  assert.deepEqual(payloadArrayOfObjects, [
+    { status: '400', title: 'Foo', meta: { status: 400, title: 'Foo' } },
+    { status: '400', title: 'Bar', meta: { status: 400, title: 'Bar' } }
+  ], 'Normalizes error array of objects');
+
+  const payloadArrayOfStrings = service.normalizeErrorResponse(400, {}, [
+    'Foo', 'Bar'
+  ]);
+  assert.deepEqual(payloadArrayOfStrings, [
+    { status: '400', title: 'Foo' },
+    { status: '400', title: 'Bar' }
+  ], 'Normalizes error array of strings');
+
+  const payloadIsString = service.normalizeErrorResponse(400, {}, 'Foo');
+  assert.deepEqual(payloadIsString, [
+    {
+      status: '400',
+      title: 'Foo'
+    }
+  ], 'Normalizes error string');
+
+  const payloadIsObject = service.normalizeErrorResponse(400, {}, {
+    title: 'Foo'
+  });
+  assert.deepEqual(payloadIsObject, [
+    {
+      status: '400',
+      title: 'Foo',
+      meta: {
+        title: 'Foo'
+      }
+    }
+  ], 'Normalizes error object');
+});
+
 test('it correctly creates the URL to request', function(assert) {
   class NamespaceLeadingSlash extends AjaxRequest {
     static get slashType() {
