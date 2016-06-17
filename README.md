@@ -265,22 +265,13 @@ To use the mixin, you can include the mixin into an Adapter, like so:
 
 ```javascript
 // app/adapters/application.js
-import Ember from 'ember';
 import DS from 'ember-data';
 import AjaxServiceSupport from 'ember-ajax/mixins/ajax-support';
 
-const {
-  inject: { service }
-} = Ember;
-const { JSONAPIAdapter } = DS;
-
-export default JSONAPIAdapter.extend(AjaxServiceSupport, {
-  ajaxService: service('ajax'),
-  namespace: 'api'
-});
+export default DS.JSONAPIAdapter.extend(AjaxServiceSupport);
 ```
 
-In the example, we import the mixin and include it in the `ApplicationAdapter` used by Ember Data. You could also include it in a model-specific adapter. By default, the `ajax` service is used, but you can also inject your own service subclass by overriding the `ajaxService` property. `namespace`, `host` and `headers` can be specified on either the service or adapter.
+That's all the configuration required!  If you want to customize the adapter, such as using an alternative AJAX service (like one you extended yourself), hooks to do so are provided; check out the mixin's implementation for details.
 
 Note that instead of using the Ember Data error checking code in your application, you should use the ones provided by Ember AJAX.
 
