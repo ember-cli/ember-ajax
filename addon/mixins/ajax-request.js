@@ -504,7 +504,7 @@ export default Mixin.create({
    * @return {Object | AjaxError} response
    */
   handleResponse(status, headers, payload, requestData) {
-    payload = payload || {};
+    payload = (payload === null || payload === undefined) ? {} : payload;
     const errors = this.normalizeErrorResponse(status, headers, payload);
 
     if (this.isSuccess(status, headers, payload)) {
