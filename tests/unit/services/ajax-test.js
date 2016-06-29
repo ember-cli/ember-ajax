@@ -4,7 +4,7 @@ import { module, test } from 'qunit';
 import Pretender from 'pretender';
 import { jsonResponse } from 'dummy/tests/helpers/json';
 
-const { computed } = Ember;
+const { computed, run } = Ember;
 
 let service, server;
 module('service:ajax', {
@@ -12,7 +12,7 @@ module('service:ajax', {
     server = new Pretender();
   },
   afterEach() {
-    Ember.run(service, 'destroy');
+    run(service, 'destroy');
     server.shutdown();
   }
 });

@@ -97,7 +97,7 @@ test('error thrown in service can be caught with assert.throws', function(assert
     }
   }));
 
-  this.register('component:async-widget', Ember.Component.extend({
+  this.register('component:async-widget', Component.extend({
     ajax: inject.service(),
     click() {
       this.get('ajax').customPOST(this.get('url'));
@@ -116,7 +116,7 @@ test('waiting for promises to complete', function(assert) {
 
   server.get('/foo', json(200, { foo: 'bar' }), 300);
 
-  this.register('component:async-widget', Ember.Component.extend({
+  this.register('component:async-widget', Component.extend({
     layout: hbs`{{yield foo}}`,
     ajax: inject.service(),
     foo: 'foo',
