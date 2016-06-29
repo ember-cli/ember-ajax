@@ -1,8 +1,10 @@
 import Ember from 'ember';
 
-export default Ember.Component.extend({
+const { Component, inject } = Ember;
+
+export default Component.extend({
   classNames: 'ajax-get',
-  ajax: Ember.inject.service(),
+  ajax: inject.service(),
   actions: {
     load() {
       let url = this.get('url');

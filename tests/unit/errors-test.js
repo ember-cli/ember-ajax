@@ -28,12 +28,14 @@ import {
   isConflictError
 } from 'ember-ajax/errors';
 
+const { Error: EmberError } = Ember;
+
 module('unit/errors-test - AjaxError');
 
 test('AjaxError', function(assert) {
   const error = new AjaxError();
   assert.ok(error instanceof Error);
-  assert.ok(error instanceof Ember.Error);
+  assert.ok(error instanceof EmberError);
 });
 
 test('InvalidError', function(assert) {

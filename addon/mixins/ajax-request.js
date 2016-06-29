@@ -27,16 +27,18 @@ import ajax from '../utils/ajax';
 
 const {
   $,
+  A,
   Error: EmberError,
+  Logger,
   Mixin,
   RSVP: { Promise },
+  Test,
   get,
   isArray,
   isNone,
   merge,
   run,
   runInDebug,
-  Test,
   testing,
   warn
 } = Ember;
@@ -536,7 +538,7 @@ export default Mixin.create({
     } else if (typeof matcher === 'string') {
       return matcher === host;
     } else {
-      Ember.Logger.warn('trustedHosts only handles strings or regexes.', matcher, 'is neither.');
+      Logger.warn('trustedHosts only handles strings or regexes.', matcher, 'is neither.');
       return false;
     }
   },
@@ -565,7 +567,7 @@ export default Mixin.create({
     host = host || get(this, 'host') || '';
 
     const urlObject = new RequestURL(url);
-    const trustedHosts = get(this, 'trustedHosts') || Ember.A();
+    const trustedHosts = get(this, 'trustedHosts') || A();
 
     // Add headers on relative URLs
     if (!urlObject.isComplete) {
