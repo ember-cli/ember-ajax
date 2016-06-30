@@ -32,13 +32,15 @@ const {
   Logger,
   Mixin,
   RSVP: { Promise },
+  Test,
   get,
   isArray,
   isNone,
   merge,
   run,
-  Test,
-  testing
+  runInDebug,
+  testing,
+  warn
 } = Ember;
 const JSONAPIContentType = 'application/vnd.api+json';
 
@@ -68,6 +70,14 @@ function stripSlashes(path) {
     path = path.slice(0, -1);
   }
   return path;
+}
+
+function isObject(object) {
+  return typeof object === 'object';
+}
+
+function isString(object) {
+  return typeof object === 'string';
 }
 
 let pendingRequestCount = 0;
@@ -237,6 +247,14 @@ export default Mixin.create({
       };
 
       hash.error = (jqXHR, textStatus, errorThrown) => {
+        runInDebug(function() {
+          let message = `The server returned an empty string for ${requestData.type} ${url}, which cannot be parsed into a valid JSON. Return either null or {}.`;
+          let validJSONString = !(textStatus === 'parsererror' && jqXHR.responseText === '');
+          warn(message, validJSONString, {
+            id: 'ds.adapter.returned-empty-string-as-JSON'
+          });
+        });
+
         const payload = this.parseErrorResponse(jqXHR.responseText) || errorThrown;
         let response;
 
@@ -745,36 +763,86 @@ export default Mixin.create({
   },
 
   /**
+   * Normalize the error from the server into the same format
+   *
+   * The format we normalize to is based on the JSON API specification.  The
+   * return value should be an array of objects that match the format they
+   * describe. More details about the object format can be found
+   * [here](http://jsonapi.org/format/#error-objects)
+   *
+   * The basics of the format are as follows:
+   *
+   * ```javascript
+   * [
+   *   {
+   *     status: 'The status code for the error',
+   *     title: 'The human-readable title of the error'
+   *     detail: 'The human-readable details of the error'
+   *   }
+   * ]
+   * ```
+   *
+   * In cases where the server returns an array, then there should be one item
+   * in the array for each of the payload.  If your server returns a JSON API
+   * formatted payload already, it will just be returned directly.
+   *
+   * If your server returns something other than a JSON API format, it's
+   * suggested that you override this method to convert your own errors into the
+   * one described above.
+   *
    * @method normalizeErrorResponse
    * @private
    * @param  {Number} status
    * @param  {Object} headers
    * @param  {Object} payload
-   * @return {Array} errors payload
+   * @return {Array} An array of JSON API-formatted error objects
    */
   normalizeErrorResponse(status, headers, payload) {
-    if (payload && typeof payload === 'object' && payload.errors) {
-      if (!isArray(payload.errors)) {
-        return payload.errors;
-      }
-
+    if (isArray(payload.errors)) {
       return payload.errors.map(function(error) {
-        let ret = merge({}, error);
-
-        if (typeof ret.status === 'number') {
-          ret.status = `${ret.status}`;
+        if (isObject(error)) {
+          let ret = merge({}, error);
+          ret.status = `${error.status}`;
+          return ret;
+        } else {
+          return {
+            status: `${status}`,
+            title: error
+          };
         }
-
-        return ret;
+      });
+    } else if (isArray(payload)) {
+      return payload.map(function(error) {
+        if (isObject(error)) {
+          return {
+            status: `${status}`,
+            title: error.title || 'The backend responded with an error',
+            meta: error
+          };
+        } else {
+          return {
+            status: `${status}`,
+            title: `${error}`
+          };
+        }
       });
     } else {
-      return [
-        {
-          status: `${status}`,
-          title: 'The backend responded with an error',
-          detail: payload
-        }
-      ];
+      if (isString(payload)) {
+        return [
+          {
+            status: `${status}`,
+            title: payload
+          }
+        ];
+      } else {
+        return [
+          {
+            status: `${status}`,
+            title: payload.title || 'The backend responded with an error',
+            meta: payload
+          }
+        ];
+      }
     }
   }
 });
