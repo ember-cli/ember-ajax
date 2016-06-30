@@ -2,14 +2,14 @@
 
 install:
   - npm install phantomjs-prebuilt
+  - npm install mocha-appveyor-reporter
   - npm install -g bower
   - npm install
   - bower install
 
 cache:
-  - 'bower_components'
-  - 'node_modules'
-  - 'APPDATA%\npm-cache'
+  - '%APPDATA%\npm-cache'
+  - '%APPDATA%\Roaming\bower'
 
 test_script:
   - cmd: npm test
