@@ -478,8 +478,6 @@ describe('AjaxRequest', function() {
   });
 
   it('it creates a detailed error message for unmatched server errors with an AJAX payload', function() {
-    expect(3);
-
     const response = [408, { 'Content-Type': 'application/json' }, JSON.stringify(
       { errors: [ 'Some error response' ] }
     )];

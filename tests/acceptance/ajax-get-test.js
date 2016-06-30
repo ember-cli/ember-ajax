@@ -1,5 +1,5 @@
 import { describe, beforeEach, afterEach, it } from 'mocha';
-import { assert } from 'chai';
+import { assert, expect } from 'chai';
 
 import destroyApp from 'dummy/tests/helpers/destroy-app';
 import startApp from 'dummy/tests/helpers/start-app';
