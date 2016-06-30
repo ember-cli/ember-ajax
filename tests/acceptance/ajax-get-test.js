@@ -1,55 +1,64 @@
-import { test } from 'qunit';
-import moduleForAcceptance from 'dummy/tests/helpers/module-for-acceptance';
+import { describe, beforeEach, afterEach, it } from 'mocha';
+import { assert, expect } from 'chai';
+
+import destroyApp from 'dummy/tests/helpers/destroy-app';
+import startApp from 'dummy/tests/helpers/start-app';
 
 import Pretender from 'pretender';
 import { jsonFactory as json } from 'dummy/tests/helpers/json';
 
-let server;
+const { equal, ok } = assert;
 
-moduleForAcceptance('ajax-get component', {
-  beforeEach() {
+let server, application;
+
+describe('Acceptance | ajax-get component', function() {
+  beforeEach(function() {
     server = new Pretender();
-  },
-  afterEach() {
+    application = startApp();
+  });
+
+  afterEach(function() {
     server.shutdown();
-  }
+    destroyApp(application);
+  });
+
+  it('waiting for a route with async widget', function() {
+    const PAYLOAD = [{ title: 'Foo' }, { title: 'Bar' }, { title: 'Baz' }];
+
+    server.get('/posts', json(200, PAYLOAD), 300);
+
+    visit('/');
+
+    andThen(function() {
+      equal(currentURL(), '/');
+      ok(find('.ajax-get').length === 1);
+    });
+
+    click('button:contains(Load Data)');
+
+    andThen(function() {
+      equal(find('.ajax-get li:eq(0)').text(), 'Foo');
+      equal(find('.ajax-get li:eq(1)').text(), 'Bar');
+      equal(find('.ajax-get li:eq(2)').text(), 'Baz');
+    });
+  });
+
+  it(`Ajax failure doesn't bubble up to console.` , function() {
+    const errorMessage = 'Not Found';
+    server.get('/posts', json(404, errorMessage), 300);
+
+    visit('/');
+
+    andThen(function() {
+      expect(currentURL()).to.equal('/');
+      expect(find('.ajax-get').length === 1).to.be.ok;
+    });
+
+    click('button:contains(Load Data)');
+
+    andThen(function() {
+      expect(find('.ajax-get .error').text()).to.equal(errorMessage);
+    });
+  });
 });
 
-test('waiting for a route with async widget', function(assert) {
-  const PAYLOAD = [{ title: 'Foo' }, { title: 'Bar' }, { title: 'Baz' }];
-
-  server.get('/posts', json(200, PAYLOAD), 300);
-
-  visit('/');
-
-  andThen(function() {
-    assert.equal(currentURL(), '/');
-    assert.ok(find('.ajax-get').length === 1, 'ajax-get component is rendered');
-  });
-
-  click('button:contains(Load Data)');
-
-  andThen(function() {
-    assert.equal(find('.ajax-get li:eq(0)').text(), 'Foo');
-    assert.equal(find('.ajax-get li:eq(1)').text(), 'Bar');
-    assert.equal(find('.ajax-get li:eq(2)').text(), 'Baz');
-  });
-});
-
-test(`Ajax failure doesn't bubble up to console.` , function(assert) {
-  const errorMessage = 'Not Found';
-  server.get('/posts', json(404, errorMessage), 300);
-
-  visit('/');
-
-  andThen(function() {
-    assert.equal(currentURL(), '/');
-    assert.ok(find('.ajax-get').length === 1, 'ajax-get component is rendered');
-  });
-
-  click('button:contains(Load Data)');
-
-  andThen(function() {
-    assert.equal(find('.ajax-get .error').text(), errorMessage);
-  });
-});

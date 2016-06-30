@@ -15,7 +15,9 @@ export default Component.extend({
             isLoaded: true
           });
         })
-        .catch((error) => this.set('errors', error.errors));
+        .catch((error) => {
+          this.set('errors', error.errors);
+        });
     }
   }
 });

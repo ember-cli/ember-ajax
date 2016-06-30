@@ -1,38 +1,43 @@
-import { test } from 'qunit';
-import moduleForAcceptance from '../../tests/helpers/module-for-acceptance';
+import { describe, beforeEach, afterEach, it } from 'mocha';
+import { assert } from 'chai';
+
+const { equal } = assert;
+
+import destroyApp from 'dummy/tests/helpers/destroy-app';
+import startApp from 'dummy/tests/helpers/start-app';
 
 import Pretender from 'pretender';
 import { jsonResponse } from 'dummy/tests/helpers/json';
 
-let server;
-moduleForAcceptance('Acceptance | ember data integration', {
-  beforeEach() {
+let server, application;
+
+describe('Acceptance | ember data integration', function() {
+  beforeEach(function() {
     server = new Pretender();
-  },
-  afterEach() {
+    application = startApp();
+  });
+  afterEach(function() {
     server.shutdown();
-  }
-});
-
-test('ember data adapter uses ember-ajax mixin', function(assert) {
-  assert.expect(2);
-
-  server.get('api/posts/1', function() {
-    assert.ok(true, 'Used the ember-ajax integration');
-    return jsonResponse(200, {
-      data: {
-        id: 1,
-        type: 'post',
-        attributes: {
-          title: 'Foo'
-        }
-      }
-    });
+    destroyApp(application);
   });
 
-  visit('/ember-data-test');
+  it('ember data adapter uses ember-ajax mixin', function() {
+    server.get('api/posts/1', function() {
+      return jsonResponse(200, {
+        data: {
+          id: 1,
+          type: 'post',
+          attributes: {
+            title: 'Foo'
+          }
+        }
+      });
+    });
 
-  andThen(function() {
-    assert.equal(currentURL(), '/ember-data-test');
+    visit('/ember-data-test');
+
+    andThen(function() {
+      equal(currentURL(), '/ember-data-test');
+    });
   });
 });
