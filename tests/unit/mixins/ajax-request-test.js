@@ -779,5 +779,21 @@ describe('Unit | Mixin | ajax request', function() {
     expect(req._buildURL('/baz', { host: 'http://foo.com' })).to.equal('http://foo.com/baz');
     expect(req._buildURL('/baz')).to.equal('/baz');
   });
+
+  describe('JSONP Requests', function() {
+    it('should make JSONP requests', function() {
+      this.server.get('/jsonp', function(req) {
+        return [200, {}, `${req.queryParams.callback}({ "foo": "bar" })`];
+      });
+
+      const ajax = new AjaxRequest();
+      return ajax.request('/jsonp', {
+        dataType: 'jsonp'
+      })
+      .then((value) => {
+        expect(value).to.deep.equal({ foo: 'bar' });
+      });
+    });
+  });
 });
 
