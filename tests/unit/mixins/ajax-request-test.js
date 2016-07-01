@@ -1,5 +1,6 @@
 import { describe, beforeEach, afterEach, it } from 'mocha';
 import { expect } from 'chai';
+import wait from 'ember-test-helpers/wait';
 
 import Ember from 'ember';
 import AjaxRequest from 'ember-ajax/ajax-request';
@@ -842,5 +843,51 @@ describe('Unit | Mixin | ajax request', function() {
     errorHandlerTest(500, ServerError);
     errorHandlerTest(502, ServerError);
     errorHandlerTest(510, ServerError);
+  });
+
+  describe('Custom waiter', function() {
+    beforeEach(function() {
+      this.requestMade = false;
+
+      function handleRequest() {
+        this.requestMade = true;
+        return jsonResponse();
+      }
+
+      this.server.get('/test', handleRequest.bind(this));
+      this.server.post('/test', handleRequest.bind(this));
+    });
+
+    it('can wait on an AJAX GET request', function() {
+      const service = new AjaxRequest();
+      service.request('/test');
+
+      return wait().then(() => {
+        expect(this.requestMade).to.be.ok;
+      });
+    });
+
+    it('can wait on an AJAX POST request', function() {
+      const service = new AjaxRequest();
+      service.post('/test');
+
+      return wait().then(() => {
+        expect(this.requestMade).to.be.ok;
+      });
+    });
+
+    it('can wait on a JSONP request', function() {
+      let response;
+
+      this.server.get('/jsonp', function(req) {
+        return [200, {}, `${req.queryParams.callback}({ "foo": "bar" })`];
+      });
+
+      const ajax = new AjaxRequest();
+      ajax.request('/jsonp', { dataType: 'jsonp' }).then((val) => response = val);
+      return wait().then(() => {
+        expect(response).to.deep.equal({ foo: 'bar' });
+      });
+    });
   });
 });
