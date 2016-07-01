@@ -28,7 +28,7 @@ describe('unit/error-handlers-test', function() {
     this.server.shutdown();
   });
 
-  it('it handles a TimeoutError correctly', function() {
+  it('handles a TimeoutError correctly', function() {
     this.server.get('/posts', jsonFactory(200), 2);
     const service = new AjaxRequest();
     return service.request('/posts', { timeout: 1 })
@@ -42,7 +42,7 @@ describe('unit/error-handlers-test', function() {
   });
 
   function errorHandlerTest(status, errorClass) {
-    it(`${status} handler`, function() {
+    it(`handles a ${status} response correctly`, function() {
       this.server.get('/posts', jsonFactory(status));
       const service = new AjaxRequest();
       return service.request('/posts')
