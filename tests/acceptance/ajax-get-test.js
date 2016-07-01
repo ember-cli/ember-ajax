@@ -1,5 +1,5 @@
 import { describe, beforeEach, afterEach, it } from 'mocha';
-import { assert, expect } from 'chai';
+import { expect } from 'chai';
 
 import destroyApp from 'dummy/tests/helpers/destroy-app';
 import startApp from 'dummy/tests/helpers/start-app';
@@ -7,45 +7,41 @@ import startApp from 'dummy/tests/helpers/start-app';
 import Pretender from 'pretender';
 import { jsonFactory as json } from 'dummy/tests/helpers/json';
 
-const { equal, ok } = assert;
-
-let server, application;
-
 describe('Acceptance | ajax-get component', function() {
   beforeEach(function() {
-    server = new Pretender();
-    application = startApp();
+    this.server = new Pretender();
+    this.application = startApp();
   });
 
   afterEach(function() {
-    server.shutdown();
-    destroyApp(application);
+    this.server.shutdown();
+    destroyApp(this.application);
   });
 
-  it('waiting for a route with async widget', function() {
+  it('waits for a route with async widget', function() {
     const PAYLOAD = [{ title: 'Foo' }, { title: 'Bar' }, { title: 'Baz' }];
 
-    server.get('/posts', json(200, PAYLOAD), 300);
+    this.server.get('/posts', json(200, PAYLOAD), 300);
 
     visit('/');
 
     andThen(function() {
-      equal(currentURL(), '/');
-      ok(find('.ajax-get').length === 1);
+      expect(currentURL()).to.equal('/');
+      expect(find('.ajax-get').length).to.equal(1);
     });
 
     click('button:contains(Load Data)');
 
     andThen(function() {
-      equal(find('.ajax-get li:eq(0)').text(), 'Foo');
-      equal(find('.ajax-get li:eq(1)').text(), 'Bar');
-      equal(find('.ajax-get li:eq(2)').text(), 'Baz');
+      expect(find('.ajax-get li:eq(0)').text()).to.equal('Foo');
+      expect(find('.ajax-get li:eq(1)').text()).to.equal('Bar');
+      expect(find('.ajax-get li:eq(2)').text()).to.equal('Baz');
     });
   });
 
-  it(`Ajax failure doesn't bubble up to console.` , function() {
+  it(`catches errors before they bubble to the console` , function() {
     const errorMessage = 'Not Found';
-    server.get('/posts', json(404, errorMessage), 300);
+    this.server.get('/posts', json(404, errorMessage), 300);
 
     visit('/');
 
