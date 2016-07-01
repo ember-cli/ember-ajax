@@ -3,10 +3,19 @@ import { expect } from 'chai';
 
 import Ember from 'ember';
 import AjaxRequest from 'ember-ajax/ajax-request';
+import {
+  ConflictError,
+  InvalidError,
+  UnauthorizedError,
+  ForbiddenError,
+  BadRequestError,
+  ServerError,
+  isTimeoutError
+} from 'ember-ajax/errors';
 import Pretender from 'pretender';
-import { jsonResponse } from 'dummy/tests/helpers/json';
+import { jsonResponse, jsonFactory } from 'dummy/tests/helpers/json';
 
-const { A } = Ember;
+const { A, typeOf } = Ember;
 
 describe('Unit | Mixin | ajax request', function() {
   beforeEach(function() {
@@ -795,5 +804,43 @@ describe('Unit | Mixin | ajax request', function() {
       });
     });
   });
-});
 
+  describe('error handlers', function() {
+    it('handles a TimeoutError correctly', function() {
+      this.server.get('/posts', jsonFactory(200), 2);
+      const service = new AjaxRequest();
+      return service.request('/posts', { timeout: 1 })
+        .then(function() {
+          throw new Error('success handler should not be called');
+        })
+        .catch(function(reason) {
+          expect(isTimeoutError(reason)).to.be.ok;
+          expect(reason.errors && typeOf(reason.errors) === 'array').to.be.ok;
+        });
+    });
+
+    function errorHandlerTest(status, errorClass) {
+      it(`handles a ${status} response correctly`, function() {
+        this.server.get('/posts', jsonFactory(status));
+        const service = new AjaxRequest();
+        return service.request('/posts')
+          .then(function() {
+            throw new Error('success handler should not be called');
+          })
+          .catch(function(reason) {
+            expect(reason instanceof errorClass).to.be.ok;
+            expect(reason.errors && typeOf(reason.errors) === 'array').to.be.ok;
+          });
+      });
+    }
+
+    errorHandlerTest(401, UnauthorizedError);
+    errorHandlerTest(403, ForbiddenError);
+    errorHandlerTest(409, ConflictError);
+    errorHandlerTest(422, InvalidError);
+    errorHandlerTest(400, BadRequestError);
+    errorHandlerTest(500, ServerError);
+    errorHandlerTest(502, ServerError);
+    errorHandlerTest(510, ServerError);
+  });
+});
