@@ -1,5 +1,5 @@
 import { describe, beforeEach, afterEach, it } from 'mocha';
-import { assert } from 'chai';
+import { assert, expect } from 'chai';
 
 const { deepEqual, equal, notEqual, ok, strictEqual, throws } = assert;
 
@@ -135,60 +135,100 @@ describe('AjaxRequest', function() {
     });
   });
 
-  it('options() sets raw data', function() {
-    const service = new AjaxRequest();
-    const url = 'test';
-    const type = 'GET';
-    const ajaxOptions = service.options(url, { type, data: { key: 'value' } });
+  describe('options method', function() {
+    it('sets raw data', function() {
+      const service = new AjaxRequest();
+      const url = 'test';
+      const type = 'GET';
+      const ajaxOptions = service.options(url, { type, data: { key: 'value' } });
 
-    deepEqual(ajaxOptions, {
-      contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-      data: {
-        key: 'value'
-      },
-      dataType: 'json',
-      headers: {},
-      type: 'GET',
-      url: '/test'
+      deepEqual(ajaxOptions, {
+        contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+        data: {
+          key: 'value'
+        },
+        dataType: 'json',
+        headers: {},
+        type: 'GET',
+        url: '/test'
+      });
     });
-  });
 
-  it('options() sets options correctly', function() {
-    const service = new AjaxRequest();
-    const url  = 'test';
-    const type = 'POST';
-    const data = JSON.stringify({ key: 'value' });
-    const ajaxOptions = service.options(
-      url,
-      {
-        type,
-        data,
-        contentType: 'application/json; charset=utf-8'
-      }
-    );
+    it('sets options correctly', function() {
+      const service = new AjaxRequest();
+      const url  = 'test';
+      const type = 'POST';
+      const data = JSON.stringify({ key: 'value' });
+      const ajaxOptions = service.options(
+        url,
+        {
+          type,
+          data,
+          contentType: 'application/json; charset=utf-8'
+        }
+      );
 
-    deepEqual(ajaxOptions, {
-      contentType: 'application/json; charset=utf-8',
-      data: '{"key":"value"}',
-      dataType: 'json',
-      headers: {},
-      type: 'POST',
-      url: '/test'
+      deepEqual(ajaxOptions, {
+        contentType: 'application/json; charset=utf-8',
+        data: '{"key":"value"}',
+        dataType: 'json',
+        headers: {},
+        type: 'POST',
+        url: '/test'
+      });
     });
-  });
 
-  it('options() empty data', function() {
-    const service = new AjaxRequest();
-    const url = 'test';
-    const type = 'POST';
-    const ajaxOptions = service.options(url, { type });
+    it('can handle empty data', function() {
+      const service = new AjaxRequest();
+      const url = 'test';
+      const type = 'POST';
+      const ajaxOptions = service.options(url, { type });
 
-    deepEqual(ajaxOptions, {
-      contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-      dataType: 'json',
-      headers: {},
-      type: 'POST',
-      url: '/test'
+      deepEqual(ajaxOptions, {
+        contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+        dataType: 'json',
+        headers: {},
+        type: 'POST',
+        url: '/test'
+      });
+    });
+
+    it('is only called once per call to request', function() {
+      let numberOptionsCalls = 0;
+
+      this.server.get('/foo', () => jsonResponse());
+
+      const MonitorOptionsCalls = AjaxRequest.extend({
+        options() {
+          numberOptionsCalls = numberOptionsCalls + 1;
+          return this._super(...arguments);
+        }
+      });
+
+      const service = new MonitorOptionsCalls();
+      return service.request('/foo')
+        .then(function() {
+          expect(numberOptionsCalls).to.equal(1);
+        });
+    });
+
+    it('is only called once per call to raw', function() {
+      let numberOptionsCalls = 0;
+
+      this.server.get('/foo', () => jsonResponse());
+
+      const MonitorOptionsCalls = AjaxRequest.extend({
+        options() {
+          numberOptionsCalls = numberOptionsCalls + 1;
+          return this._super(...arguments);
+        }
+      });
+
+      const service = new MonitorOptionsCalls();
+      return service.raw('/foo')
+        .then(function() {
+          expect(numberOptionsCalls).to.equal(1);
+        });
     });
   });
 
