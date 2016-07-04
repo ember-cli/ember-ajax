@@ -34,8 +34,9 @@ const {
   RSVP: { Promise },
   Test,
   get,
+  isEqual,
   isArray,
-  isNone,
+  isPresent,
   merge,
   run,
   runInDebug,
@@ -44,11 +45,17 @@ const {
 } = Ember;
 const JSONAPIContentType = 'application/vnd.api+json';
 
-function isJSONAPIContentType(header) {
-  if (isNone(header)) {
-    return false;
+function isJSONAPIContentType(hash) {
+  let header = hash.headers['Content-Type'];
+  let defaultContentType = hash.contentType;
+
+  if (isPresent(header) && isEqual(header.indexOf(JSONAPIContentType), 0)) {
+    return true;
   }
-  return header.indexOf(JSONAPIContentType) === 0;
+  if (isEqual(defaultContentType, JSONAPIContentType)) {
+    return true;
+  }
+  return false;
 }
 
 function startsWithSlash(string) {
@@ -222,7 +229,7 @@ export default Mixin.create({
       url: hash.url
     };
 
-    if (isJSONAPIContentType(hash.headers['Content-Type']) && requestData.type !== 'GET') {
+    if (isJSONAPIContentType(hash) && requestData.type !== 'GET') {
       if (typeof hash.data === 'object') {
         hash.data = JSON.stringify(hash.data);
       }
