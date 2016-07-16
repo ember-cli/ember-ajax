@@ -21,7 +21,7 @@ describe('Acceptance | ember data integration', function() {
     destroyApp(application);
   });
 
-  it('ember data adapter uses ember-ajax mixin', function() {
+  it('can apply the Ember Ajax mixin to an Ember Data adapter', function() {
     server.get('api/posts/1', function() {
       return jsonResponse(200, {
         data: {

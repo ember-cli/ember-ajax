@@ -91,73 +91,87 @@ describe('unit/errors-test - AjaxError', function() {
     ok(error instanceof ConflictError);
   });
 
-  it('isUnauthorizedError: detects error code correctly', function() {
-    ok(isUnauthorizedError(401));
+  describe('isUnauthorizedError', function() {
+    it('detects error code correctly', function() {
+      ok(isUnauthorizedError(401));
+    });
+
+    it('detects error class correctly', function() {
+      const error = new UnauthorizedError();
+      ok(isUnauthorizedError(error));
+    });
   });
 
-  it('isUnauthorizedError: detects error class correctly', function() {
-    const error = new UnauthorizedError();
-    ok(isUnauthorizedError(error));
+  describe('isForbiddenError', function() {
+    it('detects error code correctly', function() {
+      ok(isForbiddenError(403));
+    });
+
+    it('detects error class correctly', function() {
+      const error = new ForbiddenError();
+      ok(isForbiddenError(error));
+    });
   });
 
-  it('isForbiddenError: detects error code correctly', function() {
-    ok(isForbiddenError(403));
+  describe('isNotFoundError', function() {
+    it(': detects error code correctly', function() {
+      ok(isNotFoundError(404));
+      notOk(isNotFoundError(400));
+    });
+
+    it('detects error class correctly', function() {
+      const error = new NotFoundError();
+      const otherError = new Error();
+      ok(isNotFoundError(error));
+      notOk(isNotFoundError(otherError));
+    });
   });
 
-  it('isForbiddenError: detects error class correctly', function() {
-    const error = new ForbiddenError();
-    ok(isForbiddenError(error));
+  describe('isInvalidError', function() {
+    it('detects error code correctly', function() {
+      ok(isInvalidError(422));
+    });
+
+    it('detects error class correctly', function() {
+      const error = new InvalidError();
+      ok(isInvalidError(error));
+    });
   });
 
-  it('isNotFoundError: detects error code correctly', function() {
-    ok(isNotFoundError(404));
-    notOk(isNotFoundError(400));
+  describe('isBadRequestError', function() {
+    it('detects error code correctly', function() {
+      ok(isBadRequestError(400));
+    });
+
+    it('detects error class correctly', function() {
+      const error = new BadRequestError();
+      ok(isBadRequestError(error));
+    });
   });
 
-  it('isNotFoundError: detects error class correctly', function() {
-    const error = new NotFoundError();
-    const otherError = new Error();
-    ok(isNotFoundError(error));
-    notOk(isNotFoundError(otherError));
+  describe('isServerError', function() {
+    it('detects error code correctly', function() {
+      notOk(isServerError(499));
+      ok(isServerError(500));
+      ok(isServerError(599));
+      notOk(isServerError(600));
+    });
+
+    it('detects error class correctly', function() {
+      const error = new ServerError();
+      ok(isServerError(error));
+    });
   });
 
-  it('isInvalidError: detects error code correctly', function() {
-    ok(isInvalidError(422));
-  });
-
-  it('isInvalidError: detects error class correctly', function() {
-    const error = new InvalidError();
-    ok(isInvalidError(error));
-  });
-
-  it('isBadRequestError: detects error code correctly', function() {
-    ok(isBadRequestError(400));
-  });
-
-  it('isBadRequestError: detects error class correctly', function() {
-    const error = new BadRequestError();
-    ok(isBadRequestError(error));
-  });
-
-  it('isServerError: detects error code correctly', function() {
-    notOk(isServerError(499));
-    ok(isServerError(500));
-    ok(isServerError(599));
-    notOk(isServerError(600));
-  });
-
-  it('isAjaxError: detects error class correctly', function() {
-    const ajaxError = new AjaxError();
-    const notAjaxError = new Error();
-    const ajaxErrorSubtype = new BadRequestError();
-    ok(isAjaxError(ajaxError));
-    notOk(isAjaxError(notAjaxError));
-    ok(isAjaxError(ajaxErrorSubtype));
-  });
-
-  it('isServerError: detects error class correctly', function() {
-    const error = new ServerError();
-    ok(isServerError(error));
+  describe('isAjaxError', function() {
+    it('detects error class correctly', function() {
+      const ajaxError = new AjaxError();
+      const notAjaxError = new Error();
+      const ajaxErrorSubtype = new BadRequestError();
+      ok(isAjaxError(ajaxError));
+      notOk(isAjaxError(notAjaxError));
+      ok(isAjaxError(ajaxErrorSubtype));
+    });
   });
 
   it('isTimeoutError: detects error class correctly', function() {
@@ -165,23 +179,29 @@ describe('unit/errors-test - AjaxError', function() {
     ok(isTimeoutError(error));
   });
 
-  it('isAbortError: detects error class correctly', function() {
-    const error = new AbortError();
-    ok(isAbortError(error));
+  describe('isAbortError', function() {
+    it('detects error class correctly', function() {
+      const error = new AbortError();
+      ok(isAbortError(error));
+    });
   });
 
-  it('isConflictError: detects error code correctly', function() {
-    ok(isConflictError(409));
+  describe('isConflictError', function() {
+    it('detects error code correctly', function() {
+      ok(isConflictError(409));
+    });
   });
 
-  it('detects successful request correctly', function() {
-    notOk(isSuccess(100));
-    notOk(isSuccess(199));
-    ok(isSuccess(200));
-    ok(isSuccess(299));
-    notOk(isSuccess(300));
-    ok(isSuccess(304));
-    notOk(isSuccess(400));
-    notOk(isSuccess(500));
+  describe('isSuccess', function() {
+    it('detects successful request correctly', function() {
+      notOk(isSuccess(100));
+      notOk(isSuccess(199));
+      ok(isSuccess(200));
+      ok(isSuccess(299));
+      notOk(isSuccess(300));
+      ok(isSuccess(304));
+      notOk(isSuccess(400));
+      notOk(isSuccess(500));
+    });
   });
 });

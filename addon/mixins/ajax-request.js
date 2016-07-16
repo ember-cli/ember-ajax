@@ -196,7 +196,7 @@ export default Mixin.create({
   request(url, options) {
     const hash = this.options(url, options);
     return new Promise((resolve, reject) => {
-      this.raw(url, hash)
+      this._makeRequest(url, hash)
         .then(({ response }) => {
           resolve(response);
         })
@@ -217,6 +217,19 @@ export default Mixin.create({
    */
   raw(url, options) {
     const hash = this.options(url, options);
+    return this._makeRequest(url, hash);
+  },
+
+  /**
+   * Shared method to actually make an AJAX request
+   *
+   * @method _makeRequest
+   * @private
+   * @param {string} url The url to make a request to
+   * @param {Object} hash The options for the request
+   * @return {Promise} The result of the request
+   */
+  _makeRequest(url, hash) {
     const requestData = {
       type: hash.type,
       url: hash.url

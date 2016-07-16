@@ -3,23 +3,20 @@ import hbs from 'htmlbars-inline-precompile';
 
 import { describeComponent, it } from 'ember-mocha';
 import { beforeEach, afterEach } from 'mocha';
-import { assert } from 'chai';
-
-const { deepEqual, equal, throws } = assert;
-const {
-  Component,
-  Service,
-  inject,
-  computed
-} = Ember;
+import { expect } from 'chai';
 
 import AjaxService from 'ember-ajax/services/ajax';
 import Pretender from 'pretender';
 import { jsonFactory as json } from 'dummy/tests/helpers/json';
 import wait from 'ember-test-helpers/wait';
 
+const {
+  Component,
+  Service,
+  inject,
+  computed
+} = Ember;
 const PAYLOAD = { posts: [ { id: 1, title: 'hello world' } ] };
-let server;
 
 describeComponent(
   'async-widget',
@@ -29,15 +26,15 @@ describeComponent(
   },
   function() {
     beforeEach(function() {
-      server = new Pretender();
+      this.server = new Pretender();
     });
 
     afterEach(function() {
-      server.shutdown();
+      this.server.shutdown();
     });
 
     it('service injected in component', function() {
-      server.get('/posts', json(200, PAYLOAD));
+      this.server.get('/posts', json(200, PAYLOAD));
 
       const authToken = 'foo';
       this.register('service:session', Service.extend({ authToken }));
@@ -85,14 +82,14 @@ describeComponent(
       this.render(hbs`{{async-widget id="async-widget" url="/posts"}}`);
       return component.loadData().then(function(response) {
         component.set('hello', 'world');
-        equal(component.get('helloStyle'), 'hello world', 'run loop is not necessary');
-        deepEqual(receivedHeaders[0], ['authToken', 'foo'], 'token was used session');
-        deepEqual(response, PAYLOAD, 'recieved PAYLOAD');
+        expect(component.get('helloStyle')).to.equal('hello world');
+        expect(receivedHeaders[0]).to.deep.equal(['authToken', 'foo']);
+        expect(response).to.deep.equal(PAYLOAD);
       });
     });
 
     it.skip('error thrown in service can be caught in test', function() {
-      server.post('/posts/1', json(404, { error: 'not found' }), 200);
+      this.server.post('/posts/1', json(404, { error: 'not found' }), 200);
 
       this.register('service:ajax', AjaxService.extend({
         customPOST(url) {
@@ -113,13 +110,13 @@ describeComponent(
             {{/async-widget}}`
       );
 
-      throws(function() {
+      expect(function() {
         this.$('.async-widget').click();
-      });
+      }).to.throw();
     });
 
     it('waiting for promises to complete', function() {
-      server.get('/foo', json(200, { foo: 'bar' }), 300);
+      this.server.get('/foo', json(200, { foo: 'bar' }), 300);
 
       this.register('component:async-widget', Component.extend({
         layout: hbs`{{yield foo}}`,
@@ -134,11 +131,11 @@ describeComponent(
 
       this.render(hbs`{{#async-widget classNames="async-widget" as |foo|}}Got: {{foo}} for foo{{/async-widget}}`);
 
-      equal(this.$('.async-widget').text(), 'Got: foo for foo');
+      expect(this.$('.async-widget').text()).to.equal('Got: foo for foo');
       this.$('.async-widget').click();
 
       return wait().then(() => {
-        equal(this.$('.async-widget').text(), 'Got: bar for foo');
+        expect(this.$('.async-widget').text()).to.equal('Got: bar for foo');
       });
     });
   }
