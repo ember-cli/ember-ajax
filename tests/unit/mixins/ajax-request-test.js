@@ -790,6 +790,25 @@ describe('Unit | Mixin | ajax request', function() {
     expect(req._buildURL('/baz')).to.equal('/baz');
   });
 
+  it('it doesn\'t reassign payloads which evaluate falsey but are not null or undefined', function() {
+    const service = new AjaxRequest();
+
+    const payloadWithFalseyString = service.handleResponse(200, {}, '');
+    expect(payloadWithFalseyString).to.be.empty;
+
+    const payloadWithFalseyNumber = service.handleResponse(200, {}, 0);
+    expect(payloadWithFalseyNumber).to.equal(0);
+
+    const payloadWithNaN = service.handleResponse(200, {}, NaN);
+    expect(isNaN(payloadWithNaN)).to.be.ok;
+
+    const payloadWithNull = service.handleResponse(200, {}, null);
+    expect(payloadWithNull).to.be.deep.equal({});
+
+    const payloadWithUndefined = service.handleResponse(200, {}, undefined);
+    expect(payloadWithUndefined).to.be.deep.equal({});
+  });
+
   describe('JSONP Requests', function() {
     it('should make JSONP requests', function() {
       this.server.get('/jsonp', function(req) {
