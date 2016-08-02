@@ -287,6 +287,17 @@ can import the ajax utility like so:
 
 ```js
 import request from 'ember-ajax/request';
+
+export default function someUtility(url) {
+  var options = {
+    // request options
+  };
+  
+  return request(url, options).then(response => {
+    // `response` is the data from the server
+    return response;
+  });
+}
 ```
 
 Which will have the same API as the `ajax` service. If you want the raw jQuery XHR object
@@ -294,6 +305,17 @@ then you can use the `raw` method instead:
 
 ```js
 import raw from 'ember-ajax/raw';
+
+export default function someOtherUtility(url) {
+  var options = {
+    // raw options
+  };
+  
+  return raw(url, options).then(result => {
+    // `result` is an object containing `response` and `jqXHR`, among other items
+    return result;
+  });
+}
 ```
 
 ## Testing
