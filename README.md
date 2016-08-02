@@ -293,7 +293,7 @@ Which will have the same API as the `ajax` service. If you want the raw jQuery X
 then you can use the `raw` method instead:
 
 ```js
-import raw from 'ember-ajax/request';
+import raw from 'ember-ajax/raw';
 ```
 
 ## Testing
