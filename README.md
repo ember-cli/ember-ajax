@@ -280,6 +280,15 @@ That's all the configuration required!  If you want to customize the adapter, su
 
 Note that instead of using the Ember Data error checking code in your application, you should use the ones provided by Ember AJAX.
 
+## Stand-Alone Usage
+
+If you aren't using Ember Data and do not have access to services, you
+can import the ajax utility like so:
+
+```js
+import raw from 'ember-ajax/raw';
+```
+
 ## Testing
 
 ### Fixture Data
