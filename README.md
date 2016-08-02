@@ -286,7 +286,14 @@ If you aren't using Ember Data and do not have access to services, you
 can import the ajax utility like so:
 
 ```js
-import raw from 'ember-ajax/raw';
+import request from 'ember-ajax/request';
+```
+
+Which will have the same API as the `ajax` service. If you want the raw jQuery XHR object
+then you can use the `raw` method instead:
+
+```js
+import raw from 'ember-ajax/request';
 ```
 
 ## Testing
