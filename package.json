@@ -15,6 +15,12 @@
   "engines": {
     "node": ">= 0.10.0"
   },
+  "files": [
+    "addon/",
+    "app/",
+    "config/environment.js",
+    "index.js"
+  ],
   "author": "",
   "license": "MIT",
   "devDependencies": {
