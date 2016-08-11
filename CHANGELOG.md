@@ -1,3 +1,9 @@
+## 2.5.1
+
+- Revert changing payload info to `meta` property (#142) @alexlafroscia
+
+Sorry about the breaking change!
+
 ## 2.5.0
 
 ### Addon Changes
