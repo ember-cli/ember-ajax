@@ -830,7 +830,7 @@ export default Mixin.create({
           return {
             status: `${status}`,
             title: error.title || 'The backend responded with an error',
-            meta: error
+            detail: error
           };
         } else {
           return {
@@ -852,7 +852,7 @@ export default Mixin.create({
           {
             status: `${status}`,
             title: payload.title || 'The backend responded with an error',
-            meta: payload
+            detail: payload
           }
         ];
       }

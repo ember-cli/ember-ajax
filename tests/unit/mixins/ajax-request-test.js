@@ -695,8 +695,8 @@ describe('Unit | Mixin | ajax request', function() {
       { status: 400, title: 'Bar' }
     ]);
     expect(payloadArrayOfObjects).to.deep.equal([
-      { status: '400', title: 'Foo', meta: { status: 400, title: 'Foo' } },
-      { status: '400', title: 'Bar', meta: { status: 400, title: 'Bar' } }
+      { status: '400', title: 'Foo', detail: { status: 400, title: 'Foo' } },
+      { status: '400', title: 'Bar', detail: { status: 400, title: 'Bar' } }
     ]);
 
     const payloadArrayOfStrings = service.normalizeErrorResponse(400, {}, [
@@ -722,7 +722,7 @@ describe('Unit | Mixin | ajax request', function() {
       {
         status: '400',
         title: 'Foo',
-        meta: {
+        detail: {
           title: 'Foo'
         }
       }
