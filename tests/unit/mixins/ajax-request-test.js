@@ -182,6 +182,30 @@ describe('Unit | Mixin | ajax request', function() {
       });
     });
 
+    it('does not override contentType when defined', function() {
+      const service = new AjaxRequest();
+      const url  = 'test';
+      const type = 'POST';
+      const data = JSON.stringify({ key: 'value' });
+      const ajaxOptions = service.options(
+        url,
+        {
+          type,
+          data,
+          contentType: false
+        }
+      );
+
+      expect(ajaxOptions).to.deep.equal({
+        contentType: false,
+        data: '{"key":"value"}',
+        dataType: 'json',
+        headers: {},
+        type: 'POST',
+        url: '/test'
+      });
+    });
+
     it('can handle empty data', function() {
       const service = new AjaxRequest();
       const url = 'test';

@@ -35,6 +35,7 @@ const {
   Test,
   get,
   isArray,
+  isEmpty,
   isNone,
   merge,
   run,
@@ -421,7 +422,7 @@ export default Mixin.create({
     options.url = this._buildURL(url, options);
     options.type = options.type || 'GET';
     options.dataType = options.dataType || 'json';
-    options.contentType = options.contentType || get(this, 'contentType');
+    options.contentType = isEmpty(options.contentType) ? get(this, 'contentType') : options.contentType;
 
     if (this._shouldSendHeaders(options)) {
       options.headers = this._getFullHeadersHash(options.headers);
