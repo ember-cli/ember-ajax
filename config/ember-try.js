@@ -1,4 +1,5 @@
-/*jshint node:true*/
+/* eslint-disable */
+
 module.exports = {
   scenarios: [
     {
