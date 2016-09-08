@@ -39,7 +39,7 @@ describe('Acceptance | ajax-get component', function() {
     });
   });
 
-  it(`catches errors before they bubble to the console` , function() {
+  it('catches errors before they bubble to the console', function() {
     const errorMessage = 'Not Found';
     this.server.get('/posts', json(404, errorMessage), 300);
 

@@ -771,7 +771,7 @@ export default Mixin.create({
   parseErrorResponse(responseText) {
     try {
       return $.parseJSON(responseText);
-    } catch (e) {
+    } catch(e) {
       return responseText;
     }
   },
