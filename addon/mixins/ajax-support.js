@@ -34,13 +34,8 @@ export default Mixin.create({
    */
   headers: alias('ajaxService.headers'),
 
-  ajax(url, type, options) {
-    options = this.ajaxOptions(...arguments);
-    return this.get('ajaxService').request(url, options);
-  },
-
-  ajaxOptions(url, type, options = {}) {
+  ajax(url, type, options={}) {
     options.type = type;
-    return this.get('ajaxService').options(url, options);
+    return this.get('ajaxService').request(url, options);
   }
 });
