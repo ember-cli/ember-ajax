@@ -197,7 +197,7 @@ export default Mixin.create({
   request(url, options) {
     const hash = this.options(url, options);
     return new Promise((resolve, reject) => {
-      this._makeRequest(url, hash)
+      this._makeRequest(hash)
         .then(({ response }) => {
           resolve(response);
         })
@@ -218,7 +218,7 @@ export default Mixin.create({
    */
   raw(url, options) {
     const hash = this.options(url, options);
-    return this._makeRequest(url, hash);
+    return this._makeRequest(hash);
   },
 
   /**
@@ -226,11 +226,11 @@ export default Mixin.create({
    *
    * @method _makeRequest
    * @private
-   * @param {string} url The url to make a request to
    * @param {Object} hash The options for the request
+   * @param {string} hash.url The URL to make the request to
    * @return {Promise} The result of the request
    */
-  _makeRequest(url, hash) {
+  _makeRequest(hash) {
     const requestData = {
       type: hash.type,
       url: hash.url
@@ -262,7 +262,7 @@ export default Mixin.create({
 
       hash.error = (jqXHR, textStatus, errorThrown) => {
         runInDebug(function() {
-          let message = `The server returned an empty string for ${requestData.type} ${url}, which cannot be parsed into a valid JSON. Return either null or {}.`;
+          let message = `The server returned an empty string for ${requestData.type} ${requestData.url}, which cannot be parsed into a valid JSON. Return either null or {}.`;
           let validJSONString = !(textStatus === 'parsererror' && jqXHR.responseText === '');
           warn(message, validJSONString, {
             id: 'ds.adapter.returned-empty-string-as-JSON'
@@ -459,6 +459,12 @@ export default Mixin.create({
     let namespace = options.namespace || get(this, 'namespace');
     if (namespace) {
       namespace = stripSlashes(namespace);
+    }
+
+    // If the URL has already been constructed (presumably, by Ember Data), then we should just leave it alone
+    const hasNamespaceRegex = new RegExp(`^(\/)?${namespace}`);
+    if (hasNamespaceRegex.test(url)) {
+      return url;
     }
 
     let fullUrl = '';

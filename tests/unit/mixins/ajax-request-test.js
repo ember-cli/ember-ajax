@@ -753,7 +753,7 @@ describe('Unit | Mixin | ajax request', function() {
     ]);
   });
 
-  it('it correctly creates the URL to request', function() {
+  describe('URL building', function() {
     class NamespaceLeadingSlash extends AjaxRequest {
       static get slashType() {
         return 'leading slash';
@@ -800,18 +800,50 @@ describe('Unit | Mixin | ajax request', function() {
 
       hosts.forEach((exampleHost) => {
         const { host } = exampleHost;
-        ['/baz', 'baz'].forEach((segment) => {
-          expect(req._buildURL(segment, { host })).to.equal('http://foo.com/bar/baz');
-        });
-        ['/baz/', 'baz/'].forEach((segment) => {
-          expect(req._buildURL(segment, { host })).to.equal('http://foo.com/bar/baz/');
+
+        it(`correctly handles ${Klass.slashType} when the host has ${exampleHost.hostType}`, function() {
+          ['/baz', 'baz'].forEach((segment) => {
+            expect(req._buildURL(segment, { host })).to.equal('http://foo.com/bar/baz');
+          });
+          ['/baz/', 'baz/'].forEach((segment) => {
+            expect(req._buildURL(segment, { host })).to.equal('http://foo.com/bar/baz/');
+          });
         });
       });
     });
 
-    let req = new AjaxRequest();
-    expect(req._buildURL('/baz', { host: 'http://foo.com' })).to.equal('http://foo.com/baz');
-    expect(req._buildURL('/baz')).to.equal('/baz');
+    it('correctly handles a host provided on the request options', function() {
+      const req = new AjaxRequest();
+      expect(req._buildURL('/baz', { host: 'http://foo.com' })).to.equal('http://foo.com/baz');
+    });
+
+    it('correctly handles no namespace or host', function() {
+      const req = new AjaxRequest();
+      expect(req._buildURL('/baz')).to.equal('/baz');
+    });
+
+    it('does not build the URL if the namespace is already present', function() {
+      class RequestWithNamespace extends AjaxRequest {
+        get namespace() {
+          return 'api';
+        }
+      }
+
+      const req = new RequestWithNamespace();
+      expect(req._buildURL('/api/post')).to.equal('/api/post', 'URL provided with leading slash');
+      expect(req._buildURL('api/post')).to.equal('api/post', 'URL provided without leading slash');
+    });
+
+    it('does not build the URL if the host is already present', function() {
+      class RequestWithHost extends AjaxRequest {
+        get host() {
+          return 'https://foo.com';
+        }
+      }
+
+      const req = new RequestWithHost();
+      expect(req._buildURL('https://foo.com/posts')).to.equal('https://foo.com/posts');
+    });
   });
 
   it('it doesn\'t reassign payloads which evaluate falsey but are not null or undefined', function() {
