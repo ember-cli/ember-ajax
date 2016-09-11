@@ -407,7 +407,7 @@ describe('Unit | Mixin | ajax request', function() {
     const serverResponse = [200, { 'Content-Type': 'application/json' }, JSON.stringify({})];
 
     this.server.get(url, () => {
-      throw new Error(`Shouldn't make an AJAX request`);
+      throw new Error("Shouldn't make an AJAX request");
     });
 
     this.server.post(url, () => {
@@ -545,7 +545,7 @@ describe('Unit | Mixin | ajax request', function() {
 
   it('it creates a detailed error message for unmatched server errors with an AJAX payload', function() {
     const response = [408, { 'Content-Type': 'application/json' }, JSON.stringify(
-      { errors: [ 'Some error response' ] }
+      { errors: ['Some error response'] }
     )];
     this.server.get('/posts', () => response);
 

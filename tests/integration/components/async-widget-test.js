@@ -16,7 +16,7 @@ const {
   inject,
   computed
 } = Ember;
-const PAYLOAD = { posts: [ { id: 1, title: 'hello world' } ] };
+const PAYLOAD = { posts: [{ id: 1, title: 'hello world' }] };
 
 describeComponent(
   'async-widget',

@@ -1,5 +1,4 @@
-/* jshint node:true */
-/* jscs:disable */
+/* eslint-disable */
 
 module.exports = {
   framework: 'qunit',

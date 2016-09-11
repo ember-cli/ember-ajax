@@ -42,7 +42,7 @@ describeComponent(
         {{/ajax-get}}
       `);
 
-      this.$(`.ajax-get button`).click();
+      this.$('.ajax-get button').click();
 
       return wait().then(() => {
         expect(this.$('.ajax-get li:eq(0)').text()).to.equal('Foo');
@@ -70,7 +70,7 @@ describeComponent(
         {{/ajax-get}}
       `);
 
-      this.$(`.ajax-get button`).click();
+      this.$('.ajax-get button').click();
 
       return wait().then(() => {
         expect(this.$('.ajax-get li:eq(0)').text()).to.equal('Foo');
@@ -94,7 +94,7 @@ describeComponent(
         {{/ajax-get}}
       `);
 
-      this.$(`.ajax-get button`).click();
+      this.$('.ajax-get button').click();
 
       return wait().then(() => {
         expect(this.$('.ajax-get p').text()).to.equal('0');
@@ -120,7 +120,7 @@ describeComponent(
         {{/ajax-get}}
       `);
 
-      this.$(`.ajax-get button`).click();
+      this.$('.ajax-get button').click();
 
       return wait().then(() => {
         expect(this.$('.ajax-get li:eq(0)').text()).to.equal('Foo');
