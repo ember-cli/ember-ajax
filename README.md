@@ -2,6 +2,7 @@
 
 [![Travis CI Build Status](https://travis-ci.org/ember-cli/ember-ajax.svg?branch=master)](https://travis-ci.org/ember-cli/ember-ajax)
 [![AppVeyor Build status](https://ci.appveyor.com/api/projects/status/rjfngst9s19p3cp8/branch/master?svg=true)](https://ci.appveyor.com/project/alexlafroscia/ember-ajax/branch/master)
+[![Coverage Status](https://coveralls.io/repos/github/ember-cli/ember-ajax/badge.svg?branch=master)](https://coveralls.io/github/ember-cli/ember-ajax?branch=master)
 [![Ember Observer Score](http://emberobserver.com/badges/ember-ajax.svg)](http://emberobserver.com/addons/ember-ajax)
 ![Ember Version][ember-version]
 
@@ -292,7 +293,7 @@ export default function someUtility(url) {
   var options = {
     // request options
   };
-  
+
   return request(url, options).then(response => {
     // `response` is the data from the server
     return response;
@@ -310,7 +311,7 @@ export default function someOtherUtility(url) {
   var options = {
     // raw options
   };
-  
+
   return raw(url, options).then(result => {
     // `result` is an object containing `response` and `jqXHR`, among other items
     return result;
