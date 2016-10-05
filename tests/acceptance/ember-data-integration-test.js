@@ -66,4 +66,27 @@ describe('Acceptance | ember data integration', function() {
       equal(currentURL(), '/ember-data-test');
     });
   });
+
+  it('respects ajaxOptions on the target adapter', function() {
+    server.get('api/posts/1', function({ requestHeaders }) {
+      let xSillyHeader = requestHeaders['X-Silly-Option'];
+      equal(xSillyHeader, 'Hi!');
+
+      return jsonResponse(200, {
+        data: {
+          id: 1,
+          type: 'post',
+          attributes: {
+            title: 'Foo'
+          }
+        }
+      });
+    });
+
+    visit('/ember-data-test');
+
+    andThen(function() {
+      equal(currentURL(), '/ember-data-test');
+    });
+  });
 });
