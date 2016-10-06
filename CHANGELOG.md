@@ -1,3 +1,13 @@
+## 2.5.2
+
+- Add code coverage (#164) @alexlafroscia
+- Upgrade linting setup, plus misc. dependency updates (#154) @alexlafroscia
+- Fix adding namespace twice (#153) @alexlafroscia
+- chore(package): update ember-cli to version 2.8.0 (#155) @greenkeeperio-bot
+- fix multiple calls to the options method of the ajax service (#146) @kketch
+- chore(package): update ember-cli-eslint to version 1.8.0 (#149) @greenkeeperio-bot
+- Add isEmpty contentType check (#144) @jrowlingson
+
 ## 2.5.1
 
 - Revert changing payload info to `meta` property (#142) @alexlafroscia
