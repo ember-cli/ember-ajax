@@ -24,7 +24,7 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "babel-eslint": "^6.1.2",
+    "babel-eslint": "^7.0.0",
     "broccoli-asset-rev": "^2.4.3",
     "coveralls": "^2.11.13",
     "ember-cli": "2.8.0",
