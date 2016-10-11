@@ -103,7 +103,7 @@ AbortError.prototype = Object.create(AjaxError.prototype);
  * @extends AjaxError
  */
 export function ConflictError() {
-  AjaxError.call(this, null, 'The ajax operation failed due to a conflict');
+  AjaxError.call(this, errors, 'The ajax operation failed due to a conflict');
 }
 
 ConflictError.prototype = Object.create(AjaxError.prototype);
