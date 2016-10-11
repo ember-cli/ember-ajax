@@ -263,6 +263,18 @@ export default Ember.Route.extend({
 
 If your errors aren't standard, the helper function for that error type can be used as the base to build your custom detection function.
 
+#### Access the response in case of error
+
+If you need to access the json response of a request that failed, you can use the `raw` method instead of `request`.
+
+```js
+this.get('ajax').raw(url, options)
+  .then({ response } => this.handleSuccess(response))
+  .catch(({ response, jqXHR }) => this.handleError(response));
+```
+
+Note that in this use case there's no access to the error object. You can inspect the `jqXHR` object for additional information about the failed request. In particular `jqXHR.status` returns the relevant HTTP error code.
+
 ## Usage with Ember Data
 
 Ember AJAX provides a mixin that can be used in an Ember Data Adapter to avoid the networking code provided by Ember Data and rely on Ember AJAX instead. This serves as a first step toward true integration of Ember AJAX into Ember Data.
