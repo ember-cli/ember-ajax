@@ -896,8 +896,8 @@ describe('Unit | Mixin | ajax request', function() {
     });
 
     function errorHandlerTest(status, errorClass) {
-      it(`handles a ${status} response correctly`, function() {
-        this.server.get('/posts', jsonFactory(status));
+      it(`handles a ${status} response correctly and preserves the payload`, function() {
+        this.server.get('/posts', jsonFactory(status, { errors: [{ id: 1, message: 'error description' }] }));
         const service = new AjaxRequest();
         return service.request('/posts')
           .then(function() {
@@ -906,6 +906,8 @@ describe('Unit | Mixin | ajax request', function() {
           .catch(function(reason) {
             expect(reason instanceof errorClass).to.be.ok;
             expect(reason.errors && typeOf(reason.errors) === 'array').to.be.ok;
+            expect(reason.errors[0].id).to.equal(1);
+            expect(reason.errors[0].message).to.equal('error description');
           });
       });
     }
