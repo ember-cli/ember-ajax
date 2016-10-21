@@ -881,6 +881,32 @@ describe('Unit | Mixin | ajax request', function() {
     });
   });
 
+  describe('[ISSUE 175] error property deprecation', function() {
+    beforeEach(function() {
+      // eslint-disable-next-line
+      Ember.ENV.RAISE_ON_DEPRECATION = true;
+    });
+
+    afterEach(function() {
+      // eslint-disable-next-line
+      Ember.ENV.RAISE_ON_DEPRECATION = false;
+    });
+
+    it('notifies', function() {
+      this.server.get('/posts', jsonFactory(404, { errors: [{ id: 1, message: 'error description' }] }));
+      const service = new AjaxRequest();
+      return service.request('/posts')
+        .then(function() {
+          throw new Error('success handler should not be called');
+        })
+        .catch(function(reason) {
+          expect(function() {
+            reason.errors;
+          }).to.throws('This property will be removed in ember-ajax 3.0.0. Please use `payload` going forward. Note the attached URL for details.');
+        });
+    });
+  });
+
   describe('error handlers', function() {
     it('handles a TimeoutError correctly', function() {
       this.server.get('/posts', jsonFactory(200), 2);
