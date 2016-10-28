@@ -6,19 +6,19 @@ const { equal } = assert;
 
 describe('getHeader', function() {
   it('returns undefined when headers are undefined', function() {
-    let header = getHeader(undefined);
+    const header = getHeader(undefined);
 
     equal(header, undefined, 'undefined is returned');
   });
 
   it('returns undefined when name is undefined', function() {
-    let header = getHeader({}, undefined);
+    const header = getHeader({}, undefined);
 
     equal(header, undefined, 'undefined is returned');
   });
 
   it('matches result given by direct object access', function() {
-    let headers = {
+    const headers = {
       'Content-Encoding': 'gzip',
       'content-type': 'application/json; charset=utf-8',
       'date': 'Fri, 12 Feb 2016 19:21:00 GMT'
@@ -30,7 +30,7 @@ describe('getHeader', function() {
   });
 
   it('performs case-insensitive lookup', function() {
-    let headers = {
+    const headers = {
       'Content-Encoding': 'gzip',
       'content-type': 'application/json; charset=utf-8',
       'date': 'Fri, 12 Feb 2016 19:21:00 GMT'

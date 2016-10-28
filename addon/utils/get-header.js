@@ -16,7 +16,7 @@ export default function getHeader(headers, name) {
     return; // ask for nothing, get nothing.
   }
 
-  let matchedKey = A(Object.keys(headers)).find((key) => {
+  const matchedKey = A(Object.keys(headers)).find((key) => {
     return key.toLowerCase() === name.toLowerCase();
   });
 
