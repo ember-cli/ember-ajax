@@ -618,7 +618,7 @@ export default Mixin.create({
     let shortenedPayload;
     const payloadContentType = getHeader(headers, 'Content-Type') || 'Empty Content-Type';
 
-    if (payloadContentType === 'text/html' && payload.length > 250) {
+    if (payloadContentType.toLowerCase() === 'text/html' && payload.length > 250) {
       shortenedPayload = '[Omitted Lengthy HTML]';
     } else {
       shortenedPayload = JSON.stringify(payload);
