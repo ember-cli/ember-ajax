@@ -43,13 +43,13 @@ const {
   testing,
   warn
 } = Ember;
-const JSONAPIContentType = 'application/vnd.api+json';
+const JSONAPIContentType = /^application\/vnd\.api\+json/i;
 
 function isJSONAPIContentType(header) {
   if (isNone(header)) {
     return false;
   }
-  return header.indexOf(JSONAPIContentType) === 0;
+  return !!header.match(JSONAPIContentType);
 }
 
 function startsWithSlash(string) {
