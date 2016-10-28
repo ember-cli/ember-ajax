@@ -1,4 +1,3 @@
-/* jshint expr:true */
 import getHeader from 'ember-ajax/utils/get-header';
 import { describe, it } from 'mocha';
 import { assert } from 'chai';
