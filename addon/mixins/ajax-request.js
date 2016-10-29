@@ -33,6 +33,7 @@ const {
   Mixin,
   RSVP: { Promise },
   Test,
+  deprecate,
   get,
   isArray,
   isEmpty,
@@ -44,6 +45,29 @@ const {
   warn
 } = Ember;
 const JSONAPIContentType = 'application/vnd.api+json';
+
+function defineDeprecatedErrorsProperty(error, errors) {
+  Object.defineProperty(error, 'errors', {
+    get() {
+      deprecate(
+        'This property will be removed in ember-ajax 3.0.0. Please use `payload` going forward. Note the attached URL for details.',
+        false,
+        {
+          url: 'https://github.com/ember-cli/ember-ajax/issues/175',
+          until: '3.0.0',
+          id: 'ember-ajax.errors.normalize-errors'
+        }
+      );
+
+      let defaultError = {
+        title: 'Ajax Error',
+        detail: this.message
+      };
+
+      return errors || [defaultError];
+    }
+  });
+}
 
 function isJSONAPIContentType(header) {
   if (isNone(header)) {
@@ -276,8 +300,12 @@ export default Mixin.create({
           response = errorThrown;
         } else if (textStatus === 'timeout') {
           response = new TimeoutError();
+
+          defineDeprecatedErrorsProperty(response);
         } else if (textStatus === 'abort') {
           response = new AbortError();
+
+          defineDeprecatedErrorsProperty(response);
         } else {
           response = this.handleResponse(
              jqXHR.status,
@@ -512,35 +540,43 @@ export default Mixin.create({
    */
   handleResponse(status, headers, payload, requestData) {
     payload = (payload === null || payload === undefined) ? {} : payload;
-    const errors = this.normalizeErrorResponse(status, headers, payload);
+
+    let error;
 
     if (this.isSuccess(status, headers, payload)) {
       return payload;
     } else if (this.isUnauthorizedError(status, headers, payload)) {
-      return new UnauthorizedError(errors);
+      error = new UnauthorizedError(payload);
     } else if (this.isForbiddenError(status, headers, payload)) {
-      return new ForbiddenError(errors);
+      error = new ForbiddenError(payload);
     } else if (this.isInvalidError(status, headers, payload)) {
-      return new InvalidError(errors);
+      error = new InvalidError(payload);
     } else if (this.isBadRequestError(status, headers, payload)) {
-      return new BadRequestError(errors);
+      error = new BadRequestError(payload);
     } else if (this.isNotFoundError(status, headers, payload)) {
-      return new NotFoundError(errors);
+      error = new NotFoundError(payload);
     } else if (this.isAbortError(status, headers, payload)) {
-      return new AbortError(errors);
+      error = new AbortError(payload);
     } else if (this.isConflictError(status, headers, payload)) {
-      return new ConflictError(errors);
+      error = new ConflictError(payload);
     } else if (this.isServerError(status, headers, payload)) {
-      return new ServerError(errors);
+      error = new ServerError(payload);
+    } else {
+      let detailedMessage = this.generateDetailedMessage(
+        status,
+        headers,
+        payload,
+        requestData
+      );
+
+      error = new AjaxError(payload, detailedMessage);
     }
 
-    const detailedMessage = this.generateDetailedMessage(
-      status,
-      headers,
-      payload,
-      requestData
-    );
-    return new AjaxError(errors, detailedMessage);
+    let errors = this.normalizeErrorResponse(status, headers, payload);
+
+    defineDeprecatedErrorsProperty(error, errors);
+
+    return error;
   },
 
   /**

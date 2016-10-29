@@ -577,40 +577,6 @@ describe('Unit | Mixin | ajax request', function() {
       });
   });
 
-  it('it always returns error objects with status codes as strings', function() {
-    const response = [404, { 'Content-Type': 'application/json' }, ''];
-    this.server.get('/posts', () => response);
-
-    const service = new AjaxRequest();
-    return service.request('/posts')
-      .then(function() {
-        throw new Error('success handler should not be called');
-      })
-      .catch(function(result) {
-        expect(result.errors[0].status).to.equal('404');
-      });
-  });
-
-  it('it coerces payload error response status codes to strings', function() {
-    const body = {
-      errors: [
-        { status: 403, message: 'Permission Denied' }
-      ]
-    };
-    const response = [403, { 'Content-Type': 'application/json' }, JSON.stringify(body)];
-    this.server.get('/posts', () => response);
-
-    const service = new AjaxRequest();
-    return service.request('/posts')
-      .then(function() {
-        throw new Error('success handler should not be called');
-      })
-      .catch(function(result) {
-        expect(result.errors[0].status).to.equal('403');
-        expect(result.errors[0].message).to.equal('Permission Denied');
-      });
-  });
-
   it('it throws an error when the user tries to use `.get` to make a request', function() {
     const service = new AjaxRequest();
     service.set('someProperty', 'foo');
@@ -881,6 +847,32 @@ describe('Unit | Mixin | ajax request', function() {
     });
   });
 
+  describe('[ISSUE 175] error property deprecation', function() {
+    beforeEach(function() {
+      // eslint-disable-next-line
+      Ember.ENV.RAISE_ON_DEPRECATION = true;
+    });
+
+    afterEach(function() {
+      // eslint-disable-next-line
+      Ember.ENV.RAISE_ON_DEPRECATION = false;
+    });
+
+    it('notifies', function() {
+      this.server.get('/posts', jsonFactory(404, { errors: [{ id: 1, message: 'error description' }] }));
+      const service = new AjaxRequest();
+      return service.request('/posts')
+        .then(function() {
+          throw new Error('success handler should not be called');
+        })
+        .catch(function(reason) {
+          expect(function() {
+            reason.errors;
+          }).to.throws('This property will be removed in ember-ajax 3.0.0. Please use `payload` going forward. Note the attached URL for details.');
+        });
+    });
+  });
+
   describe('error handlers', function() {
     it('handles a TimeoutError correctly', function() {
       this.server.get('/posts', jsonFactory(200), 2);
@@ -891,7 +883,7 @@ describe('Unit | Mixin | ajax request', function() {
         })
         .catch(function(reason) {
           expect(isTimeoutError(reason)).to.be.ok;
-          expect(reason.errors && typeOf(reason.errors) === 'array').to.be.ok;
+          expect(reason.payload).to.be.null;
         });
     });
 
@@ -905,9 +897,15 @@ describe('Unit | Mixin | ajax request', function() {
           })
           .catch(function(reason) {
             expect(reason instanceof errorClass).to.be.ok;
-            expect(reason.errors && typeOf(reason.errors) === 'array').to.be.ok;
-            expect(reason.errors[0].id).to.equal(1);
-            expect(reason.errors[0].message).to.equal('error description');
+            expect(reason.payload).to.not.be.undefined;
+
+            let {
+              errors
+            } = reason.payload;
+
+            expect(errors && typeOf(errors) === 'array').to.be.ok;
+            expect(errors[0].id).to.equal(1);
+            expect(errors[0].message).to.equal('error description');
           });
       });
     }
