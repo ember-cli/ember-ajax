@@ -1,14 +1,22 @@
 {
   "name": "ember-ajax",
   "dependencies": {
+    "chai": "~2.3.0",
     "ember": "~2.6.0",
     "ember-cli-shims": "0.1.0",
+    "ember-mocha-adapter": "~0.3.1",
     "ember-qunit-notifications": "0.1.0",
-    "mocha": "~2.2.4",
-    "chai": "~2.3.0",
-    "ember-mocha-adapter": "~0.3.1"
+    "mocha": "~2.2.4"
   },
   "resolutions": {
     "ember": "~2.5.0"
-  }
+  },
+  "version": "2.5.2",
+  "description": "Service for making AJAX requests in Ember 1.13+ applications.",
+  "main": "index.js",
+  "repository": {
+    "url": "git@github.com:ember-cli/ember-ajax.git",
+    "type": "git"
+  },
+  "license": "MIT"
 }
