@@ -812,6 +812,17 @@ describe('Unit | Mixin | ajax request', function() {
       });
     });
 
+    it('correctly handles a host without a namespace', function() {
+      class HostWithoutNamespace extends AjaxRequest {
+        get host() {
+          return 'http://foo.com';
+        }
+      }
+
+      const req = new HostWithoutNamespace();
+      expect(req._buildURL('baz')).to.equal('http://foo.com/baz');
+    });
+
     it('correctly handles a host provided on the request options', function() {
       const req = new AjaxRequest();
       expect(req._buildURL('/baz', { host: 'http://foo.com' })).to.equal('http://foo.com/baz');
