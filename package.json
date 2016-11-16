@@ -11,7 +11,10 @@
     "start": "ember server",
     "test": "ember try:each"
   },
-  "repository": "ember-cli/ember-ajax",
+  "repository": {
+    "url": "git@github.com:ember-cli/ember-ajax.git",
+    "type": "git"
+  },
   "engines": {
     "node": ">= 0.12"
   },
@@ -21,7 +24,6 @@
     "config/environment.js",
     "index.js"
   ],
-  "author": "",
   "license": "MIT",
   "devDependencies": {
     "broccoli-asset-rev": "^2.4.3",
@@ -58,5 +60,6 @@
   },
   "ember-addon": {
     "configPath": "tests/dummy/config"
-  }
+  },
+  "main": "index.js"
 }
