@@ -1,69 +1,74 @@
-import parseResponseHeaders from 'ember-ajax/-private/utils/parse-response-headers';
+import parseResponseHeaders, { CRLF } from 'ember-ajax/-private/utils/parse-response-headers';
 import { describe, it } from 'mocha';
-import { assert } from 'chai';
+import { expect } from 'chai';
 
-const { deepEqual, equal } = assert;
+function buildHeaderString(array) {
+  return array.join(CRLF);
+}
 
-const CRLF = '\u000d\u000a';
+function transform(value) {
+  if (typeof value === 'string') {
+    value = [value];
+  }
 
-describe('unit/adapters/parse-response-headers', function() {
-  it('returns {} when headersString is undefined', function() {
-    let headers = parseResponseHeaders(undefined);
+  return parseResponseHeaders(buildHeaderString(value));
+}
 
-    deepEqual(headers, {}, '{} is returned');
+describe('unit/-private/utils/parse-response-headers', function() {
+
+  describe('parsing headers', function() {
+    it('can parse a set of multiple headers', function() {
+      const headers = transform([
+        'key: value',
+        'foo: bar'
+      ]);
+
+      expect(headers).to.deep.equal({
+        key: 'value',
+        foo: 'bar'
+      });
+    });
+
+    it('returns an empty object when the headers are undefined', function() {
+      const headers = parseResponseHeaders(undefined);
+
+      expect(headers).to.deep.equal({});
+    });
+
+    it('ignores headers that do not contain a colon', function() {
+      expect(transform('no colon')).to.deep.equal({});
+    });
   });
 
-  it('header parsing', function() {
-    let headersString = [
-      'Content-Encoding: gzip',
-      'content-type: application/json; charset=utf-8',
-      'date: Fri, 12 Feb 2016 19:21:00 GMT'
-    ].join(CRLF);
+  describe('extracting header names', function() {
+    it('strips leading whitespace', function() {
+      expect(transform(' key: value')).to.have.property('key');
+    });
 
-    let headers = parseResponseHeaders(headersString);
-
-    equal(headers['Content-Encoding'], 'gzip', 'parses basic header pair');
-    equal(headers['content-type'], 'application/json; charset=utf-8', 'parses header with complex value');
-    equal(headers.date, 'Fri, 12 Feb 2016 19:21:00 GMT', 'parses header with date value');
+    it('strips trailing whitespace', function() {
+      expect(transform('key : value')).to.have.property('key');
+    });
   });
 
-  it('field-name parsing', function() {
-    let headersString = [
-      ' name-with-leading-whitespace: some value',
-      'name-with-whitespace-before-colon : another value'
-    ].join(CRLF);
+  describe('extracting header values', function() {
+    describe('leading whitespace', function() {
+      it('can handle it', function() {
+        expect(transform('key: value')).to.have.property('key', 'value');
+      });
 
-    let headers = parseResponseHeaders(headersString);
+      it('does not require it', function() {
+        expect(transform('key:value')).to.have.property('key', 'value');
+      });
+    });
 
-    equal(headers['name-with-leading-whitespace'], 'some value', 'strips leading whitespace from field-name');
-    equal(headers['name-with-whitespace-before-colon'], 'another value', 'strips whitespace before colon from field-name');
-  });
+    describe('trailing whitespace', function() {
+      it('can handle it', function() {
+        expect(transform('key: value ')).to.have.property('key', 'value');
+      });
+    });
 
-  it('field-value parsing', function() {
-    let headersString = [
-      'value-with-leading-space: value with leading whitespace',
-      'value-without-leading-space:value without leading whitespace',
-      'value-with-colon: value with: a colon',
-      'value-with-trailing-whitespace: banana '
-    ].join(CRLF);
-
-    let headers = parseResponseHeaders(headersString);
-
-    equal(headers['value-with-leading-space'], 'value with leading whitespace', 'strips leading whitespace in field-value');
-    equal(headers['value-without-leading-space'], 'value without leading whitespace', 'works without leaading whitespace in field-value');
-    equal(headers['value-with-colon'], 'value with: a colon', 'has correct value when value contains a colon');
-    equal(headers['value-with-trailing-whitespace'], 'banana', 'strips trailing whitespace from field-value');
-  });
-
-  it('ignores headers that do not contain a colon', function() {
-    let headersString = [
-      'Content-Encoding: gzip',
-      'I am ignored because I do not contain a colon'
-    ].join(CRLF);
-
-    let headers = parseResponseHeaders(headersString);
-
-    equal(headers['Content-Encoding'], 'gzip', 'parses basic header pair');
-    equal(Object.keys(headers).length, 1, 'only has the one valid header');
+    it('can handle a value containing a colon', function() {
+      expect(transform('key: colon : in value')).to.have.property('key', 'colon : in value');
+    });
   });
 });
