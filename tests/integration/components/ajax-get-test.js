@@ -1,5 +1,5 @@
-import { describeComponent, it } from 'ember-mocha';
-import { beforeEach, afterEach } from 'mocha';
+import { describeComponent } from 'ember-mocha';
+import { beforeEach, afterEach, it } from 'mocha';
 import { expect } from 'chai';
 
 import Pretender from 'pretender';

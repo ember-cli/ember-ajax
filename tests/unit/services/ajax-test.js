@@ -1,8 +1,8 @@
 import Ember from 'ember';
 import Service from 'ember-ajax/services/ajax';
 
-import { describeModule, it } from 'ember-mocha';
-import { beforeEach, afterEach } from 'mocha';
+import { describeModule } from 'ember-mocha';
+import { beforeEach, afterEach, it } from 'mocha';
 import { assert } from 'chai';
 
 const { equal } = assert;

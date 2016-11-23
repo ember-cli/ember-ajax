@@ -1,8 +1,8 @@
 import Ember from 'ember';
 import hbs from 'htmlbars-inline-precompile';
 
-import { describeComponent, it } from 'ember-mocha';
-import { beforeEach, afterEach } from 'mocha';
+import { describeComponent } from 'ember-mocha';
+import { beforeEach, afterEach, it } from 'mocha';
 import { expect } from 'chai';
 
 import AjaxService from 'ember-ajax/services/ajax';
