@@ -1,52 +1,63 @@
 import { describe, it } from 'mocha';
-import { assert } from 'chai';
+import { expect } from 'chai';
 
-import { RequestURL } from 'ember-ajax/-private/utils/url-helpers';
-
-const { equal, ok, notOk } = assert;
+import { isFullURL, parseURL, haveSameHost } from 'ember-ajax/-private/utils/url-helpers';
 
 describe('Unit | Utility | url helpers', function() {
-  it('RequestURL Class: parses the parts of a URL correctly', function() {
-    const url = 'https://google.com/test?a=b#hash';
-    const obj = new RequestURL(url);
-    equal(obj.href, url);
-    equal(obj.protocol, 'https:');
-    equal(obj.hostname, 'google.com');
-    // equal(obj.port, ''); TODO: Why does Phantom return '0'?
-    equal(obj.pathname, '/test');
-    equal(obj.search, '?a=b');
-    equal(obj.hash, '#hash');
+  describe('parseURL', function() {
+    it('parses the parts of a URL correctly', function() {
+      const parsed = parseURL('https://google.com/test?a=b#hash');
+      const desired = {
+        hash: '#hash',
+        hostname: 'google.com',
+        href: 'https://google.com/test?a=b#hash',
+        pathname: '/test',
+        port: '',
+        protocol: 'https:',
+        search: '?a=b'
+      };
+
+      expect(parsed).to.deep.equal(desired);
+    });
   });
 
-  it('RequestURL Class: can detect if the url is complete', function() {
-    const obj = new RequestURL('http://google.com/test');
-    ok(obj.isComplete);
+  describe('isFullURL', function() {
+    it('recognizes a URL with a protocol', function() {
+      expect(isFullURL('http://google.com/test')).to.be.ok;
+    });
 
-    const obj2 = new RequestURL('google.com/test');
-    notOk(obj2.isComplete);
+    it('does not recognize a URL without a protocol', function() {
+      expect(isFullURL('google.com/test')).not.to.be.ok;
+    });
 
-    const obj3 = new RequestURL('/test');
-    notOk(obj3.isComplete);
-
-    const obj4 = new RequestURL('test/http/http');
-    notOk(obj4.isComplete);
+    it('is not tricked by a URL with a protocol as part of the path', function() {
+      expect(isFullURL('test/http/http')).not.to.be.ok;
+    });
   });
 
-  it('RequestURL Class: can detect if two hosts are the same', function() {
-    function sameHost(urlA, urlB, match = true) {
-      const a = new RequestURL(urlA);
-      const b = new RequestURL(urlB);
-      if (match) {
-        ok(a.sameHost(b), `${urlA} has the same host as ${urlB}`);
-      } else {
-        notOk(a.sameHost(b), `${urlA} does not have the same host as ${urlB}`);
+  describe('haveSameHost', function() {
+    describe('matching hosts', function() {
+      function verify(a, b) {
+        expect(haveSameHost(a, b)).to.be.ok;
       }
-    }
 
-    sameHost('https://google.com', 'https://google.com');
-    sameHost('https://google.com', 'http://google.com', false);
-    sameHost('http://google.com', 'google.com', false);
-    sameHost('http://google.com:8080', 'http://google.com:8080');
-    sameHost('http://google.com:8080', 'http://google.com:8081', false);
+      it('matches hosts with the same protocol, hostname and port', function() {
+        verify('https://foo.com/foo', 'https://foo.com/bar');
+      });
+    });
+
+    describe('mis-matched hosts', function() {
+      function verify(a, b) {
+        expect(haveSameHost(a, b)).not.to.be.ok;
+      }
+
+      it('does not match if the protocol is different', function() {
+        verify('http://foo.com', 'https://foo.com');
+      });
+
+      it('does not match if the host name is different', function() {
+        verify('https://bar.com', 'https://foo.com');
+      });
+    });
   });
 });

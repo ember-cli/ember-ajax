@@ -23,7 +23,7 @@ import {
 } from '../errors';
 import parseResponseHeaders from 'ember-ajax/-private/utils/parse-response-headers';
 import getHeader from 'ember-ajax/-private/utils/get-header';
-import { RequestURL } from 'ember-ajax/-private/utils/url-helpers';
+import { isFullURL, parseURL, haveSameHost } from 'ember-ajax/-private/utils/url-helpers';
 import ajax from 'ember-ajax/utils/ajax';
 
 const {
@@ -477,11 +477,8 @@ export default Mixin.create({
    * @returns {string} the URL to make a request to
    */
   _buildURL(url, options = {}) {
-    const urlObject = new RequestURL(url);
-
-    // If the URL passed is not relative, return the whole URL
-    if (urlObject.isComplete) {
-      return urlObject.href;
+    if (isFullURL(url)) {
+      return url;
     }
 
     const host = options.host || get(this, 'host');
@@ -623,19 +620,18 @@ export default Mixin.create({
     url = url || '';
     host = host || get(this, 'host') || '';
 
-    const urlObject = new RequestURL(url);
     const trustedHosts = get(this, 'trustedHosts') || A();
+    const { hostname } = parseURL(url);
 
     // Add headers on relative URLs
-    if (!urlObject.isComplete) {
+    if (!isFullURL(url)) {
       return true;
-    } else if (trustedHosts.find((matcher) => this._matchHosts(urlObject.hostname, matcher))) {
+    } else if (trustedHosts.find((matcher) => this._matchHosts(hostname, matcher))) {
       return true;
     }
 
     // Add headers on matching host
-    const hostObject = new RequestURL(host);
-    return urlObject.sameHost(hostObject);
+    return haveSameHost(url, host);
   },
 
   /**
