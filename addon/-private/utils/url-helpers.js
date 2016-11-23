@@ -1,5 +1,5 @@
 /* global require, module, URL */
-import isFastBoot from './is-fastboot';
+import isFastBoot from 'ember-ajax/-private/utils/is-fastboot';
 
 const completeUrlRegex = /^(http|https)/;
 

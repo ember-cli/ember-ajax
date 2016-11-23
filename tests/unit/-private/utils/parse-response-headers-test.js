@@ -1,4 +1,4 @@
-import parseResponseHeaders from 'ember-ajax/utils/parse-response-headers';
+import parseResponseHeaders from 'ember-ajax/-private/utils/parse-response-headers';
 import { describe, it } from 'mocha';
 import { assert } from 'chai';
 

@@ -21,10 +21,10 @@ import {
   isServerError,
   isSuccess
 } from '../errors';
-import parseResponseHeaders from '../utils/parse-response-headers';
-import getHeader from '../utils/get-header';
-import { RequestURL } from '../utils/url-helpers';
-import ajax from '../utils/ajax';
+import parseResponseHeaders from 'ember-ajax/-private/utils/parse-response-headers';
+import getHeader from 'ember-ajax/-private/utils/get-header';
+import { RequestURL } from 'ember-ajax/-private/utils/url-helpers';
+import ajax from 'ember-ajax/utils/ajax';
 
 const {
   $,

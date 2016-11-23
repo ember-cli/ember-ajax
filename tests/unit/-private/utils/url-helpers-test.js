@@ -1,7 +1,7 @@
 import { describe, it } from 'mocha';
 import { assert } from 'chai';
 
-import { RequestURL } from 'ember-ajax/utils/url-helpers';
+import { RequestURL } from 'ember-ajax/-private/utils/url-helpers';
 
 const { equal, ok, notOk } = assert;
 
