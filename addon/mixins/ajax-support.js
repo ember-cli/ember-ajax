@@ -34,7 +34,7 @@ export default Mixin.create({
    */
   headers: alias('ajaxService.headers'),
 
-  ajax(url, type, options = {}) {
+  ajax(url) {
     const augmentedOptions = this.ajaxOptions(...arguments);
 
     return this.get('ajaxService').request(url, augmentedOptions);

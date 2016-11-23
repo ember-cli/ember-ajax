@@ -1,5 +1,8 @@
 module.exports = {
-  extends: 'plugin:ember-suave/recommended',
+  extends: [
+    'eslint:recommended',
+    'plugin:ember-suave/recommended'
+  ],
   root: true,
   parserOptions: {
     ecmaVersion: 6,

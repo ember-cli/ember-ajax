@@ -27,7 +27,6 @@ import { isFullURL, parseURL, haveSameHost } from 'ember-ajax/-private/utils/url
 import ajax from 'ember-ajax/utils/ajax';
 
 const {
-  $,
   A,
   Error: EmberError,
   Logger,
