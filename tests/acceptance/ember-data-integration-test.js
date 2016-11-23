@@ -69,7 +69,7 @@ describe('Acceptance | ember data integration', function() {
 
   it('respects ajaxOptions on the target adapter', function() {
     server.get('api/posts/1', function({ requestHeaders }) {
-      let xSillyHeader = requestHeaders['X-Silly-Option'];
+      const xSillyHeader = requestHeaders['X-Silly-Option'];
       equal(xSillyHeader, 'Hi!');
 
       return jsonResponse(200, {

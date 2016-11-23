@@ -7,7 +7,7 @@ export default Component.extend({
   ajax: inject.service(),
   actions: {
     load() {
-      let url = this.get('url');
+      const url = this.get('url');
       return this.get('ajax').request(url)
         .then((data) => {
           this.setProperties({

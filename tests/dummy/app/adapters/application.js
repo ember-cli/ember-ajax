@@ -7,7 +7,7 @@ export default JSONAPIAdapter.extend(AjaxServiceSupport, {
   namespace: 'api',
 
   ajaxOptions() {
-    let hash = this._super(...arguments);
+    const hash = this._super(...arguments);
 
     hash.headers = {
       'X-Silly-Option': 'Hi!'

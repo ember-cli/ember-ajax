@@ -9,6 +9,10 @@ module.exports = {
     'browser': true
   },
   rules: {
-    'ember-suave/no-const-outside-module-scope': 'off'
+    // Ember Suave
+    'ember-suave/no-const-outside-module-scope': 'off',
+
+    // Built-In Rules
+    'prefer-const': 'error'
   }
 };

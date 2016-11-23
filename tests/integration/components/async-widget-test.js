@@ -39,10 +39,10 @@ describeComponent(
       const authToken = 'foo';
       this.register('service:session', Service.extend({ authToken }));
 
-      let receivedHeaders = [];
+      const receivedHeaders = [];
       this.register('service:fajax', AjaxService.extend({
         options() {
-          let options = this._super(...arguments);
+          const options = this._super(...arguments);
           Object.keys(options.headers).forEach((key) => {
             receivedHeaders.push([key, options.headers[key]]);
           });
@@ -52,7 +52,7 @@ describeComponent(
         headers: computed('session.authToken', {
           get() {
             const headers = {};
-            let authToken = this.get('session.authToken');
+            const authToken = this.get('session.authToken');
             if (authToken) {
               headers.authToken = authToken;
             }

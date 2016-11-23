@@ -60,7 +60,7 @@ function defineDeprecatedErrorsProperty(error, errors) {
         }
       );
 
-      let defaultError = {
+      const defaultError = {
         title: 'Ajax Error',
         detail: this.message
       };
@@ -273,7 +273,7 @@ export default Mixin.create({
 
     return new Promise((resolve, reject) => {
       hash.success = (payload, textStatus, jqXHR) => {
-        let response = this.handleResponse(
+        const response = this.handleResponse(
           jqXHR.status,
           parseResponseHeaders(jqXHR.getAllResponseHeaders()),
           payload,
@@ -291,8 +291,8 @@ export default Mixin.create({
 
       hash.error = (jqXHR, textStatus, errorThrown) => {
         runInDebug(function() {
-          let message = `The server returned an empty string for ${requestData.type} ${requestData.url}, which cannot be parsed into a valid JSON. Return either null or {}.`;
-          let validJSONString = !(textStatus === 'parsererror' && jqXHR.responseText === '');
+          const message = `The server returned an empty string for ${requestData.type} ${requestData.url}, which cannot be parsed into a valid JSON. Return either null or {}.`;
+          const validJSONString = !(textStatus === 'parsererror' && jqXHR.responseText === '');
           warn(message, validJSONString, {
             id: 'ds.adapter.returned-empty-string-as-JSON'
           });
@@ -559,7 +559,7 @@ export default Mixin.create({
     } else if (this.isServerError(status, headers, payload)) {
       error = new ServerError(payload);
     } else {
-      let detailedMessage = this.generateDetailedMessage(
+      const detailedMessage = this.generateDetailedMessage(
         status,
         headers,
         payload,
@@ -569,7 +569,7 @@ export default Mixin.create({
       error = new AjaxError(payload, detailedMessage);
     }
 
-    let errors = this.normalizeErrorResponse(status, headers, payload);
+    const errors = this.normalizeErrorResponse(status, headers, payload);
 
     defineDeprecatedErrorsProperty(error, errors);
 
@@ -853,7 +853,7 @@ export default Mixin.create({
     if (isArray(payload.errors)) {
       return payload.errors.map(function(error) {
         if (isObject(error)) {
-          let ret = merge({}, error);
+          const ret = merge({}, error);
           ret.status = `${error.status}`;
           return ret;
         } else {
