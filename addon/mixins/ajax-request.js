@@ -85,10 +85,14 @@ function endsWithSlash(string) {
   return string.charAt(string.length - 1) === '/';
 }
 
+function removeLeadingSlash(string) {
+  return string.substring(1);
+}
+
 function stripSlashes(path) {
   // make sure path starts with `/`
   if (startsWithSlash(path)) {
-    path = path.substring(1);
+    path = removeLeadingSlash(path);
   }
 
   // remove end `/`
@@ -481,10 +485,18 @@ export default Mixin.create({
       return url;
     }
 
-    const host = options.host || get(this, 'host');
+    const urlParts = [];
+
+    let host = options.host || get(this, 'host');
+    if (host) {
+      host = stripSlashes(host);
+    }
+    urlParts.push(host);
+
     let namespace = options.namespace || get(this, 'namespace');
     if (namespace) {
       namespace = stripSlashes(namespace);
+      urlParts.push(namespace);
     }
 
     // If the URL has already been constructed (presumably, by Ember Data), then we should just leave it alone
@@ -493,27 +505,14 @@ export default Mixin.create({
       return url;
     }
 
-    let fullUrl = '';
-    // Add the host, if it exists
-    if (host) {
-      fullUrl += host;
+    // *Only* remove a leading slash -- we need to maintain a trailing slash for
+    // APIs that differentiate between it being and not being present
+    if (startsWithSlash(url)) {
+      url = removeLeadingSlash(url);
     }
-    // Add the namespace, if it exists
-    if (namespace) {
-      if (!endsWithSlash(fullUrl)) {
-        fullUrl += '/';
-      }
-      fullUrl += namespace;
-    }
-    // Add the URL segment, if it exists
-    if (url) {
-      if (!startsWithSlash(url)) {
-        fullUrl += '/';
-      }
-      fullUrl += url;
-    }
+    urlParts.push(url);
 
-    return fullUrl;
+    return urlParts.join('/');
   },
 
   /**
