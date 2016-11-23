@@ -22,6 +22,7 @@ import {
   isSuccess
 } from '../errors';
 import parseResponseHeaders from '../utils/parse-response-headers';
+import getHeader from '../utils/get-header';
 import { RequestURL } from '../utils/url-helpers';
 import ajax from '../utils/ajax';
 
@@ -44,7 +45,7 @@ const {
   testing,
   warn
 } = Ember;
-const JSONAPIContentType = 'application/vnd.api+json';
+const JSONAPIContentType = /^application\/vnd\.api\+json/i;
 
 function defineDeprecatedErrorsProperty(error, errors) {
   Object.defineProperty(error, 'errors', {
@@ -73,7 +74,7 @@ function isJSONAPIContentType(header) {
   if (isNone(header)) {
     return false;
   }
-  return header.indexOf(JSONAPIContentType) === 0;
+  return !!header.match(JSONAPIContentType);
 }
 
 function startsWithSlash(string) {
@@ -260,7 +261,7 @@ export default Mixin.create({
       url: hash.url
     };
 
-    if (isJSONAPIContentType(hash.headers['Content-Type']) && requestData.type !== 'GET') {
+    if (isJSONAPIContentType(getHeader(hash.headers, 'Content-Type')) && requestData.type !== 'GET') {
       if (typeof hash.data === 'object') {
         hash.data = JSON.stringify(hash.data);
       }
@@ -651,9 +652,9 @@ export default Mixin.create({
    */
   generateDetailedMessage(status, headers, payload, requestData) {
     let shortenedPayload;
-    const payloadContentType = headers['Content-Type'] || 'Empty Content-Type';
+    const payloadContentType = getHeader(headers, 'Content-Type') || 'Empty Content-Type';
 
-    if (payloadContentType === 'text/html' && payload.length > 250) {
+    if (payloadContentType.toLowerCase() === 'text/html' && payload.length > 250) {
       shortenedPayload = '[Omitted Lengthy HTML]';
     } else {
       shortenedPayload = JSON.stringify(payload);

@@ -27,118 +27,6 @@ describe('Unit | Mixin | ajax request', function() {
     this.server.shutdown();
   });
 
-  it('headers are set if the URL matches the host', function() {
-    this.server.get('http://example.com/test', (req) => {
-      const { requestHeaders } = req;
-      expect(requestHeaders['Content-Type']).to.equal('application/json');
-      expect(requestHeaders['Other-key']).to.equal('Other Value');
-      return jsonResponse();
-    });
-
-    const RequestWithHeaders = AjaxRequest.extend({
-      host: 'http://example.com',
-      headers: { 'Content-Type': 'application/json', 'Other-key': 'Other Value' }
-    });
-
-    const service = new RequestWithHeaders();
-    return service.request('http://example.com/test');
-  });
-
-  it('headers are set if the URL is relative', function() {
-    this.server.get('/some/relative/url', (req) => {
-      const { requestHeaders } = req;
-      expect(requestHeaders['Content-Type']).to.equal('application/json');
-      expect(requestHeaders['Other-key']).to.equal('Other Value');
-      return jsonResponse();
-    });
-
-    const RequestWithHeaders = AjaxRequest.extend({
-      headers: { 'Content-Type': 'application/json', 'Other-key': 'Other Value' }
-    });
-
-    const service = new RequestWithHeaders();
-    return service.request('/some/relative/url');
-  });
-
-  it('headers are set if the URL matches one of the RegExp trustedHosts', function() {
-    this.server.get('http://my.example.com', (req) => {
-      const { requestHeaders } = req;
-      expect(requestHeaders['Other-key']).to.equal('Other Value');
-      return jsonResponse();
-    });
-
-    const RequestWithHeaders = AjaxRequest.extend({
-      host: 'some-other-host.com',
-      trustedHosts: A([
-        4,
-        'notmy.example.com',
-        /example\./
-      ]),
-      headers: { 'Content-Type': 'application/json', 'Other-key': 'Other Value' }
-    });
-
-    const service = new RequestWithHeaders();
-    return service.request('http://my.example.com');
-  });
-
-  it('headers are set if the URL matches one of the string trustedHosts', function() {
-    this.server.get('http://foo.bar.com', (req) => {
-      const { requestHeaders } = req;
-      expect(requestHeaders['Other-key']).to.equal('Other Value');
-      return jsonResponse();
-    });
-
-    const RequestWithHeaders = AjaxRequest.extend({
-      host: 'some-other-host.com',
-      trustedHosts: A([
-        'notmy.example.com',
-        /example\./,
-        'foo.bar.com'
-      ]),
-      headers: { 'Content-Type': 'application/json', 'Other-key': 'Other Value' }
-    });
-
-    const service = new RequestWithHeaders();
-    return service.request('http://foo.bar.com');
-  });
-
-  it('headers are not set if the URL does not match the host', function() {
-    this.server.get('http://example.com', (req) => {
-      const { requestHeaders } = req;
-      expect(requestHeaders['Other-key']).to.not.equal('Other Value');
-      return jsonResponse();
-    });
-
-    const RequestWithHeaders = AjaxRequest.extend({
-      host: 'some-other-host.com',
-      headers: { 'Content-Type': 'application/json', 'Other-key': 'Other Value' }
-    });
-
-    const service = new RequestWithHeaders();
-    return service.request('http://example.com');
-  });
-
-  it('headers can be supplied on a per-request basis', function() {
-    this.server.get('http://example.com', (req) => {
-      const { requestHeaders } = req;
-      expect(requestHeaders['Per-Request-Key']).to.equal('Some value');
-      expect(requestHeaders['Other-key']).to.equal('Other Value');
-      return jsonResponse();
-    });
-
-    const RequestWithHeaders = AjaxRequest.extend({
-      host: 'http://example.com',
-      headers: { 'Content-Type': 'application/json', 'Other-key': 'Other Value' }
-    });
-
-    const service = new RequestWithHeaders();
-    return service.request('http://example.com', {
-      headers: {
-        'Per-Request-Key': 'Some value'
-      }
-    });
-  });
-
   describe('options method', function() {
     it('sets raw data', function() {
       const service = new AjaxRequest();
@@ -258,6 +146,85 @@ describe('Unit | Mixin | ajax request', function() {
           expect(numberOptionsCalls).to.equal(1);
         });
     });
+
+    describe('host', function() {
+      it('is set on the url (url starting with `/`)', function() {
+        const RequestWithHost = AjaxRequest.extend({
+          host: 'https://discuss.emberjs.com'
+        });
+
+        const service = new RequestWithHost();
+        const url = '/users/me';
+        const ajaxoptions = service.options(url);
+
+        expect(ajaxoptions.url).to.equal('https://discuss.emberjs.com/users/me');
+      });
+
+      it('is set on the url (url not starting with `/`)', function() {
+        const RequestWithHost = AjaxRequest.extend({
+          host: 'https://discuss.emberjs.com'
+        });
+
+        const service = new RequestWithHost();
+        const url = 'users/me';
+        const ajaxoptions = service.options(url);
+
+        expect(ajaxoptions.url).to.equal('https://discuss.emberjs.com/users/me');
+      });
+
+      it('is overridable on a per-request basis', function() {
+        const RequestWithHost = AjaxRequest.extend({
+          host: 'https://discuss.emberjs.com'
+        });
+
+        const service = new RequestWithHost();
+        const url = 'users/me';
+        const host = 'https://myurl.com';
+        const ajaxoptions = service.options(url, { host });
+
+        expect(ajaxoptions.url).to.equal('https://myurl.com/users/me');
+      });
+    });
+
+    describe('namespace', function() {
+      it('is set on the url (namespace starting with `/`)', function() {
+        const RequestWithHost = AjaxRequest.extend({
+          namespace: '/api/v1'
+        });
+
+        const service = new RequestWithHost();
+
+        expect(service.options('/users/me').url).to.equal('/api/v1/users/me');
+        expect(service.options('users/me').url).to.equal('/api/v1/users/me');
+      });
+
+      it('can be set on a per-request basis', function() {
+        const service = new AjaxRequest();
+
+        expect(service.options('users/me', { namespace: 'api' }).url).to.equal('/api/users/me');
+      });
+
+      it('is set on the url (namespace not starting with `/`)', function() {
+        const RequestWithHost = AjaxRequest.extend({
+          namespace: 'api/v1'
+        });
+
+        const service = new RequestWithHost();
+
+        expect(service.options('/users/me').url).to.equal('/api/v1/users/me');
+        expect(service.options('users/me').url).to.equal('/api/v1/users/me');
+      });
+    });
+
+    describe('type', function() {
+      it('defaults to GET', function() {
+        const service = new AjaxRequest();
+        const url = 'test';
+        const ajaxOptions = service.options(url);
+
+        expect(ajaxOptions.type).to.equal('GET');
+      });
+    });
   });
 
   it('can override the default `contentType` for the service', function() {
@@ -272,14 +239,6 @@ describe('Unit | Mixin | ajax request', function() {
     const service = new AjaxServiceWithDefaultContentType();
     const options = service.options('');
     expect(options.contentType).to.equal(defaultContentType);
-  });
-
-  it('options() type defaults to GET', function() {
-    const service = new AjaxRequest();
-    const url = 'test';
-    const ajaxOptions = service.options(url);
-
-    expect(ajaxOptions.type).to.equal('GET');
   });
 
   it('request() promise label is correct', function() {
@@ -417,130 +376,168 @@ describe('Unit | Mixin | ajax request', function() {
     return service.request(url, { method: 'POST' });
   });
 
-  it('options() host is set on the url (url starting with `/`)', function() {
-    const RequestWithHost = AjaxRequest.extend({
-      host: 'https://discuss.emberjs.com'
+  describe('explicit host in URL', function() {
+    it('overrides host property of class', function() {
+      const RequestWithHost = AjaxRequest.extend({
+        host: 'https://discuss.emberjs.com'
+      });
+
+      const service = new RequestWithHost();
+      const url = 'http://myurl.com/users/me';
+      const ajaxOptions = service.options(url);
+
+      expect(ajaxOptions.url).to.equal('http://myurl.com/users/me');
     });
 
-    const service = new RequestWithHost();
-    const url = '/users/me';
-    const ajaxoptions = service.options(url);
+    it('overrides host property in request config', function() {
+      const service = new AjaxRequest();
+      const host = 'https://discuss.emberjs.com';
+      const url = 'http://myurl.com/users/me';
+      const ajaxOptions = service.options(url, { host });
 
-    expect(ajaxoptions.url).to.equal('https://discuss.emberjs.com/users/me');
-  });
-
-  it('options() host is set on the url (url not starting with `/`)', function() {
-    const RequestWithHost = AjaxRequest.extend({
-      host: 'https://discuss.emberjs.com'
+      expect(ajaxOptions.url).to.equal('http://myurl.com/users/me');
     });
 
-    const service = new RequestWithHost();
-    const url = 'users/me';
-    const ajaxoptions = service.options(url);
+    it('without a protocol does not override config property', function() {
+      const RequestWithHost = AjaxRequest.extend({
+        host: 'https://discuss.emberjs.com'
+      });
 
-    expect(ajaxoptions.url).to.equal('https://discuss.emberjs.com/users/me');
+      const service = new RequestWithHost();
+      const url = 'myurl.com/users/me';
+      const ajaxOptions = service.options(url);
+
+      expect(ajaxOptions.url).to.equal('https://discuss.emberjs.com/myurl.com/users/me');
+    });
   });
 
-  it('options() host is overridable on a per-request basis', function() {
-    const RequestWithHost = AjaxRequest.extend({
-      host: 'https://discuss.emberjs.com'
+  describe('headers', function() {
+    it('is set if the URL matches the host', function() {
+      this.server.get('http://example.com/test', (req) => {
+        const { requestHeaders } = req;
+        expect(requestHeaders['Content-Type']).to.equal('application/json');
+        expect(requestHeaders['Other-key']).to.equal('Other Value');
+        return jsonResponse();
+      });
+
+      const RequestWithHeaders = AjaxRequest.extend({
+        host: 'http://example.com',
+        headers: { 'Content-Type': 'application/json', 'Other-key': 'Other Value' }
+      });
+
+      const service = new RequestWithHeaders();
+      return service.request('http://example.com/test');
     });
 
-    const service = new RequestWithHost();
-    const url = 'users/me';
-    const host = 'https://myurl.com';
-    const ajaxoptions = service.options(url, { host });
+    it('is set if the URL is relative', function() {
+      this.server.get('/some/relative/url', (req) => {
+        const { requestHeaders } = req;
+        expect(requestHeaders['Content-Type']).to.equal('application/json');
+        expect(requestHeaders['Other-key']).to.equal('Other Value');
+        return jsonResponse();
+      });
 
-    expect(ajaxoptions.url).to.equal('https://myurl.com/users/me');
-  });
+      const RequestWithHeaders = AjaxRequest.extend({
+        headers: { 'Content-Type': 'application/json', 'Other-key': 'Other Value' }
+      });
 
-  it('explicit host in URL overrides host property of class', function() {
-    const RequestWithHost = AjaxRequest.extend({
-      host: 'https://discuss.emberjs.com'
+      const service = new RequestWithHeaders();
+      return service.request('/some/relative/url');
     });
 
-    const service = new RequestWithHost();
-    const url = 'http://myurl.com/users/me';
-    const ajaxOptions = service.options(url);
+    it('is set if the URL matches one of the RegExp trustedHosts', function() {
+      this.server.get('http://my.example.com', (req) => {
+        const { requestHeaders } = req;
+        expect(requestHeaders['Other-key']).to.equal('Other Value');
+        return jsonResponse();
+      });
 
-    expect(ajaxOptions.url).to.equal('http://myurl.com/users/me');
-  });
+      const RequestWithHeaders = AjaxRequest.extend({
+        host: 'some-other-host.com',
+        trustedHosts: A([
+          4,
+          'notmy.example.com',
+          /example\./
+        ]),
+        headers: { 'Content-Type': 'application/json', 'Other-key': 'Other Value' }
+      });
 
-  it('explicit host in URL overrides host property in request config', function() {
-    const service = new AjaxRequest();
-    const host = 'https://discuss.emberjs.com';
-    const url = 'http://myurl.com/users/me';
-    const ajaxOptions = service.options(url, { host });
-
-    expect(ajaxOptions.url).to.equal('http://myurl.com/users/me');
-  });
-
-  it('explicit host in URL without a protocol does not override config property', function() {
-    const RequestWithHost = AjaxRequest.extend({
-      host: 'https://discuss.emberjs.com'
+      const service = new RequestWithHeaders();
+      return service.request('http://my.example.com');
     });
 
-    const service = new RequestWithHost();
-    const url = 'myurl.com/users/me';
-    const ajaxOptions = service.options(url);
+    it('is set if the URL matches one of the string trustedHosts', function() {
+      this.server.get('http://foo.bar.com', (req) => {
+        const { requestHeaders } = req;
+        expect(requestHeaders['Other-key']).to.equal('Other Value');
+        return jsonResponse();
+      });
 
-    expect(ajaxOptions.url).to.equal('https://discuss.emberjs.com/myurl.com/users/me');
-  });
+      const RequestWithHeaders = AjaxRequest.extend({
+        host: 'some-other-host.com',
+        trustedHosts: A([
+          'notmy.example.com',
+          /example\./,
+          'foo.bar.com'
+        ]),
+        headers: { 'Content-Type': 'application/json', 'Other-key': 'Other Value' }
+      });
 
-  it('options() namespace is set on the url (namespace starting with `/`)', function() {
-    const RequestWithHost = AjaxRequest.extend({
-      namespace: '/api/v1'
+      const service = new RequestWithHeaders();
+      return service.request('http://foo.bar.com');
     });
 
-    const service = new RequestWithHost();
+    it('is not set if the URL does not match the host', function() {
+      this.server.get('http://example.com', (req) => {
+        const { requestHeaders } = req;
+        expect(requestHeaders['Other-key']).to.not.equal('Other Value');
+        return jsonResponse();
+      });
 
-    expect(service.options('/users/me').url).to.equal('/api/v1/users/me');
-    expect(service.options('users/me').url).to.equal('/api/v1/users/me');
-  });
+      const RequestWithHeaders = AjaxRequest.extend({
+        host: 'some-other-host.com',
+        headers: { 'Content-Type': 'application/json', 'Other-key': 'Other Value' }
+      });
 
-  it('namespace can be set on a per-request basis', function() {
-    const service = new AjaxRequest();
-
-    expect(service.options('users/me', { namespace: 'api' }).url).to.equal('/api/users/me');
-  });
-
-  it('options() namespace is set on the url (namespace not starting with `/`)', function() {
-    const RequestWithHost = AjaxRequest.extend({
-      namespace: 'api/v1'
+      const service = new RequestWithHeaders();
+      return service.request('http://example.com');
     });
 
-    const service = new RequestWithHost();
+    it('can be supplied on a per-request basis', function() {
+      this.server.get('http://example.com', (req) => {
+        const { requestHeaders } = req;
+        expect(requestHeaders['Per-Request-Key']).to.equal('Some value');
+        expect(requestHeaders['Other-key']).to.equal('Other Value');
+        return jsonResponse();
+      });
 
-    expect(service.options('/users/me').url).to.equal('/api/v1/users/me');
-    expect(service.options('users/me').url).to.equal('/api/v1/users/me');
-  });
+      const RequestWithHeaders = AjaxRequest.extend({
+        host: 'http://example.com',
+        headers: { 'Content-Type': 'application/json', 'Other-key': 'Other Value' }
+      });
 
-  it('options() both host and namespace are set on the url', function() {
-    const RequestWithHost = AjaxRequest.extend({
-      host: 'https://discuss.emberjs.com',
-      namespace: '/api/v1'
+      const service = new RequestWithHeaders();
+      return service.request('http://example.com', {
+        headers: {
+          'Per-Request-Key': 'Some value'
+        }
+      });
     });
 
-    const service = new RequestWithHost();
-    const url = '/users/me';
-    const ajaxoptions = service.options(url);
+    it('can get the full list from class and request options', function() {
+      const RequestWithHeaders = AjaxRequest.extend({
+        headers: {
+          'Content-Type': 'application/vnd.api+json',
+          'Other-Value': 'Some Value'
+        }
+      });
 
-    expect(ajaxoptions.url).to.equal('https://discuss.emberjs.com/api/v1/users/me');
-  });
-
-  it('it can get the full header list from class and request options', function() {
-    const RequestWithHeaders = AjaxRequest.extend({
-      headers: {
-        'Content-Type': 'application/vnd.api+json',
-        'Other-Value': 'Some Value'
-      }
+      const service = new RequestWithHeaders();
+      const headers = { 'Third-Value': 'Other Thing' };
+      expect(Object.keys(service._getFullHeadersHash()).length).to.equal(2);
+      expect(Object.keys(service._getFullHeadersHash(headers)).length).to.equal(3);
+      expect(Object.keys(service.headers).length).to.equal(2);
     });
-
-    const service = new RequestWithHeaders();
-    const headers = { 'Third-Value': 'Other Thing' };
-    expect(Object.keys(service._getFullHeadersHash()).length).to.equal(2);
-    expect(Object.keys(service._getFullHeadersHash(headers)).length).to.equal(3);
-    expect(Object.keys(service.headers).length).to.equal(2);
   });
 
   it('it creates a detailed error message for unmatched server errors with an AJAX payload', function() {
@@ -776,6 +773,17 @@ describe('Unit | Mixin | ajax request', function() {
           });
         });
       });
+    });
+
+    it('correctly handles a host without a namespace', function() {
+      class HostWithoutNamespace extends AjaxRequest {
+        get host() {
+          return 'http://foo.com';
+        }
+      }
+
+      const req = new HostWithoutNamespace();
+      expect(req._buildURL('baz')).to.equal('http://foo.com/baz');
     });
 
     it('correctly handles a host provided on the request options', function() {

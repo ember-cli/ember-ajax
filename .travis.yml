@@ -16,6 +16,8 @@ node_js:
 cache:
   directories:
     - node_modules
+    - bower_components
+    - $HOME/.yarn-cache
 
 env:
   - EMBER_TRY_SCENARIO=default COVERAGE=true # Only log coverage from the default scenario
@@ -35,10 +37,10 @@ before_install:
   - sh -e /etc/init.d/xvfb start
   # Other setup
   - npm config set spin false
-  - npm install -g bower
+  - npm install -g bower yarn
 
 install:
-  - npm install
+  - yarn
   - bower install
 
 script:
