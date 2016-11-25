@@ -1,4 +1,4 @@
-import getHeader from 'ember-ajax/utils/get-header';
+import getHeader from 'ember-ajax/-private/utils/get-header';
 import { describe, it } from 'mocha';
 import { expect } from 'chai';
 

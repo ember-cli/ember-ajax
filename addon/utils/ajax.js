@@ -1,6 +1,6 @@
 /* global najax */
 import Ember from 'ember';
-import isFastBoot from './is-fastboot';
+import isFastBoot from 'ember-ajax/-private/utils/is-fastboot';
 
 const {
   $

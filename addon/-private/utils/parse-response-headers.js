@@ -1,24 +1,22 @@
-const CLRF = '\u000d\u000a';
+export const CRLF = '\u000d\u000a';
 
 export default function parseResponseHeaders(headersString) {
-  let headers = {};
+  const headers = {};
 
   if (!headersString) {
     return headers;
   }
 
-  let headerPairs = headersString.split(CLRF);
-
-  headerPairs.forEach((header) => {
+  return headersString.split(CRLF).reduce((hash, header) => {
     let [field, ...value] = header.split(':');
 
     field = field.trim();
     value = value.join(':').trim();
 
     if (value) {
-      headers[field] = value;
+      hash[field] = value;
     }
-  });
 
-  return headers;
+    return hash;
+  }, headers);
 }

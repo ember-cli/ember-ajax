@@ -21,10 +21,10 @@ import {
   isServerError,
   isSuccess
 } from '../errors';
-import parseResponseHeaders from '../utils/parse-response-headers';
-import getHeader from '../utils/get-header';
-import { RequestURL } from '../utils/url-helpers';
-import ajax from '../utils/ajax';
+import parseResponseHeaders from 'ember-ajax/-private/utils/parse-response-headers';
+import getHeader from 'ember-ajax/-private/utils/get-header';
+import { isFullURL, parseURL, haveSameHost } from 'ember-ajax/-private/utils/url-helpers';
+import ajax from 'ember-ajax/utils/ajax';
 
 const {
   $,
@@ -85,10 +85,14 @@ function endsWithSlash(string) {
   return string.charAt(string.length - 1) === '/';
 }
 
+function removeLeadingSlash(string) {
+  return string.substring(1);
+}
+
 function stripSlashes(path) {
   // make sure path starts with `/`
   if (startsWithSlash(path)) {
-    path = path.substring(1);
+    path = removeLeadingSlash(path);
   }
 
   // remove end `/`
@@ -477,17 +481,22 @@ export default Mixin.create({
    * @returns {string} the URL to make a request to
    */
   _buildURL(url, options = {}) {
-    const urlObject = new RequestURL(url);
-
-    // If the URL passed is not relative, return the whole URL
-    if (urlObject.isComplete) {
-      return urlObject.href;
+    if (isFullURL(url)) {
+      return url;
     }
 
-    const host = options.host || get(this, 'host');
+    const urlParts = [];
+
+    let host = options.host || get(this, 'host');
+    if (host) {
+      host = stripSlashes(host);
+    }
+    urlParts.push(host);
+
     let namespace = options.namespace || get(this, 'namespace');
     if (namespace) {
       namespace = stripSlashes(namespace);
+      urlParts.push(namespace);
     }
 
     // If the URL has already been constructed (presumably, by Ember Data), then we should just leave it alone
@@ -496,27 +505,14 @@ export default Mixin.create({
       return url;
     }
 
-    let fullUrl = '';
-    // Add the host, if it exists
-    if (host) {
-      fullUrl += host;
+    // *Only* remove a leading slash -- we need to maintain a trailing slash for
+    // APIs that differentiate between it being and not being present
+    if (startsWithSlash(url)) {
+      url = removeLeadingSlash(url);
     }
-    // Add the namespace, if it exists
-    if (namespace) {
-      if (!endsWithSlash(fullUrl)) {
-        fullUrl += '/';
-      }
-      fullUrl += namespace;
-    }
-    // Add the URL segment, if it exists
-    if (url) {
-      if (!startsWithSlash(url)) {
-        fullUrl += '/';
-      }
-      fullUrl += url;
-    }
+    urlParts.push(url);
 
-    return fullUrl;
+    return urlParts.join('/');
   },
 
   /**
@@ -623,19 +619,18 @@ export default Mixin.create({
     url = url || '';
     host = host || get(this, 'host') || '';
 
-    const urlObject = new RequestURL(url);
     const trustedHosts = get(this, 'trustedHosts') || A();
+    const { hostname } = parseURL(url);
 
     // Add headers on relative URLs
-    if (!urlObject.isComplete) {
+    if (!isFullURL(url)) {
       return true;
-    } else if (trustedHosts.find((matcher) => this._matchHosts(urlObject.hostname, matcher))) {
+    } else if (trustedHosts.find((matcher) => this._matchHosts(hostname, matcher))) {
       return true;
     }
 
     // Add headers on matching host
-    const hostObject = new RequestURL(host);
-    return urlObject.sameHost(hostObject);
+    return haveSameHost(url, host);
   },
 
   /**
