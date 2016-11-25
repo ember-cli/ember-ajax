@@ -1,8 +1,8 @@
 import Ember from 'ember';
 import Service from 'ember-ajax/services/ajax';
 
-import { describeModule, it } from 'ember-mocha';
-import { beforeEach, afterEach } from 'mocha';
+import { setupTest } from 'ember-mocha';
+import { beforeEach, afterEach, it, describe } from 'mocha';
 import { assert } from 'chai';
 
 const { equal } = assert;
@@ -13,7 +13,9 @@ import { jsonResponse } from 'dummy/tests/helpers/json';
 const { computed, run } = Ember;
 
 let service, server;
-describeModule('service:ajax', 'AJAX Service', function() {
+describe('AJAX Service', function() {
+  setupTest('service:ajax');
+
   beforeEach(function() {
     server = new Pretender();
   });
