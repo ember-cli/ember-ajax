@@ -671,7 +671,7 @@ broccoli-funnel-reducer@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/broccoli-funnel-reducer/-/broccoli-funnel-reducer-1.0.0.tgz#11365b2a785aec9b17972a36df87eef24c5cc0ea"
 
-broccoli-funnel@^1.0.0, broccoli-funnel@^1.0.1, broccoli-funnel@^1.0.6:
+broccoli-funnel@^1.0.0, broccoli-funnel@^1.0.1, broccoli-funnel@^1.0.6, broccoli-funnel@^1.0.9:
   version "1.0.9"
   resolved "https://registry.yarnpkg.com/broccoli-funnel/-/broccoli-funnel-1.0.9.tgz#1b2673be66dd8a8771214e3f3aeb7325012e4580"
   dependencies:
@@ -722,6 +722,19 @@ broccoli-merge-trees@^1.0.0, broccoli-merge-trees@^1.1.1, broccoli-merge-trees@^
     can-symlink "^1.0.0"
     fast-ordered-set "^1.0.2"
     fs-tree-diff "^0.5.2"
+    heimdalljs "^0.2.1"
+    heimdalljs-logger "^0.1.7"
+    rimraf "^2.4.3"
+    symlink-or-copy "^1.0.0"
+
+broccoli-merge-trees@^1.1.5:
+  version "1.1.5"
+  resolved "https://registry.yarnpkg.com/broccoli-merge-trees/-/broccoli-merge-trees-1.1.5.tgz#5831ab22d63a47deb653f82f4d9a9bb42991b98c"
+  dependencies:
+    broccoli-plugin "^1.0.0"
+    can-symlink "^1.0.0"
+    fast-ordered-set "^1.0.2"
+    fs-tree-diff "^0.5.4"
     heimdalljs "^0.2.1"
     heimdalljs-logger "^0.1.7"
     rimraf "^2.4.3"
@@ -1432,6 +1445,17 @@ ember-cli-broccoli-sane-watcher@^2.0.3:
     rsvp "^3.0.18"
     sane "^1.1.1"
 
+ember-cli-chai@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/ember-cli-chai/-/ember-cli-chai-0.2.0.tgz#0b3df476604396ccc87608d161a81c418b5c0446"
+  dependencies:
+    broccoli-funnel "^1.0.9"
+    broccoli-merge-trees "^1.1.5"
+    chai "^3.5.0"
+    ember-cli-babel "^5.1.7"
+    ember-cli-version-checker "^1.1.7"
+    resolve "^1.1.7"
+
 ember-cli-code-coverage@0.3.8:
   version "0.3.8"
   resolved "https://registry.yarnpkg.com/ember-cli-code-coverage/-/ember-cli-code-coverage-0.3.8.tgz#b3f8f765f3c9f34d3f2c78e5ace33bc681adad89"
@@ -1537,19 +1561,18 @@ ember-cli-lodash-subset@^1.0.1, ember-cli-lodash-subset@^1.0.7:
   version "1.0.11"
   resolved "https://registry.yarnpkg.com/ember-cli-lodash-subset/-/ember-cli-lodash-subset-1.0.11.tgz#0149eef9c0c3505ba44ed202f8d034ddbbfb2826"
 
-ember-cli-mocha@0.12.0:
-  version "0.12.0"
-  resolved "https://registry.yarnpkg.com/ember-cli-mocha/-/ember-cli-mocha-0.12.0.tgz#3fcf60f3448381ff5fd7a7b8bd126fc0ca323d0f"
+ember-cli-mocha@0.13.0:
+  version "0.13.0"
+  resolved "https://registry.yarnpkg.com/ember-cli-mocha/-/ember-cli-mocha-0.13.0.tgz#d0a2cef61cbab71a345b20761af03b043fbc5ed4"
   dependencies:
     broccoli-babel-transpiler "^5.5.0"
     broccoli-concat "^2.1.0"
     broccoli-funnel "^1.0.1"
     broccoli-merge-trees "^1.1.1"
-    chai "^3.5.0"
     ember-cli-babel "^5.1.7"
     ember-cli-test-loader "^1.1.0"
     ember-cli-version-checker "^1.1.6"
-    ember-mocha "^0.9.1"
+    ember-mocha "^0.9.4"
     mocha "^2.5.3"
     resolve "^1.1.7"
 
@@ -1631,7 +1654,7 @@ ember-cli-valid-component-name@^1.0.0:
   dependencies:
     silent-error "^1.0.0"
 
-ember-cli-version-checker@^1.0.2, ember-cli-version-checker@^1.1.4, ember-cli-version-checker@^1.1.6:
+ember-cli-version-checker@^1.0.2, ember-cli-version-checker@^1.1.4, ember-cli-version-checker@^1.1.6, ember-cli-version-checker@^1.1.7:
   version "1.1.7"
   resolved "https://registry.yarnpkg.com/ember-cli-version-checker/-/ember-cli-version-checker-1.1.7.tgz#cbabacb5eef2635048d5208fab05b032e5313d1a"
   dependencies:
@@ -1772,9 +1795,9 @@ ember-load-initializers@^0.5.0:
   version "0.5.1"
   resolved "https://registry.yarnpkg.com/ember-load-initializers/-/ember-load-initializers-0.5.1.tgz#76e3db23c111dbdcd3ae6f687036bf0b56be0cbe"
 
-ember-mocha@^0.9.1:
-  version "0.9.3"
-  resolved "https://registry.yarnpkg.com/ember-mocha/-/ember-mocha-0.9.3.tgz#4339d4f08c2645c9c38381743a597445cd78d200"
+ember-mocha@^0.9.4:
+  version "0.9.4"
+  resolved "https://registry.yarnpkg.com/ember-mocha/-/ember-mocha-0.9.4.tgz#260f2863dd289c34a139219ea1fce05d0b7da700"
   dependencies:
     ember-test-helpers "^0.5.33"
 
@@ -2374,6 +2397,13 @@ fs-readdir-recursive@^0.1.0:
 fs-tree-diff@^0.5.2, fs-tree-diff@^0.5.3:
   version "0.5.3"
   resolved "https://registry.yarnpkg.com/fs-tree-diff/-/fs-tree-diff-0.5.3.tgz#a7e6044bf660b49b38c484826d5a41b34ae6aa69"
+  dependencies:
+    fast-ordered-set "^1.0.2"
+    heimdalljs-logger "^0.1.7"
+
+fs-tree-diff@^0.5.4:
+  version "0.5.4"
+  resolved "https://registry.yarnpkg.com/fs-tree-diff/-/fs-tree-diff-0.5.4.tgz#4c99dc5fb33650df74cce09ce0e67e45eaff8c3e"
   dependencies:
     fast-ordered-set "^1.0.2"
     heimdalljs-logger "^0.1.7"
