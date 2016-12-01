@@ -1791,9 +1791,9 @@ ember-inflector@^1.9.4:
   dependencies:
     ember-cli-babel "^5.1.6"
 
-ember-load-initializers@^0.5.0:
-  version "0.5.1"
-  resolved "https://registry.yarnpkg.com/ember-load-initializers/-/ember-load-initializers-0.5.1.tgz#76e3db23c111dbdcd3ae6f687036bf0b56be0cbe"
+ember-load-initializers@^0.6.0:
+  version "0.6.2"
+  resolved "https://registry.yarnpkg.com/ember-load-initializers/-/ember-load-initializers-0.6.2.tgz#9366227948a917874c74f2799f185cdc997d4062"
 
 ember-mocha@^0.9.4:
   version "0.9.4"
