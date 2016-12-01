@@ -2,6 +2,9 @@
   "name": "ember-ajax",
   "version": "2.5.2",
   "description": "Service for making AJAX requests in Ember 1.13+ applications.",
+  "keywords": [
+    "ember-addon"
+  ],
   "directories": {
     "doc": "doc",
     "test": "tests"
@@ -25,10 +28,13 @@
     "index.js"
   ],
   "license": "MIT",
+  "dependencies": {
+    "ember-cli-babel": "^5.1.5"
+  },
   "devDependencies": {
     "broccoli-asset-rev": "^2.4.3",
     "coveralls": "^2.11.13",
-    "ember-cli": "2.9.1",
+    "ember-cli": "^2.10.0",
     "ember-cli-app-version": "^2.0.0",
     "ember-cli-chai": "^0.2.0",
     "ember-cli-code-coverage": "0.3.8",
@@ -52,12 +58,6 @@
     "ember-resolver": "^2.1.0",
     "eslint-plugin-ember-suave": "^1.0.0",
     "loader.js": "^4.0.10"
-  },
-  "keywords": [
-    "ember-addon"
-  ],
-  "dependencies": {
-    "ember-cli-babel": "^5.1.5"
   },
   "ember-addon": {
     "configPath": "tests/dummy/config"

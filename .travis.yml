@@ -18,6 +18,8 @@ cache:
     - node_modules
     - bower_components
     - $HOME/.yarn-cache
+    - $HOME/.npm
+    - $HOME/.cache
 
 env:
   - EMBER_TRY_SCENARIO=default COVERAGE=true # Only log coverage from the default scenario
@@ -25,6 +27,8 @@ env:
   - EMBER_TRY_SCENARIO=ember-beta
   - EMBER_TRY_SCENARIO=ember-canary
   - EMBER_TRY_SCENARIO=ember-1-13
+  - EMBER_TRY_SCENARIO=ember-lts-2.4
+  - EMBER_TRY_SCENARIO=ember-lts-2.8
 
 matrix:
   fast_finish: true
