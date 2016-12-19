@@ -30,7 +30,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "ember-cli-babel": "^5.1.5"
+    "ember-cli-babel": "^5.2.1"
   },
   "devDependencies": {
     "broccoli-asset-rev": "^2.4.3",
@@ -55,10 +55,10 @@
     "ember-disable-prototype-extensions": "^1.1.0",
     "ember-disable-proxy-controllers": "^1.0.1",
     "ember-export-application-global": "^1.0.4",
-    "ember-load-initializers": "^0.6.0",
+    "ember-load-initializers": "^0.6.3",
     "ember-resolver": "^2.1.0",
     "eslint-plugin-ember-suave": "^1.0.0",
-    "loader.js": "^4.0.10"
+    "loader.js": "^4.1.0"
   },
   "ember-addon": {
     "configPath": "tests/dummy/config"
