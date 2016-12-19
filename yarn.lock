@@ -389,6 +389,14 @@ babel-plugin-undefined-to-void@^1.1.6:
   version "1.1.6"
   resolved "https://registry.yarnpkg.com/babel-plugin-undefined-to-void/-/babel-plugin-undefined-to-void-1.1.6.tgz#7f578ef8b78dfae6003385d8417a61eda06e2f81"
 
+babel5-plugin-strip-class-callcheck@^5.1.0:
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/babel5-plugin-strip-class-callcheck/-/babel5-plugin-strip-class-callcheck-5.1.0.tgz#77d4a40c8614d367b8a21a53908159806dba5f91"
+
+babel5-plugin-strip-heimdall@^5.0.2:
+  version "5.0.2"
+  resolved "https://registry.yarnpkg.com/babel5-plugin-strip-heimdall/-/babel5-plugin-strip-heimdall-5.0.2.tgz#e1fe191c34de79686564d50a86f4217b8df629c1"
+
 babylon@^5.8.38:
   version "5.8.38"
   resolved "https://registry.yarnpkg.com/babylon/-/babylon-5.8.38.tgz#ec9b120b11bf6ccd4173a18bf217e60b79859ffd"
@@ -1765,13 +1773,15 @@ ember-cli@2.10.0:
     walk-sync "^0.3.0"
     yam "0.0.22"
 
-ember-data@^2.5.3:
-  version "2.9.0"
-  resolved "https://registry.yarnpkg.com/ember-data/-/ember-data-2.9.0.tgz#802e29ab98917c1053cfc44d5ee9d28e9faeb026"
+ember-data@^2.10.0:
+  version "2.10.0"
+  resolved "https://registry.yarnpkg.com/ember-data/-/ember-data-2.10.0.tgz#9d6e23ba21ab242afc03a2ac77e8071bc51a5c62"
   dependencies:
     amd-name-resolver "0.0.5"
     babel-plugin-feature-flags "^0.2.1"
     babel-plugin-filter-imports "^0.2.0"
+    babel5-plugin-strip-class-callcheck "^5.1.0"
+    babel5-plugin-strip-heimdall "^5.0.2"
     broccoli-babel-transpiler "^5.5.0"
     broccoli-file-creator "^1.0.0"
     broccoli-merge-trees "^1.0.0"
@@ -1785,6 +1795,7 @@ ember-data@^2.5.3:
     ember-runtime-enumerable-includes-polyfill "^1.0.0"
     exists-sync "0.0.3"
     git-repo-info "^1.1.2"
+    heimdalljs "^0.3.0"
     inflection "^1.8.0"
     npm-git-info "^1.0.0"
     semver "^5.1.0"
@@ -2742,6 +2753,12 @@ heimdalljs@^0.2.0, heimdalljs@^0.2.1:
   resolved "https://registry.yarnpkg.com/heimdalljs/-/heimdalljs-0.2.1.tgz#bde5d5034bc7996f0d973f21fa2d93d6c729de19"
   dependencies:
     rsvp "^3.2.1"
+
+heimdalljs@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/heimdalljs/-/heimdalljs-0.3.0.tgz#d35973da0333e7d9396a491d57f727793691ee8f"
+  dependencies:
+    rsvp "~3.2.1"
 
 hoek@2.x.x:
   version "2.16.3"
@@ -4611,6 +4628,10 @@ rsvp@^3.0.14, rsvp@^3.0.16, rsvp@^3.0.17, rsvp@^3.0.18, rsvp@^3.0.21, rsvp@^3.0.
 rsvp@~3.0.6:
   version "3.0.21"
   resolved "https://registry.yarnpkg.com/rsvp/-/rsvp-3.0.21.tgz#49c588fe18ef293bcd0ab9f4e6756e6ac433359f"
+
+rsvp@~3.2.1:
+  version "3.2.1"
+  resolved "https://registry.yarnpkg.com/rsvp/-/rsvp-3.2.1.tgz#07cb4a5df25add9e826ebc67dcc9fd89db27d84a"
 
 run-async@^0.1.0:
   version "0.1.0"
