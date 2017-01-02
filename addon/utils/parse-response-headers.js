@@ -1,4 +1,6 @@
-const CLRF = '\u000d\u000a';
+import isFastBoot from './is-fastboot';
+
+const CLRF = isFastBoot ? '\n' : '\u000d\u000a';
 
 export default function parseResponseHeaders(headersString) {
   let headers = {};
