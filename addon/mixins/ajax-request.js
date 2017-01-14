@@ -21,10 +21,10 @@ import {
   isServerError,
   isSuccess
 } from '../errors';
-import parseResponseHeaders from '../utils/parse-response-headers';
-import getHeader from '../utils/get-header';
-import { RequestURL } from '../utils/url-helpers';
-import ajax from '../utils/ajax';
+import parseResponseHeaders from 'ember-ajax/-private/utils/parse-response-headers';
+import getHeader from 'ember-ajax/-private/utils/get-header';
+import { isFullURL, parseURL, haveSameHost } from 'ember-ajax/-private/utils/url-helpers';
+import ajax from 'ember-ajax/utils/ajax';
 
 const {
   $,
@@ -34,6 +34,7 @@ const {
   Mixin,
   RSVP: { Promise },
   Test,
+  deprecate,
   get,
   isArray,
   isEmpty,
@@ -45,6 +46,29 @@ const {
   warn
 } = Ember;
 const JSONAPIContentType = /^application\/vnd\.api\+json/i;
+
+function defineDeprecatedErrorsProperty(error, errors) {
+  Object.defineProperty(error, 'errors', {
+    get() {
+      deprecate(
+        'This property will be removed in ember-ajax 3.0.0. Please use `payload` going forward. Note the attached URL for details.',
+        false,
+        {
+          url: 'https://github.com/ember-cli/ember-ajax/issues/175',
+          until: '3.0.0',
+          id: 'ember-ajax.errors.normalize-errors'
+        }
+      );
+
+      let defaultError = {
+        title: 'Ajax Error',
+        detail: this.message
+      };
+
+      return errors || [defaultError];
+    }
+  });
+}
 
 function isJSONAPIContentType(header) {
   if (isNone(header)) {
@@ -61,10 +85,14 @@ function endsWithSlash(string) {
   return string.charAt(string.length - 1) === '/';
 }
 
+function removeLeadingSlash(string) {
+  return string.substring(1);
+}
+
 function stripSlashes(path) {
   // make sure path starts with `/`
   if (startsWithSlash(path)) {
-    path = path.substring(1);
+    path = removeLeadingSlash(path);
   }
 
   // remove end `/`
@@ -277,8 +305,12 @@ export default Mixin.create({
           response = errorThrown;
         } else if (textStatus === 'timeout') {
           response = new TimeoutError();
+
+          defineDeprecatedErrorsProperty(response);
         } else if (textStatus === 'abort') {
           response = new AbortError();
+
+          defineDeprecatedErrorsProperty(response);
         } else {
           response = this.handleResponse(
              jqXHR.status,
@@ -449,17 +481,22 @@ export default Mixin.create({
    * @returns {string} the URL to make a request to
    */
   _buildURL(url, options = {}) {
-    const urlObject = new RequestURL(url);
-
-    // If the URL passed is not relative, return the whole URL
-    if (urlObject.isComplete) {
-      return urlObject.href;
+    if (isFullURL(url)) {
+      return url;
     }
 
-    const host = options.host || get(this, 'host');
+    const urlParts = [];
+
+    let host = options.host || get(this, 'host');
+    if (host) {
+      host = stripSlashes(host);
+    }
+    urlParts.push(host);
+
     let namespace = options.namespace || get(this, 'namespace');
     if (namespace) {
       namespace = stripSlashes(namespace);
+      urlParts.push(namespace);
     }
 
     // If the URL has already been constructed (presumably, by Ember Data), then we should just leave it alone
@@ -468,27 +505,14 @@ export default Mixin.create({
       return url;
     }
 
-    let fullUrl = '';
-    // Add the host, if it exists
-    if (host) {
-      fullUrl += host;
+    // *Only* remove a leading slash -- we need to maintain a trailing slash for
+    // APIs that differentiate between it being and not being present
+    if (startsWithSlash(url)) {
+      url = removeLeadingSlash(url);
     }
-    // Add the namespace, if it exists
-    if (namespace) {
-      if (!endsWithSlash(fullUrl)) {
-        fullUrl += '/';
-      }
-      fullUrl += namespace;
-    }
-    // Add the URL segment, if it exists
-    if (url) {
-      if (!startsWithSlash(url)) {
-        fullUrl += '/';
-      }
-      fullUrl += url;
-    }
+    urlParts.push(url);
 
-    return fullUrl;
+    return urlParts.join('/');
   },
 
   /**
@@ -513,35 +537,43 @@ export default Mixin.create({
    */
   handleResponse(status, headers, payload, requestData) {
     payload = (payload === null || payload === undefined) ? {} : payload;
-    const errors = this.normalizeErrorResponse(status, headers, payload);
+
+    let error;
 
     if (this.isSuccess(status, headers, payload)) {
       return payload;
     } else if (this.isUnauthorizedError(status, headers, payload)) {
-      return new UnauthorizedError(errors);
+      error = new UnauthorizedError(payload);
     } else if (this.isForbiddenError(status, headers, payload)) {
-      return new ForbiddenError(errors);
+      error = new ForbiddenError(payload);
     } else if (this.isInvalidError(status, headers, payload)) {
-      return new InvalidError(errors);
+      error = new InvalidError(payload);
     } else if (this.isBadRequestError(status, headers, payload)) {
-      return new BadRequestError(errors);
+      error = new BadRequestError(payload);
     } else if (this.isNotFoundError(status, headers, payload)) {
-      return new NotFoundError(errors);
+      error = new NotFoundError(payload);
     } else if (this.isAbortError(status, headers, payload)) {
-      return new AbortError(errors);
+      error = new AbortError(payload);
     } else if (this.isConflictError(status, headers, payload)) {
-      return new ConflictError(errors);
+      error = new ConflictError(payload);
     } else if (this.isServerError(status, headers, payload)) {
-      return new ServerError(errors);
+      error = new ServerError(payload);
+    } else {
+      let detailedMessage = this.generateDetailedMessage(
+        status,
+        headers,
+        payload,
+        requestData
+      );
+
+      error = new AjaxError(payload, detailedMessage);
     }
 
-    const detailedMessage = this.generateDetailedMessage(
-      status,
-      headers,
-      payload,
-      requestData
-    );
-    return new AjaxError(errors, detailedMessage);
+    let errors = this.normalizeErrorResponse(status, headers, payload);
+
+    defineDeprecatedErrorsProperty(error, errors);
+
+    return error;
   },
 
   /**
@@ -587,19 +619,18 @@ export default Mixin.create({
     url = url || '';
     host = host || get(this, 'host') || '';
 
-    const urlObject = new RequestURL(url);
     const trustedHosts = get(this, 'trustedHosts') || A();
+    const { hostname } = parseURL(url);
 
     // Add headers on relative URLs
-    if (!urlObject.isComplete) {
+    if (!isFullURL(url)) {
       return true;
-    } else if (trustedHosts.find((matcher) => this._matchHosts(urlObject.hostname, matcher))) {
+    } else if (trustedHosts.find((matcher) => this._matchHosts(hostname, matcher))) {
       return true;
     }
 
     // Add headers on matching host
-    const hostObject = new RequestURL(host);
-    return urlObject.sameHost(hostObject);
+    return haveSameHost(url, host);
   },
 
   /**
