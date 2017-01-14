@@ -5,6 +5,7 @@ import wait from 'ember-test-helpers/wait';
 import Ember from 'ember';
 import AjaxRequest from 'ember-ajax/ajax-request';
 import {
+  AbortError,
   ConflictError,
   InvalidError,
   UnauthorizedError,
@@ -970,6 +971,67 @@ describe('Unit | Mixin | ajax request', function() {
       ajax.request('/jsonp', { dataType: 'jsonp' }).then((val) => response = val);
       return wait().then(() => {
         expect(response).to.deep.equal({ foo: 'bar' });
+      });
+    });
+  });
+
+  describe('accessing the XHR property of the promise', function() {
+    beforeEach(function() {
+      this.server.get('/foo', () => jsonResponse());
+    });
+
+    it('attaches the XHR for the request to the promise object', function() {
+      const ajax = new AjaxRequest();
+      const promise = ajax.request('/foo');
+
+      expect(promise.xhr).to.be.ok;
+    });
+
+    it('can be used to abort the request', function() {
+      const ajax = new AjaxRequest();
+      const promise = ajax.request('/foo');
+
+      promise.xhr.abort();
+
+      return promise
+        .then((response) => {
+          // Ensure that this code is not executed
+          expect(false).to.be.ok;
+        })
+        .catch((error) => {
+          expect(error).to.be.instanceOf(AbortError);
+        });
+    });
+
+    describe('passing the XHR to child promises', function() {
+      it('keeps the XHR property through child promises (then)', function() {
+        const ajax = new AjaxRequest();
+        const promise = ajax.request('/foo').then((response) => response);
+
+        expect(promise.xhr).to.be.ok;
+      });
+
+      it('keeps the XHR property through child promises (catch)', function() {
+        const ajax = new AjaxRequest();
+        const promise = ajax.request('/foo').catch((response) => response);
+
+        expect(promise.xhr).to.be.ok;
+      });
+
+      it('keeps the XHR property through child promises (finally)', function() {
+        const ajax = new AjaxRequest();
+        const promise = ajax.request('/foo').finally((response) => response);
+
+        expect(promise.xhr).to.be.ok;
+      });
+
+      it('keeps the XHR property through child promises (multiple)', function() {
+        const ajax = new AjaxRequest();
+        const promise = ajax.request('/foo')
+          .then((response) => response)
+          .finally((response) => response);
+
+        expect(promise.xhr).to.be.ok;
       });
     });
   });

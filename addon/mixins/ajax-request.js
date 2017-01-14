@@ -25,6 +25,7 @@ import parseResponseHeaders from 'ember-ajax/-private/utils/parse-response-heade
 import getHeader from 'ember-ajax/-private/utils/get-header';
 import { isFullURL, parseURL, haveSameHost } from 'ember-ajax/-private/utils/url-helpers';
 import ajax from 'ember-ajax/utils/ajax';
+import AJAXPromise from 'ember-ajax/-private/promise';
 
 const {
   $,
@@ -32,7 +33,6 @@ const {
   Error: EmberError,
   Logger,
   Mixin,
-  RSVP: { Promise },
   Test,
   deprecate,
   get,
@@ -225,15 +225,20 @@ export default Mixin.create({
    */
   request(url, options) {
     const hash = this.options(url, options);
-    return new Promise((resolve, reject) => {
-      this._makeRequest(hash)
-        .then(({ response }) => {
-          resolve(response);
-        })
-        .catch(({ response }) => {
-          reject(response);
-        });
+    const internalPromise = this._makeRequest(hash);
+
+    const ajaxPromise = new AJAXPromise((resolve, reject) => {
+      internalPromise.then(({ response }) => {
+        resolve(response);
+      })
+      .catch(({ response }) => {
+        reject(response);
+      });
     }, `ember-ajax: ${hash.type} ${hash.url} response`);
+
+    ajaxPromise.xhr = internalPromise.xhr;
+
+    return ajaxPromise;
   },
 
   /**
@@ -271,64 +276,67 @@ export default Mixin.create({
       }
     }
 
-    return new Promise((resolve, reject) => {
-      hash.success = (payload, textStatus, jqXHR) => {
-        let response = this.handleResponse(
-          jqXHR.status,
-          parseResponseHeaders(jqXHR.getAllResponseHeaders()),
-          payload,
-          requestData
-        );
+    pendingRequestCount = pendingRequestCount + 1;
 
-        pendingRequestCount = pendingRequestCount - 1;
+    const jqXHR = ajax(hash);
 
-        if (isAjaxError(response)) {
-          run.join(null, reject, { payload, textStatus, jqXHR, response });
-        } else {
-          run.join(null, resolve, { payload, textStatus, jqXHR, response });
-        }
-      };
+    const promise = new AJAXPromise((resolve, reject) => {
+      jqXHR
+        .done((payload, textStatus, jqXHR) => {
+          let response = this.handleResponse(
+                    jqXHR.status,
+                    parseResponseHeaders(jqXHR.getAllResponseHeaders()),
+                    payload,
+                    requestData
+                  );
 
-      hash.error = (jqXHR, textStatus, errorThrown) => {
-        runInDebug(function() {
-          let message = `The server returned an empty string for ${requestData.type} ${requestData.url}, which cannot be parsed into a valid JSON. Return either null or {}.`;
-          let validJSONString = !(textStatus === 'parsererror' && jqXHR.responseText === '');
-          warn(message, validJSONString, {
-            id: 'ds.adapter.returned-empty-string-as-JSON'
+          if (isAjaxError(response)) {
+            run.join(null, reject, { payload, textStatus, jqXHR, response });
+          } else {
+            run.join(null, resolve, { payload, textStatus, jqXHR, response });
+          }
+        })
+        .error((jqXHR, textStatus, errorThrown) => {
+          runInDebug(function() {
+            let message = `The server returned an empty string for ${requestData.type} ${requestData.url}, which cannot be parsed into a valid JSON. Return either null or {}.`;
+            let validJSONString = !(textStatus === 'parsererror' && jqXHR.responseText === '');
+            warn(message, validJSONString, {
+              id: 'ds.adapter.returned-empty-string-as-JSON'
+            });
           });
+
+          const payload = this.parseErrorResponse(jqXHR.responseText) || errorThrown;
+          let response;
+
+          if (errorThrown instanceof Error) {
+            response = errorThrown;
+          } else if (textStatus === 'timeout') {
+            response = new TimeoutError();
+
+            defineDeprecatedErrorsProperty(response);
+          } else if (textStatus === 'abort') {
+            response = new AbortError();
+
+            defineDeprecatedErrorsProperty(response);
+          } else {
+            response = this.handleResponse(
+               jqXHR.status,
+               parseResponseHeaders(jqXHR.getAllResponseHeaders()),
+               payload,
+               requestData
+            );
+          }
+
+          run.join(null, reject, { payload, textStatus, jqXHR, errorThrown, response });
+        })
+        .always(() => {
+          pendingRequestCount = pendingRequestCount - 1;
         });
-
-        const payload = this.parseErrorResponse(jqXHR.responseText) || errorThrown;
-        let response;
-
-        if (errorThrown instanceof Error) {
-          response = errorThrown;
-        } else if (textStatus === 'timeout') {
-          response = new TimeoutError();
-
-          defineDeprecatedErrorsProperty(response);
-        } else if (textStatus === 'abort') {
-          response = new AbortError();
-
-          defineDeprecatedErrorsProperty(response);
-        } else {
-          response = this.handleResponse(
-             jqXHR.status,
-             parseResponseHeaders(jqXHR.getAllResponseHeaders()),
-             payload,
-             requestData
-          );
-        }
-
-        pendingRequestCount = pendingRequestCount - 1;
-
-        run.join(null, reject, { payload, textStatus, jqXHR, errorThrown, response });
-      };
-
-      pendingRequestCount = pendingRequestCount + 1;
-
-      ajax(hash);
     }, `ember-ajax: ${hash.type} ${hash.url}`);
+
+    promise.xhr = jqXHR;
+
+    return promise;
   },
 
   /**
