@@ -987,13 +987,11 @@ describe('Unit | Mixin | ajax request', function() {
       expect(promise.xhr).to.be.ok;
     });
 
+    // Note: the `.catch` handler _must_ be set up before the request is aborted
+    // Without that, the rejection will be treated as un-handled
     it('can be used to abort the request', function() {
       const ajax = new AjaxRequest();
-      const promise = ajax.request('/foo');
-
-      promise.xhr.abort();
-
-      return promise
+      const promise = ajax.request('/foo')
         .then((response) => {
           // Ensure that this code is not executed
           expect(false).to.be.ok;
@@ -1001,6 +999,10 @@ describe('Unit | Mixin | ajax request', function() {
         .catch((error) => {
           expect(error).to.be.instanceOf(AbortError);
         });
+
+      promise.xhr.abort();
+
+      return promise;
     });
 
     describe('passing the XHR to child promises', function() {
