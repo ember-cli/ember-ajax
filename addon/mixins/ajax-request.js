@@ -418,6 +418,7 @@ export default Mixin.create({
    * @return {Object}
    */
   options(url, options = {}) {
+    options = merge({}, options);
     options.url = this._buildURL(url, options);
     options.type = options.type || 'GET';
     options.dataType = options.dataType || 'json';
