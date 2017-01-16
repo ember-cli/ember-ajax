@@ -296,7 +296,7 @@ export default Mixin.create({
             run.join(null, resolve, { payload, textStatus, jqXHR, response });
           }
         })
-        .error((jqXHR, textStatus, errorThrown) => {
+        .fail((jqXHR, textStatus, errorThrown) => {
           runInDebug(function() {
             let message = `The server returned an empty string for ${requestData.type} ${requestData.url}, which cannot be parsed into a valid JSON. Return either null or {}.`;
             let validJSONString = !(textStatus === 'parsererror' && jqXHR.responseText === '');
