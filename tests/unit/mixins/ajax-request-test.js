@@ -70,6 +70,15 @@ describe('Unit | Mixin | ajax request', function() {
       });
     });
 
+    it('does not modify the options object argument', function() {
+      const service = new AjaxRequest();
+      const url  = 'test';
+      const data = JSON.stringify({ key: 'value' });
+      const baseOptions = { type: 'POST', data };
+      service.options(url, baseOptions);
+      expect(baseOptions).to.deep.equal({ type: 'POST', data });
+    });
+
     it('does not override contentType when defined', function() {
       const service = new AjaxRequest();
       const url  = 'test';
