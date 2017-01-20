@@ -25,7 +25,7 @@ describe('AJAX Service', function() {
   });
 
   it('allows headers to be specified as a computed property', function() {
-    server.get('example.com', (req) => {
+    server.get('/example.com', (req) => {
       const { requestHeaders } = req;
       equal(requestHeaders['Content-Type'], 'application/json');
       equal(requestHeaders['Other-key'], 'Other Value');

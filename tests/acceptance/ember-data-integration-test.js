@@ -23,7 +23,7 @@ describe('Acceptance | ember data integration', function() {
   });
 
   it('can apply the Ember Ajax mixin to an Ember Data adapter', function() {
-    server.get('api/posts/1', function() {
+    server.get('/api/posts/1', function() {
       return jsonResponse(200, {
         data: {
           id: 1,
@@ -48,7 +48,7 @@ describe('Acceptance | ember data integration', function() {
     }));
     application.inject('adapter:application', 'ajaxService', 'service:ajaxWithNs');
 
-    server.get('api/posts/1', function() {
+    server.get('/api/posts/1', function() {
       return jsonResponse(200, {
         data: {
           id: 1,
@@ -68,7 +68,7 @@ describe('Acceptance | ember data integration', function() {
   });
 
   it('respects ajaxOptions on the target adapter', function() {
-    server.get('api/posts/1', function({ requestHeaders }) {
+    server.get('/api/posts/1', function({ requestHeaders }) {
       let xSillyHeader = requestHeaders['X-Silly-Option'];
       equal(xSillyHeader, 'Hi!');
 
