@@ -15,16 +15,17 @@ node_js:
 
 cache:
   directories:
-    - node_modules
-    - bower_components
+    - $HOME/.npm
+    - $HOME/.cache # includes bowers cache
     - $HOME/.yarn-cache
 
 env:
-  - EMBER_TRY_SCENARIO=default COVERAGE=true # Only log coverage from the default scenario
-  - EMBER_TRY_SCENARIO=ember-release
+  # we recommend testing LTS's and latest stable release (bonus points to beta/canary)
+  - EMBER_TRY_SCENARIO=ember-lts-2.4
+  - EMBER_TRY_SCENARIO=ember-lts-2.8
+  - EMBER_TRY_SCENARIO=ember-release COVERAGE=true
   - EMBER_TRY_SCENARIO=ember-beta
   - EMBER_TRY_SCENARIO=ember-canary
-  - EMBER_TRY_SCENARIO=ember-1-13
 
 matrix:
   fast_finish: true
@@ -38,13 +39,16 @@ before_install:
   # Other setup
   - npm config set spin false
   - npm install -g bower yarn
+  - bower --version
 
 install:
   - yarn
   - bower install
 
 script:
-  - ember try $EMBER_TRY_SCENARIO test --skip-cleanup
+  # Usually, it's ok to finish the test scenario without reverting
+  #  to the addon's original dependency state, skipping "cleanup".
+  - node_modules/.bin/ember try:one $EMBER_TRY_SCENARIO test --skip-cleanup
 
 after_success:
   - cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
