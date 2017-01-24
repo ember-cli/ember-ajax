@@ -1,5 +1,6 @@
 import { describe, beforeEach, afterEach, it } from 'mocha';
 import { expect } from 'chai';
+import td from 'testdouble';
 import wait from 'ember-test-helpers/wait';
 
 import Ember from 'ember';
@@ -16,6 +17,7 @@ import {
 import Pretender from 'pretender';
 import { jsonResponse, jsonFactory } from 'dummy/tests/helpers/json';
 
+const { matchers: { anything, contains: matchContains } } = td;
 const { A, typeOf } = Ember;
 
 describe('Unit | Mixin | ajax request', function() {
@@ -370,19 +372,25 @@ describe('Unit | Mixin | ajax request', function() {
   });
 
   it('request with method option makes the correct type of request', function() {
-    const service = new AjaxRequest();
     const url = '/posts/1';
     const serverResponse = [200, { 'Content-Type': 'application/json' }, JSON.stringify({})];
 
     this.server.get(url, () => {
       throw new Error("Shouldn't make an AJAX request");
     });
+    this.server.post(url, () => serverResponse);
 
-    this.server.post(url, () => {
-      return serverResponse;
+    const service = new AjaxRequest();
+    const handleResponse = td.function('handle response');
+    const expectedArguments = [
+      anything(), anything(), anything(), matchContains({ type: 'POST' })
+    ];
+    service.handleResponse = handleResponse;
+    td.when(handleResponse(...expectedArguments)).thenReturn({});
+
+    return service.request(url, { method: 'POST' }).then(() => {
+      expect(handleResponse).to.be.calledWith(...expectedArguments);
     });
-
-    return service.request(url, { method: 'POST' });
   });
 
   describe('explicit host in URL', function() {
