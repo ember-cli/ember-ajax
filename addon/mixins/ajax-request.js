@@ -232,10 +232,8 @@ export default Mixin.create({
    * @return {Promise} The result of the request
    */
   _makeRequest(hash) {
-    const requestData = {
-      type: hash.type,
-      url: hash.url
-    };
+    const method = hash.method || hash.type || 'GET';
+    const requestData = { method, type: method, url: hash.url };
 
     if (isJSONAPIContentType(getHeader(hash.headers, 'Content-Type')) && requestData.type !== 'GET') {
       if (typeof hash.data === 'object') {
