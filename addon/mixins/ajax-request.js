@@ -535,8 +535,6 @@ export default Mixin.create({
    * @return {Object | AjaxError} response
    */
   handleResponse(status, headers, payload, requestData) {
-    payload = (payload === null || payload === undefined) ? {} : payload;
-
     let error;
 
     if (this.isSuccess(status, headers, payload)) {
@@ -849,6 +847,8 @@ export default Mixin.create({
    * @return {Array} An array of JSON API-formatted error objects
    */
   normalizeErrorResponse(status, headers, payload) {
+    payload = isNone(payload) ? {} : payload;
+
     if (isArray(payload.errors)) {
       return payload.errors.map(function(error) {
         if (isObject(error)) {
