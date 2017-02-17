@@ -414,7 +414,7 @@ export default Mixin.create({
    * @public
    */
   get(url) {
-    if (arguments.length > 1 || url.charAt(0) === '/') {
+    if (arguments.length > 1 || url.indexOf('/') !== -1) {
       throw new EmberError('It seems you tried to use `.get` to make a request! Use the `.request` method instead.');
     }
     return this._super(...arguments);
