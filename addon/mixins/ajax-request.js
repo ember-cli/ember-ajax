@@ -45,7 +45,7 @@ const {
   testing,
   warn
 } = Ember;
-const JSONAPIContentType = /^application\/vnd\.api\+json/i;
+const JSONContentType = /^application\/(?:vnd\.api\+)?json/i;
 
 function defineDeprecatedErrorsProperty(error, errors) {
   Object.defineProperty(error, 'errors', {
@@ -70,11 +70,27 @@ function defineDeprecatedErrorsProperty(error, errors) {
   });
 }
 
-function isJSONAPIContentType(header) {
+function isJSONContentType(header) {
   if (isNone(header)) {
     return false;
   }
-  return !!header.match(JSONAPIContentType);
+  return !!header.match(JSONContentType);
+}
+
+function isJSONStringifyable(method, { contentType, data, headers }) {
+  if (method === 'GET') {
+    return false;
+  }
+
+  if (!isJSONContentType(contentType) && !isJSONContentType(getHeader(headers, 'Content-Type'))) {
+    return false;
+  }
+
+  if (typeof data !== 'object') {
+    return false;
+  }
+
+  return true;
 }
 
 function startsWithSlash(string) {
@@ -268,10 +284,8 @@ export default Mixin.create({
     const method = hash.method || hash.type || 'GET';
     const requestData = { method, type: method, url: hash.url };
 
-    if (isJSONAPIContentType(getHeader(hash.headers, 'Content-Type')) && requestData.type !== 'GET') {
-      if (typeof hash.data === 'object') {
-        hash.data = JSON.stringify(hash.data);
-      }
+    if (isJSONStringifyable(method, hash)) {
+      hash.data = JSON.stringify(hash.data);
     }
 
     pendingRequestCount = pendingRequestCount + 1;
