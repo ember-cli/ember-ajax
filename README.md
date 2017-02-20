@@ -177,6 +177,25 @@ You can even leave off the forward slash if you'd like:
 request('users/me')
 ```
 
+### Custom Content-Type
+
+`ember-ajax` allows you to specify a default [Content-Type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type) header to be used with a request.
+
+To include a custom Content-Type you can specify `contentType` property on the `Ajax Service`.
+
+```js
+// app/services/ajax.js
+
+import Ember from 'ember';
+import AjaxService from 'ember-ajax/services/ajax';
+
+export default AjaxService.extend({
+  contentType: 'application/json; charset=utf-8'
+});
+```
+
+You can also override the Content-Type per `request` with the `options` parameter.
+
 #### Customize isSuccess
 
 Some APIs respond with status code 200, even though an error has occurred and
