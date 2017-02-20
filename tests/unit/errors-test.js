@@ -180,6 +180,10 @@ describe('unit/errors-test - AjaxError', function() {
   });
 
   describe('isAbortError', function() {
+    it('detects error code correctly', function() {
+      ok(isAbortError(0));
+    });
+
     it('detects error class correctly', function() {
       const error = new AbortError();
       ok(isAbortError(error));
