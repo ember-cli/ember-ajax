@@ -235,7 +235,11 @@ export function isTimeoutError(error) {
  * @return {Boolean}
  */
 export function isAbortError(error) {
-  return error instanceof AbortError;
+  if (isAjaxError(error)) {
+    return error instanceof AbortError;
+  } else {
+    return error === 0;
+  }
 }
 
 /**
