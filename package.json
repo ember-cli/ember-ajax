@@ -20,7 +20,7 @@
     "test": "ember try:each"
   },
   "dependencies": {
-    "ember-cli-babel": "^5.1.7",
+    "ember-cli-babel": "^5.2.4",
     "ember-inflector": "^1.11.0"
   },
   "devDependencies": {
@@ -46,11 +46,11 @@
     "ember-data": "^2.11.1",
     "ember-disable-prototype-extensions": "^1.1.0",
     "ember-export-application-global": "^1.0.5",
-    "ember-load-initializers": "0.6.0",
+    "ember-load-initializers": "^0.6.3",
     "ember-resolver": "^2.0.3",
-    "ember-source": "2.11.0",
+    "ember-source": "^2.11.2",
     "eslint-plugin-ember-suave": "^1.0.0",
-    "loader.js": "^4.0.10",
+    "loader.js": "^4.1.0",
     "testdouble-chai": "^0.5.0"
   },
   "engines": {
