@@ -607,7 +607,66 @@ describe('Unit | Mixin | ajax request', function() {
     }).to.throw();
   });
 
-  it('it JSON encodes JSON:API request data automatically', function() {
+  it('it JSON encodes JSON request data automatically per contentType', function() {
+    this.server.post('/test', ({ requestBody }) => {
+      const { foo } = JSON.parse(requestBody);
+      expect(foo).to.equal('bar');
+      return jsonResponse();
+    });
+
+    const RequestWithHeaders = AjaxRequest.extend({
+      contentType: 'application/json'
+    });
+
+    const service = new RequestWithHeaders();
+    return service.post('/test', {
+      data: {
+        foo: 'bar'
+      }
+    });
+  });
+
+  it('it JSON encodes JSON:API request data automatically per contentType', function() {
+    this.server.post('/test', ({ requestBody }) => {
+      const { foo } = JSON.parse(requestBody);
+      expect(foo).to.equal('bar');
+      return jsonResponse();
+    });
+
+    const RequestWithHeaders = AjaxRequest.extend({
+      contentType: 'application/vnd.api+json'
+    });
+
+    const service = new RequestWithHeaders();
+    return service.post('/test', {
+      data: {
+        foo: 'bar'
+      }
+    });
+  });
+
+  it('it JSON encodes JSON request data automatically per Content-Type header', function() {
+    this.server.post('/test', ({ requestBody }) => {
+      const { foo } = JSON.parse(requestBody);
+      expect(foo).to.equal('bar');
+      return jsonResponse();
+    });
+
+    const RequestWithHeaders = AjaxRequest.extend({
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+    const service = new RequestWithHeaders();
+    return service.post('/test', {
+      data: {
+        foo: 'bar'
+      }
+    });
+  });
+
+  it('it JSON encodes JSON:API request data automatically per Content-Type header', function() {
     this.server.post('/test', ({ requestBody }) => {
       const { foo } = JSON.parse(requestBody);
       expect(foo).to.equal('bar');
