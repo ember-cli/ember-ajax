@@ -71,7 +71,7 @@ function defineDeprecatedErrorsProperty(error, errors) {
 }
 
 function isJSONContentType(header) {
-  if (isNone(header)) {
+  if (!isString(header)) {
     return false;
   }
   return !!header.match(JSONContentType);
