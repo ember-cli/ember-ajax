@@ -28,7 +28,6 @@ import ajax from 'ember-ajax/utils/ajax';
 import AJAXPromise from 'ember-ajax/-private/promise';
 
 const {
-  $,
   A,
   Error: EmberError,
   Logger,
