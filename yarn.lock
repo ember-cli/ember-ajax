@@ -2426,11 +2426,11 @@ ember-mocha@^0.11.0:
   dependencies:
     ember-test-helpers "^0.6.0-beta.1"
 
-ember-resolver@^3.0.0:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/ember-resolver/-/ember-resolver-3.0.1.tgz#ca66fcb4add5e07b660514c55666f8e2bf6a0362"
+ember-resolver@4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/ember-resolver/-/ember-resolver-4.0.0.tgz#6c8c91366639010eac739dd1734548219fbd84ac"
   dependencies:
-    ember-cli-babel "^5.1.6"
+    ember-cli-babel "^6.0.0-beta.7"
     ember-cli-version-checker "^1.1.6"
 
 ember-router-generator@^1.0.0:
