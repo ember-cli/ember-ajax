@@ -46,29 +46,6 @@ const {
 } = Ember;
 const JSONContentType = /^application\/(?:vnd\.api\+)?json/i;
 
-function defineDeprecatedErrorsProperty(error, errors) {
-  Object.defineProperty(error, 'errors', {
-    get() {
-      deprecate(
-        'This property will be removed in ember-ajax 3.0.0. Please use `payload` going forward. Note the attached URL for details.',
-        false,
-        {
-          url: 'https://github.com/ember-cli/ember-ajax/issues/175',
-          until: '3.0.0',
-          id: 'ember-ajax.errors.normalize-errors'
-        }
-      );
-
-      let defaultError = {
-        title: 'Ajax Error',
-        detail: this.message
-      };
-
-      return errors || [defaultError];
-    }
-  });
-}
-
 function isJSONContentType(header) {
   if (isNone(header)) {
     return false;
@@ -115,14 +92,6 @@ function stripSlashes(path) {
     path = path.slice(0, -1);
   }
   return path;
-}
-
-function isObject(object) {
-  return typeof object === 'object';
-}
-
-function isString(object) {
-  return typeof object === 'string';
 }
 
 let pendingRequestCount = 0;
@@ -323,12 +292,8 @@ export default Mixin.create({
             response = errorThrown;
           } else if (textStatus === 'timeout') {
             response = new TimeoutError();
-
-            defineDeprecatedErrorsProperty(response);
           } else if (textStatus === 'abort') {
             response = new AbortError();
-
-            defineDeprecatedErrorsProperty(response);
           } else {
             response = this.handleResponse(
                jqXHR.status,
@@ -560,7 +525,12 @@ export default Mixin.create({
 
     if (this.isSuccess(status, headers, payload)) {
       return payload;
-    } else if (this.isUnauthorizedError(status, headers, payload)) {
+    }
+
+    // Allow overriding of error payload
+    payload = this.normalizeErrorResponse(status, headers, payload);
+
+    if (this.isUnauthorizedError(status, headers, payload)) {
       error = new UnauthorizedError(payload);
     } else if (this.isForbiddenError(status, headers, payload)) {
       error = new ForbiddenError(payload);
@@ -586,10 +556,6 @@ export default Mixin.create({
 
       error = new AjaxError(payload, detailedMessage);
     }
-
-    let errors = this.normalizeErrorResponse(status, headers, payload);
-
-    defineDeprecatedErrorsProperty(error, errors);
 
     return error;
   },
@@ -833,88 +799,16 @@ export default Mixin.create({
   },
 
   /**
-   * Normalize the error from the server into the same format
-   *
-   * The format we normalize to is based on the JSON API specification.  The
-   * return value should be an array of objects that match the format they
-   * describe. More details about the object format can be found
-   * [here](http://jsonapi.org/format/#error-objects)
-   *
-   * The basics of the format are as follows:
-   *
-   * ```javascript
-   * [
-   *   {
-   *     status: 'The status code for the error',
-   *     title: 'The human-readable title of the error'
-   *     detail: 'The human-readable details of the error'
-   *   }
-   * ]
-   * ```
-   *
-   * In cases where the server returns an array, then there should be one item
-   * in the array for each of the payload.  If your server returns a JSON API
-   * formatted payload already, it will just be returned directly.
-   *
-   * If your server returns something other than a JSON API format, it's
-   * suggested that you override this method to convert your own errors into the
-   * one described above.
+   * Can be overwritten to allow re-formatting of error messages
    *
    * @method normalizeErrorResponse
    * @private
    * @param  {Number} status
    * @param  {Object} headers
    * @param  {Object} payload
-   * @return {Array} An array of JSON API-formatted error objects
+   * @return {*} error response
    */
   normalizeErrorResponse(status, headers, payload) {
-    payload = isNone(payload) ? {} : payload;
-
-    if (isArray(payload.errors)) {
-      return payload.errors.map(function(error) {
-        if (isObject(error)) {
-          let ret = merge({}, error);
-          ret.status = `${error.status}`;
-          return ret;
-        } else {
-          return {
-            status: `${status}`,
-            title: error
-          };
-        }
-      });
-    } else if (isArray(payload)) {
-      return payload.map(function(error) {
-        if (isObject(error)) {
-          return {
-            status: `${status}`,
-            title: error.title || 'The backend responded with an error',
-            detail: error
-          };
-        } else {
-          return {
-            status: `${status}`,
-            title: `${error}`
-          };
-        }
-      });
-    } else {
-      if (isString(payload)) {
-        return [
-          {
-            status: `${status}`,
-            title: payload
-          }
-        ];
-      } else {
-        return [
-          {
-            status: `${status}`,
-            title: payload.title || 'The backend responded with an error',
-            detail: payload
-          }
-        ];
-      }
-    }
+    return payload;
   }
 });
