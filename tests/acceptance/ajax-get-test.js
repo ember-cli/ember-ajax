@@ -53,7 +53,7 @@ describe('Acceptance | ajax-get component', function() {
     click('button:contains(Load Data)');
 
     andThen(function() {
-      expect(find('.ajax-get .error').text()).to.equal(errorMessage);
+      expect(find('.ajax-get .error').text().trim()).to.equal(errorMessage);
     });
   });
 });

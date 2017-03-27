@@ -729,70 +729,6 @@ describe('Unit | Mixin | ajax request', function() {
     });
   });
 
-  it('normalizes errors into the appropriate format', function() {
-    const service = new AjaxRequest();
-
-    const jsonApiError = service.normalizeErrorResponse(400, {}, {
-      errors: [
-        { status: 400, title: 'Foo' },
-        { status: 400, title: 'Foo' }
-      ]
-    });
-    expect(jsonApiError).to.deep.equal([
-        { status: '400', title: 'Foo' },
-        { status: '400', title: 'Foo' }
-    ]);
-
-    const payloadWithErrorStrings = service.normalizeErrorResponse(400, {}, {
-      errors: [
-        'This is an error',
-        'This is another error'
-      ]
-    });
-    expect(payloadWithErrorStrings).to.deep.equal([
-      { status: '400', title: 'This is an error' },
-      { status: '400', title: 'This is another error' }
-    ]);
-
-    const payloadArrayOfObjects = service.normalizeErrorResponse(400, {}, [
-      { status: 400, title: 'Foo' },
-      { status: 400, title: 'Bar' }
-    ]);
-    expect(payloadArrayOfObjects).to.deep.equal([
-      { status: '400', title: 'Foo', detail: { status: 400, title: 'Foo' } },
-      { status: '400', title: 'Bar', detail: { status: 400, title: 'Bar' } }
-    ]);
-
-    const payloadArrayOfStrings = service.normalizeErrorResponse(400, {}, [
-      'Foo', 'Bar'
-    ]);
-    expect(payloadArrayOfStrings).to.deep.equal([
-      { status: '400', title: 'Foo' },
-      { status: '400', title: 'Bar' }
-    ]);
-
-    const payloadIsString = service.normalizeErrorResponse(400, {}, 'Foo');
-    expect(payloadIsString).to.deep.equal([
-      {
-        status: '400',
-        title: 'Foo'
-      }
-    ]);
-
-    const payloadIsObject = service.normalizeErrorResponse(400, {}, {
-      title: 'Foo'
-    });
-    expect(payloadIsObject).to.deep.equal([
-      {
-        status: '400',
-        title: 'Foo',
-        detail: {
-          title: 'Foo'
-        }
-      }
-    ]);
-  });
-
   describe('URL building', function() {
     class NamespaceLeadingSlash extends AjaxRequest {
       static get slashType() {
@@ -929,32 +865,6 @@ describe('Unit | Mixin | ajax request', function() {
       .then((value) => {
         expect(value).to.deep.equal({ foo: 'bar' });
       });
-    });
-  });
-
-  describe('[ISSUE 175] error property deprecation', function() {
-    beforeEach(function() {
-      // eslint-disable-next-line
-      Ember.ENV.RAISE_ON_DEPRECATION = true;
-    });
-
-    afterEach(function() {
-      // eslint-disable-next-line
-      Ember.ENV.RAISE_ON_DEPRECATION = false;
-    });
-
-    it('notifies', function() {
-      this.server.get('/posts', jsonFactory(404, { errors: [{ id: 1, message: 'error description' }] }));
-      const service = new AjaxRequest();
-      return service.request('/posts')
-        .then(function() {
-          throw new Error('success handler should not be called');
-        })
-        .catch(function(reason) {
-          expect(function() {
-            reason.errors;
-          }).to.throws('This property will be removed in ember-ajax 3.0.0. Please use `payload` going forward. Note the attached URL for details.');
-        });
     });
   });
 
