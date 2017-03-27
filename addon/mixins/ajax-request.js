@@ -47,7 +47,7 @@ const {
 const JSONContentType = /^application\/(?:vnd\.api\+)?json/i;
 
 function isJSONContentType(header) {
-  if (isNone(header)) {
+  if (!isString(header)) {
     return false;
   }
   return !!header.match(JSONContentType);
