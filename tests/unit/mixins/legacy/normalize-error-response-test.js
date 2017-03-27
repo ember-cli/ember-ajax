@@ -5,11 +5,10 @@ import LegacyNormalizeErrorResponseMixin from 'ember-ajax/mixins/legacy/normaliz
 
 const { Object: EmberObject } = Ember;
 const AjaxRequest = EmberObject.extend(LegacyNormalizeErrorResponseMixin);
+const service = new AjaxRequest();
 
 describe('Unit | Mixin | legacy/normalize error response', function() {
-  it('formats the error response according to the legacy format', function() {
-    const service = new AjaxRequest();
-
+  it('handles JSON:API formatted error objects', function() {
     const jsonApiError = service.normalizeErrorResponse(400, {}, {
       errors: [
         { status: 400, title: 'Foo' },
@@ -20,7 +19,9 @@ describe('Unit | Mixin | legacy/normalize error response', function() {
         { status: '400', title: 'Foo' },
         { status: '400', title: 'Foo' }
     ]);
+  });
 
+  it('handles an object with an array of error strings', function() {
     const payloadWithErrorStrings = service.normalizeErrorResponse(400, {}, {
       errors: [
         'This is an error',
@@ -31,7 +32,9 @@ describe('Unit | Mixin | legacy/normalize error response', function() {
       { status: '400', title: 'This is an error' },
       { status: '400', title: 'This is another error' }
     ]);
+  });
 
+  it('handles an array of error objects', function() {
     const payloadArrayOfObjects = service.normalizeErrorResponse(400, {}, [
       { status: 400, title: 'Foo' },
       { status: 400, title: 'Bar' }
@@ -40,7 +43,9 @@ describe('Unit | Mixin | legacy/normalize error response', function() {
       { status: '400', title: 'Foo', detail: { status: 400, title: 'Foo' } },
       { status: '400', title: 'Bar', detail: { status: 400, title: 'Bar' } }
     ]);
+  });
 
+  it('handles an array of strings', function() {
     const payloadArrayOfStrings = service.normalizeErrorResponse(400, {}, [
       'Foo', 'Bar'
     ]);
@@ -48,15 +53,20 @@ describe('Unit | Mixin | legacy/normalize error response', function() {
       { status: '400', title: 'Foo' },
       { status: '400', title: 'Bar' }
     ]);
+  });
 
+  it('handles a string', function() {
     const payloadIsString = service.normalizeErrorResponse(400, {}, 'Foo');
+
     expect(payloadIsString).to.deep.equal([
       {
         status: '400',
         title: 'Foo'
       }
     ]);
+  });
 
+  it('handles an arbitrary object', function() {
     const payloadIsObject = service.normalizeErrorResponse(400, {}, {
       title: 'Foo'
     });

@@ -79,23 +79,21 @@ export default Mixin.create({
           };
         }
       });
+    } else if (isString(payload)) {
+      return [
+        {
+          status: `${status}`,
+          title: payload
+        }
+      ];
     } else {
-      if (isString(payload)) {
-        return [
-          {
-            status: `${status}`,
-            title: payload
-          }
-        ];
-      } else {
-        return [
-          {
-            status: `${status}`,
-            title: payload.title || 'The backend responded with an error',
-            detail: payload
-          }
-        ];
-      }
+      return [
+        {
+          status: `${status}`,
+          title: payload.title || 'The backend responded with an error',
+          detail: payload
+        }
+      ];
     }
   }
 });

@@ -1,4 +1,4 @@
-import { describe, it, beforeEach } from 'mocha';
+import { describe, it } from 'mocha';
 import { expect } from 'chai';
 
 import AJAXPromise from 'ember-ajax/-private/promise';
