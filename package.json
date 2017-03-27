@@ -38,7 +38,7 @@
     "ember-cli-mocha": "^0.13.2",
     "ember-cli-pretender": "^1.0.1",
     "ember-cli-release": "^1.0.0-beta.2",
-    "ember-cli-shims": "1.0.2",
+    "ember-cli-shims": "1.1.0",
     "ember-cli-sri": "^2.1.0",
     "ember-cli-test-loader": "2.0.0",
     "ember-cli-testdouble": "0.1.0",
