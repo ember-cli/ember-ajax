@@ -21,10 +21,11 @@ import {
   isServerError,
   isSuccess
 } from '../errors';
+import ajax from 'ember-ajax/utils/ajax';
 import parseResponseHeaders from 'ember-ajax/-private/utils/parse-response-headers';
 import getHeader from 'ember-ajax/-private/utils/get-header';
 import { isFullURL, parseURL, haveSameHost } from 'ember-ajax/-private/utils/url-helpers';
-import ajax from 'ember-ajax/utils/ajax';
+import isString from 'ember-ajax/-private/utils/is-string';
 import AJAXPromise from 'ember-ajax/-private/promise';
 
 const {
@@ -33,11 +34,8 @@ const {
   Logger,
   Mixin,
   Test,
-  deprecate,
   get,
-  isArray,
   isEmpty,
-  isNone,
   merge,
   run,
   runInDebug,
@@ -263,7 +261,7 @@ export default Mixin.create({
     const promise = new AJAXPromise((resolve, reject) => {
       jqXHR
         .done((payload, textStatus, jqXHR) => {
-          let response = this.handleResponse(
+          const response = this.handleResponse(
                     jqXHR.status,
                     parseResponseHeaders(jqXHR.getAllResponseHeaders()),
                     payload,
@@ -278,8 +276,9 @@ export default Mixin.create({
         })
         .fail((jqXHR, textStatus, errorThrown) => {
           runInDebug(function() {
-            let message = `The server returned an empty string for ${requestData.type} ${requestData.url}, which cannot be parsed into a valid JSON. Return either null or {}.`;
-            let validJSONString = !(textStatus === 'parsererror' && jqXHR.responseText === '');
+            const message = `The server returned an empty string for ${requestData.type} ${requestData.url}, which cannot be parsed into a valid JSON. Return either null or {}.`;
+            const validJSONString = !(textStatus === 'parsererror' && jqXHR.responseText === '');
+
             warn(message, validJSONString, {
               id: 'ds.adapter.returned-empty-string-as-JSON'
             });
@@ -547,7 +546,7 @@ export default Mixin.create({
     } else if (this.isServerError(status, headers, payload)) {
       error = new ServerError(payload);
     } else {
-      let detailedMessage = this.generateDetailedMessage(
+      const detailedMessage = this.generateDetailedMessage(
         status,
         headers,
         payload,

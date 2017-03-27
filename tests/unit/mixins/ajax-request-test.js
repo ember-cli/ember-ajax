@@ -255,8 +255,8 @@ describe('Unit | Mixin | ajax request', function() {
 
   it('request() promise label is correct', function() {
     const service = new AjaxRequest();
-    let url = '/posts';
-    let data = {
+    const url = '/posts';
+    const data = {
       type: 'POST',
       data: {
         post: { title: 'Title', description: 'Some description.' }
@@ -279,7 +279,7 @@ describe('Unit | Mixin | ajax request', function() {
     const url = '/posts';
     const title = 'Title';
     const description = 'Some description.';
-    let options = {
+    const options = {
       data: {
         post: { title, description }
       }
@@ -772,7 +772,7 @@ describe('Unit | Mixin | ajax request', function() {
     ];
 
     [NamespaceLeadingSlash, NamespaceTrailingSlash, NamespaceTwoSlash, NamespaceNoSlash].forEach((Klass) => {
-      let req = new Klass();
+      const req = new Klass();
 
       hosts.forEach((exampleHost) => {
         const { host } = exampleHost;
@@ -894,9 +894,7 @@ describe('Unit | Mixin | ajax request', function() {
             expect(reason instanceof errorClass).to.be.ok;
             expect(reason.payload).to.not.be.undefined;
 
-            let {
-              errors
-            } = reason.payload;
+            const { errors } = reason.payload;
 
             expect(errors && typeOf(errors) === 'array').to.be.ok;
             expect(errors[0].id).to.equal(1);
@@ -978,7 +976,7 @@ describe('Unit | Mixin | ajax request', function() {
     it('can be used to abort the request', function() {
       const ajax = new AjaxRequest();
       const promise = ajax.request('/foo')
-        .then((response) => {
+        .then(() => {
           // Ensure that this code is not executed
           expect(false).to.be.ok;
         })

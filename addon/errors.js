@@ -284,6 +284,7 @@ export function isServerError(error) {
  * @return {Boolean}
  */
 export function isSuccess(status) {
-  let s = parseInt(status, 10);
+  const s = parseInt(status, 10);
+
   return s >= 200 && s < 300 || s === 304;
 }

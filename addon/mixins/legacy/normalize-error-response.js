@@ -1,4 +1,5 @@
 import Ember from 'ember';
+import isString from 'ember-ajax/-private/utils/is-string';
 
 const {
   Mixin,
@@ -9,10 +10,6 @@ const {
 
 function isObject(object) {
   return typeof object === 'object';
-}
-
-function isString(object) {
-  return typeof object === 'string';
 }
 
 export default Mixin.create({
@@ -57,7 +54,7 @@ export default Mixin.create({
     if (isArray(payload.errors)) {
       return payload.errors.map(function(error) {
         if (isObject(error)) {
-          let ret = merge({}, error);
+          const ret = merge({}, error);
           ret.status = `${error.status}`;
           return ret;
         } else {
