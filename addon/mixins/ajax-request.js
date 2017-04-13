@@ -555,6 +555,7 @@ export default Mixin.create({
 
       error = new AjaxError(payload, detailedMessage);
     }
+    error.status = status;
 
     return error;
   },
