@@ -10,7 +10,10 @@ const completeUrlRegex = /^(http|https)/;
  * Borrowed from
  * http://www.sitepoint.com/url-parsing-isomorphic-javascript/
  */
-const isNode = (typeof module === 'object' && module.exports);
+const isNode = typeof self === 'undefined'
+  && typeof process !== 'undefined'
+  && {}.toString.call(process) === '[object process]';
+
 const url = (function() {
   if (isFastBoot) {
     // ember-fastboot-server provides the node url module as URL global
