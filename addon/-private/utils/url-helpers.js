@@ -1,5 +1,6 @@
 /* eslint-env browser, node */
 
+import require from 'require';
 import isFastBoot from 'ember-ajax/-private/utils/is-fastboot';
 
 const completeUrlRegex = /^(http|https)/;
