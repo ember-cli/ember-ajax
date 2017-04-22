@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "ember-cli-babel": "6.0.0-beta.10",
-    "ember-inflector": "^1.11.0"
+    "ember-inflector": "^2.0.0"
   },
   "devDependencies": {
     "broccoli-asset-rev": "^2.4.5",
