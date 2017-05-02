@@ -20,62 +20,72 @@ export function AjaxError(errors, message = 'Ajax operation failed') {
 AjaxError.prototype = Object.create(EmberError.prototype);
 
 /**
+ * @class HttpError
+ * @public
+ */
+export function HttpError(errors) {
+  AjaxError.call(this, errors, 'Http request failed');
+}
+
+HttpError.prototype = Object.create(AjaxError.prototype);
+
+/**
  * @class InvalidError
  * @public
  */
 export function InvalidError(errors) {
-  AjaxError.call(this, errors, 'Request was rejected because it was invalid');
+  HttpError.call(this, errors, 'Request was rejected because it was invalid');
 }
 
-InvalidError.prototype = Object.create(AjaxError.prototype);
+InvalidError.prototype = Object.create(HttpError.prototype);
 
 /**
  * @class UnauthorizedError
  * @public
  */
 export function UnauthorizedError(errors) {
-  AjaxError.call(this, errors, 'Ajax authorization failed');
+  HttpError.call(this, errors, 'Http authorization failed');
 }
 
-UnauthorizedError.prototype = Object.create(AjaxError.prototype);
+UnauthorizedError.prototype = Object.create(HttpError.prototype);
 
 /**
  * @class ForbiddenError
  * @public
  */
 export function ForbiddenError(errors) {
-  AjaxError.call(this, errors,
+  HttpError.call(this, errors,
     'Request was rejected because user is not permitted to perform this operation.');
 }
 
-ForbiddenError.prototype = Object.create(AjaxError.prototype);
+ForbiddenError.prototype = Object.create(HttpError.prototype);
 
 /**
  * @class BadRequestError
  * @public
  */
 export function BadRequestError(errors) {
-  AjaxError.call(this, errors, 'Request was formatted incorrectly.');
+  HttpError.call(this, errors, 'Request was formatted incorrectly.');
 }
 
-BadRequestError.prototype = Object.create(AjaxError.prototype);
+BadRequestError.prototype = Object.create(HttpError.prototype);
 
 /**
  * @class NotFoundError
  * @public
  */
 export function NotFoundError(errors) {
-  AjaxError.call(this, errors, 'Resource was not found.');
+  HttpError.call(this, errors, 'Resource was not found.');
 }
 
-NotFoundError.prototype = Object.create(AjaxError.prototype);
+NotFoundError.prototype = Object.create(HttpError.prototype);
 
 /**
  * @class TimeoutError
  * @public
  */
 export function TimeoutError() {
-  AjaxError.call(this, null, 'The ajax operation timed out');
+  AjaxError.call(this, null, 'The http request timed out');
 }
 
 TimeoutError.prototype = Object.create(AjaxError.prototype);
@@ -85,7 +95,7 @@ TimeoutError.prototype = Object.create(AjaxError.prototype);
  * @public
  */
 export function AbortError() {
-  AjaxError.call(this, null, 'The ajax operation was aborted');
+  AjaxError.call(this, null, 'The http request was aborted');
 }
 
 AbortError.prototype = Object.create(AjaxError.prototype);
@@ -95,13 +105,30 @@ AbortError.prototype = Object.create(AjaxError.prototype);
  * @public
  */
 export function ServerError(errors) {
-  AjaxError.call(this, errors, 'Request was rejected due to server error');
+  HttpError.call(this, errors, 'Request was rejected due to server error');
 }
 
-ServerError.prototype = Object.create(AjaxError.prototype);
+ServerError.prototype = Object.create(HttpError.prototype);
 
 /**
- * Checks if the given status code or AjaxError obejct represents an
+ * Checks if the given status code or AjaxError object represents a
+ * http request error
+ * @method isHttpError
+ * @public
+ * @param  {Number | AjaxError} error
+ * @return {Boolean}
+ */
+export function isHttpError(error) {
+  if (error instanceof AjaxError) {
+    return error instanceof HttpError;
+  } else {
+    // error code 0 indicate a non-http error
+    return error && error > 0;
+  }
+}
+
+/**
+ * Checks if the given status code or AjaxError object represents an
  * unauthorized request error
  * @method isUnauthorizedError
  * @public
