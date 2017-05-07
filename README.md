@@ -1,7 +1,6 @@
 # ember-ajax
 
 [![Travis CI Build Status](https://travis-ci.org/ember-cli/ember-ajax.svg?branch=master)](https://travis-ci.org/ember-cli/ember-ajax)
-[![Coverage Status](https://coveralls.io/repos/github/ember-cli/ember-ajax/badge.svg?branch=master)](https://coveralls.io/github/ember-cli/ember-ajax?branch=master)
 [![Ember Observer Score](http://emberobserver.com/badges/ember-ajax.svg)](http://emberobserver.com/addons/ember-ajax)
 ![Ember Version][ember-version]
 
