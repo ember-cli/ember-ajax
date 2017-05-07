@@ -1,5 +1,6 @@
 # ember-ajax
 
+[![npm version](https://badge.fury.io/js/ember-ajax.svg)](https://badge.fury.io/js/ember-ajax)
 [![Travis CI Build Status](https://travis-ci.org/ember-cli/ember-ajax.svg?branch=master)](https://travis-ci.org/ember-cli/ember-ajax)
 [![Ember Observer Score](http://emberobserver.com/badges/ember-ajax.svg)](http://emberobserver.com/addons/ember-ajax)
 ![Ember Version][ember-version]
