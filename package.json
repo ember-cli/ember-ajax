@@ -37,7 +37,7 @@
     "ember-cli-shims": "1.1.0",
     "ember-cli-sri": "^2.1.0",
     "ember-cli-test-loader": "^2.1.0",
-    "ember-cli-testdouble": "0.1.0",
+    "ember-cli-testdouble": "0.1.1",
     "ember-cli-uglify": "^1.2.0",
     "ember-data": "^2.13.1",
     "ember-export-application-global": "2.0.0",
