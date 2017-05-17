@@ -287,8 +287,8 @@ If you need to access the json response of a request that failed, you can use th
 
 ```js
 this.get('ajax').raw(url, options)
-  .then(({ response }) => this.handleSuccess(response))
-  .catch(({ response, jqXHR, payload }) => this.handleError(response));
+  .then((response) => this.handleSuccess(response))
+  .catch((response, jqXHR, payload) => this.handleError(response));
 ```
 
 Note that in this use case there's no access to the error object. You can inspect the `jqXHR` object for additional information about the failed request. In particular `jqXHR.status` returns the relevant HTTP error code.
