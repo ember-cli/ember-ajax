@@ -42,7 +42,7 @@
     "ember-data": "^2.13.1",
     "ember-export-application-global": "2.0.0",
     "ember-load-initializers": "1.0.0",
-    "ember-resolver": "4.1.0",
+    "ember-resolver": "4.2.0",
     "ember-source": "^2.13.0",
     "eslint": "^4.1.0",
     "eslint-plugin-ember-suave": "^1.0.0",
