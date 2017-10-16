@@ -5,10 +5,11 @@ import EmberError from '@ember/error';
  * @public
  * @extends Ember.Error
  */
-export function AjaxError(payload, message = 'Ajax operation failed') {
+export function AjaxError(payload, message = 'Ajax operation failed', status) {
   EmberError.call(this, message);
 
   this.payload = payload;
+  this.status = status;
 }
 
 AjaxError.prototype = Object.create(EmberError.prototype);
@@ -19,7 +20,7 @@ AjaxError.prototype = Object.create(EmberError.prototype);
  * @extends AjaxError
  */
 export function InvalidError(payload) {
-  AjaxError.call(this, payload, 'Request was rejected because it was invalid');
+  AjaxError.call(this, payload, 'Request was rejected because it was invalid', 422);
 }
 
 InvalidError.prototype = Object.create(AjaxError.prototype);
@@ -30,7 +31,7 @@ InvalidError.prototype = Object.create(AjaxError.prototype);
  * @extends AjaxError
  */
 export function UnauthorizedError(payload) {
-  AjaxError.call(this, payload, 'Ajax authorization failed');
+  AjaxError.call(this, payload, 'Ajax authorization failed', 401);
 }
 
 UnauthorizedError.prototype = Object.create(AjaxError.prototype);
@@ -44,7 +45,8 @@ export function ForbiddenError(payload) {
   AjaxError.call(
     this,
     payload,
-    'Request was rejected because user is not permitted to perform this operation.'
+    'Request was rejected because user is not permitted to perform this operation.',
+    403
   );
 }
 
@@ -56,7 +58,7 @@ ForbiddenError.prototype = Object.create(AjaxError.prototype);
  * @extends AjaxError
  */
 export function BadRequestError(payload) {
-  AjaxError.call(this, payload, 'Request was formatted incorrectly.');
+  AjaxError.call(this, payload, 'Request was formatted incorrectly.', 400);
 }
 
 BadRequestError.prototype = Object.create(AjaxError.prototype);
@@ -67,7 +69,7 @@ BadRequestError.prototype = Object.create(AjaxError.prototype);
  * @extends AjaxError
  */
 export function NotFoundError(payload) {
-  AjaxError.call(this, payload, 'Resource was not found.');
+  AjaxError.call(this, payload, 'Resource was not found.', 404);
 }
 
 NotFoundError.prototype = Object.create(AjaxError.prototype);
@@ -78,7 +80,7 @@ NotFoundError.prototype = Object.create(AjaxError.prototype);
  * @extends AjaxError
  */
 export function TimeoutError() {
-  AjaxError.call(this, null, 'The ajax operation timed out');
+  AjaxError.call(this, null, 'The ajax operation timed out', -1);
 }
 
 TimeoutError.prototype = Object.create(AjaxError.prototype);
@@ -89,7 +91,7 @@ TimeoutError.prototype = Object.create(AjaxError.prototype);
  * @extends AjaxError
  */
 export function AbortError() {
-  AjaxError.call(this, null, 'The ajax operation was aborted');
+  AjaxError.call(this, null, 'The ajax operation was aborted', 0);
 }
 
 AbortError.prototype = Object.create(AjaxError.prototype);
@@ -100,7 +102,7 @@ AbortError.prototype = Object.create(AjaxError.prototype);
  * @extends AjaxError
  */
 export function ConflictError(payload) {
-  AjaxError.call(this, payload, 'The ajax operation failed due to a conflict');
+  AjaxError.call(this, payload, 'The ajax operation failed due to a conflict', 409);
 }
 
 ConflictError.prototype = Object.create(AjaxError.prototype);
@@ -110,8 +112,8 @@ ConflictError.prototype = Object.create(AjaxError.prototype);
  * @public
  * @extends AjaxError
  */
-export function ServerError(payload) {
-  AjaxError.call(this, payload, 'Request was rejected due to server error');
+export function ServerError(payload, status) {
+  AjaxError.call(this, payload, 'Request was rejected due to server error', status);
 }
 
 ServerError.prototype = Object.create(AjaxError.prototype);

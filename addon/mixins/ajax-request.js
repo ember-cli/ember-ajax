@@ -521,14 +521,19 @@ export default Mixin.create({
    * @return {Object | AjaxError} response
    */
   handleResponse(status, headers, payload, requestData) {
-    let error;
-
     if (this.isSuccess(status, headers, payload)) {
       return payload;
     }
 
     // Allow overriding of error payload
     payload = this.normalizeErrorResponse(status, headers, payload);
+
+    return _createCorrectError(status, headers, payload, requestData);
+  },
+
+  _createCorrectError(status, headers, payload, requestData) {
+    let error;
+
 
     if (this.isUnauthorizedError(status, headers, payload)) {
       error = new UnauthorizedError(payload);
@@ -545,13 +550,12 @@ export default Mixin.create({
     } else if (this.isConflictError(status, headers, payload)) {
       error = new ConflictError(payload);
     } else if (this.isServerError(status, headers, payload)) {
-      error = new ServerError(payload);
+      error = new ServerError(payload, status);
     } else {
       const detailedMessage = this.generateDetailedMessage(status, headers, payload, requestData);
 
-      error = new AjaxError(payload, detailedMessage);
+      error = new AjaxError(payload, detailedMessage, status);
     }
-    error.status = status;
 
     return error;
   },
