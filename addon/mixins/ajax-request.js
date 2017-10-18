@@ -528,12 +528,11 @@ export default Mixin.create({
     // Allow overriding of error payload
     payload = this.normalizeErrorResponse(status, headers, payload);
 
-    return _createCorrectError(status, headers, payload, requestData);
+    return this._createCorrectError(status, headers, payload, requestData);
   },
 
   _createCorrectError(status, headers, payload, requestData) {
     let error;
-
 
     if (this.isUnauthorizedError(status, headers, payload)) {
       error = new UnauthorizedError(payload);
