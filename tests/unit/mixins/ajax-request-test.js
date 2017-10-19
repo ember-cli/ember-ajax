@@ -885,7 +885,7 @@ describe('Unit | Mixin | ajax request', function() {
         .catch(function(reason) {
           expect(isTimeoutError(reason)).to.be.ok;
           expect(reason.payload).to.be.null;
-          expect(reason.status).to.be.undefined;
+          expect(reason.status).to.equal(-1);
         });
     });
 
