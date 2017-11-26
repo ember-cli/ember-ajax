@@ -17,7 +17,6 @@ cache:
   yarn: true
   directories:
     - $HOME/.npm
-    - $HOME/.cache # includes bowers cache
     - $HOME/.yarn-cache
 
 env:
@@ -40,12 +39,9 @@ before_install:
   - sh -e /etc/init.d/xvfb start
   # Other setup
   - npm config set spin false
-  - npm install -g bower
-  - bower --version
 
 install:
   - yarn
-  - bower install
 
 script:
   # Usually, it's ok to finish the test scenario without reverting

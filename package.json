@@ -25,7 +25,7 @@
   "devDependencies": {
     "broccoli-asset-rev": "^2.4.5",
     "ember-cli": "^2.13.1",
-    "ember-cli-chai": "^0.4.0",
+    "ember-cli-chai": "0.4.3",
     "ember-cli-dependency-checker": "^1.4.0",
     "ember-cli-eslint": "^3.1.0",
     "ember-cli-htmlbars": "^2.0.1",
@@ -37,7 +37,7 @@
     "ember-cli-shims": "1.1.0",
     "ember-cli-sri": "^2.1.0",
     "ember-cli-test-loader": "^2.1.0",
-    "ember-cli-testdouble": "0.1.0",
+    "ember-cli-testdouble": "^0.1.2",
     "ember-cli-uglify": "^1.2.0",
     "ember-data": "^2.13.1",
     "ember-export-application-global": "2.0.0",
@@ -47,6 +47,7 @@
     "eslint": "^4.1.0",
     "eslint-plugin-ember-suave": "^1.0.0",
     "loader.js": "^4.4.0",
+    "testdouble": "3.2.6",
     "testdouble-chai": "^0.5.0"
   },
   "engines": {

@@ -1,6 +1,0 @@
-{
-  "name": "ember-ajax",
-  "dependencies": {
-    "testdouble": "testdouble/testdouble.js#^1.4.2"
-  }
-}
