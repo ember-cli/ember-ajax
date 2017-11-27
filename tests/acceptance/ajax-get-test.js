@@ -1,9 +1,4 @@
-import {
-  describe,
-  beforeEach,
-  afterEach,
-  it
-} from 'mocha';
+import { describe, beforeEach, afterEach, it } from 'mocha';
 import { expect } from 'chai';
 
 import destroyApp from 'dummy/tests/helpers/destroy-app';
@@ -58,8 +53,11 @@ describe('Acceptance | ajax-get component', function() {
     click('button:contains(Load Data)');
 
     andThen(function() {
-      expect(find('.ajax-get .error').text().trim()).to.equal(errorMessage);
+      expect(
+        find('.ajax-get .error')
+          .text()
+          .trim()
+      ).to.equal(errorMessage);
     });
   });
 });
-

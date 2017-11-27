@@ -36,11 +36,7 @@ import { isFullURL, parseURL, haveSameHost } from 'ember-ajax/-private/utils/url
 import isString from 'ember-ajax/-private/utils/is-string';
 import AJAXPromise from 'ember-ajax/-private/promise';
 
-const {
-  Logger,
-  Test,
-  testing
-} = Ember;
+const { Logger, Test, testing } = Ember;
 const JSONContentType = /^application\/(?:vnd\.api\+)?json/i;
 
 function isJSONContentType(header) {
@@ -105,7 +101,6 @@ if (testing) {
  * @mixin
  */
 export default Mixin.create({
-
   /**
    * The default value for the request `contentType`
    *
@@ -209,9 +204,10 @@ export default Mixin.create({
     const internalPromise = this._makeRequest(hash);
 
     const ajaxPromise = new AJAXPromise((resolve, reject) => {
-      internalPromise.then(({ response }) => {
-        resolve(response);
-      })
+      internalPromise
+        .then(({ response }) => {
+          resolve(response);
+        })
         .catch(({ response }) => {
           reject(response);
         });
@@ -275,7 +271,9 @@ export default Mixin.create({
         })
         .fail((jqXHR, textStatus, errorThrown) => {
           runInDebug(function() {
-            const message = `The server returned an empty string for ${requestData.type} ${requestData.url}, which cannot be parsed into a valid JSON. Return either null or {}.`;
+            const message = `The server returned an empty string for ${requestData.type} ${
+              requestData.url
+            }, which cannot be parsed into a valid JSON. Return either null or {}.`;
             const validJSONString = !(textStatus === 'parsererror' && jqXHR.responseText === '');
 
             warn(message, validJSONString, {
@@ -391,7 +389,9 @@ export default Mixin.create({
    */
   get(url) {
     if (arguments.length > 1 || url.indexOf('/') !== -1) {
-      throw new EmberError('It seems you tried to use `.get` to make a request! Use the `.request` method instead.');
+      throw new EmberError(
+        'It seems you tried to use `.get` to make a request! Use the `.request` method instead.'
+      );
     }
     return this._super(...arguments);
   },
@@ -438,7 +438,9 @@ export default Mixin.create({
     options.url = this._buildURL(url, options);
     options.type = options.type || 'GET';
     options.dataType = options.dataType || 'json';
-    options.contentType = isEmpty(options.contentType) ? get(this, 'contentType') : options.contentType;
+    options.contentType = isEmpty(options.contentType)
+      ? get(this, 'contentType')
+      : options.contentType;
 
     if (this._shouldSendHeaders(options)) {
       options.headers = this._getFullHeadersHash(options.headers);
@@ -545,12 +547,7 @@ export default Mixin.create({
     } else if (this.isServerError(status, headers, payload)) {
       error = new ServerError(payload);
     } else {
-      const detailedMessage = this.generateDetailedMessage(
-        status,
-        headers,
-        payload,
-        requestData
-      );
+      const detailedMessage = this.generateDetailedMessage(status, headers, payload, requestData);
 
       error = new AjaxError(payload, detailedMessage);
     }
@@ -607,7 +604,7 @@ export default Mixin.create({
     // Add headers on relative URLs
     if (!isFullURL(url)) {
       return true;
-    } else if (trustedHosts.find((matcher) => this._matchHosts(hostname, matcher))) {
+    } else if (trustedHosts.find(matcher => this._matchHosts(hostname, matcher))) {
       return true;
     }
 
@@ -791,7 +788,7 @@ export default Mixin.create({
   parseErrorResponse(responseText) {
     try {
       return JSON.parse(responseText);
-    } catch(e) {
+    } catch (e) {
       return responseText;
     }
   },

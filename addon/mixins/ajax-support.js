@@ -3,7 +3,6 @@ import { inject as service } from '@ember/service';
 import { alias } from '@ember/object/computed';
 
 export default Mixin.create({
-
   /**
    * The AJAX service to send requests through
    *

@@ -1,10 +1,5 @@
 import { setupComponentTest } from 'ember-mocha';
-import {
-  beforeEach,
-  afterEach,
-  it,
-  describe
-} from 'mocha';
+import { beforeEach, afterEach, it, describe } from 'mocha';
 import { expect } from 'chai';
 
 import Pretender from 'pretender';

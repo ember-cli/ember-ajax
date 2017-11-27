@@ -15,13 +15,9 @@ function transform(value) {
 }
 
 describe('unit/-private/utils/parse-response-headers', function() {
-
   describe('parsing headers', function() {
     it('can parse a set of multiple headers', function() {
-      const headers = transform([
-        'key: value',
-        'foo: bar'
-      ]);
+      const headers = transform(['key: value', 'foo: bar']);
 
       expect(headers).to.deep.equal({
         key: 'value',

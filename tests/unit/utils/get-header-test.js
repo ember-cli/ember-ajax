@@ -19,11 +19,17 @@ describe('getHeader', function() {
     const headers = {
       'Content-Encoding': 'gzip',
       'content-type': 'application/json; charset=utf-8',
-      'date': 'Fri, 12 Feb 2016 19:21:00 GMT'
+      date: 'Fri, 12 Feb 2016 19:21:00 GMT'
     };
 
-    expect(getHeader(headers, 'Content-Encoding')).to.equal(headers['Content-Encoding'], 'matches direct object access');
-    expect(getHeader(headers, 'content-type')).to.equal(headers['content-type'], 'matches direct object access');
+    expect(getHeader(headers, 'Content-Encoding')).to.equal(
+      headers['Content-Encoding'],
+      'matches direct object access'
+    );
+    expect(getHeader(headers, 'content-type')).to.equal(
+      headers['content-type'],
+      'matches direct object access'
+    );
     expect(getHeader(headers, 'date')).to.equal(headers.date, 'matches direct object access');
   });
 
@@ -31,11 +37,17 @@ describe('getHeader', function() {
     const headers = {
       'Content-Encoding': 'gzip',
       'content-type': 'application/json; charset=utf-8',
-      'date': 'Fri, 12 Feb 2016 19:21:00 GMT'
+      date: 'Fri, 12 Feb 2016 19:21:00 GMT'
     };
 
-    expect(getHeader(headers, 'CoNtEnT-EnCoDiNg')).to.equal(headers['Content-Encoding'], 'matches case-insensitive header');
-    expect(getHeader(headers, 'Content-Type')).to.equal(headers['content-type'], 'matches case-insensitive header');
+    expect(getHeader(headers, 'CoNtEnT-EnCoDiNg')).to.equal(
+      headers['Content-Encoding'],
+      'matches case-insensitive header'
+    );
+    expect(getHeader(headers, 'Content-Type')).to.equal(
+      headers['content-type'],
+      'matches case-insensitive header'
+    );
     expect(getHeader(headers, 'DATE')).to.equal(headers.date, 'matches case-insensitive header');
   });
 });

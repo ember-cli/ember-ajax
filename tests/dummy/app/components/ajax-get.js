@@ -15,14 +15,15 @@ export default Component.extend({
     load() {
       const url = this.get('url');
 
-      return this.get('ajax').request(url)
-        .then((data) => {
+      return this.get('ajax')
+        .request(url)
+        .then(data => {
           this.setProperties({
             data,
             isLoaded: true
           });
         })
-        .catch((error) => {
+        .catch(error => {
           this.set('error', error.payload);
         });
     }

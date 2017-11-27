@@ -4,15 +4,22 @@ module.exports = {
     ecmaVersion: 2017,
     sourceType: 'module'
   },
-  plugins: ['ember'],
+  plugins: ['ember', 'prettier'],
   extends: [
     'eslint:recommended',
-    'plugin:ember/recommended'
+    'plugin:ember/recommended',
+    'prettier'
   ],
   env: {
     'browser': true
   },
   rules: {
+    // Prettier config
+    'prettier/prettier': ['error', {
+      singleQuote: true,
+      printWidth: 100
+    }],
+
     // Built-in Rule Config
     'prefer-const': 'error'
   },

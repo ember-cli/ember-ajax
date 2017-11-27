@@ -8,12 +8,13 @@ const service = new AjaxRequest();
 
 describe('Unit | Mixin | legacy/normalize error response', function() {
   it('handles JSON:API formatted error objects', function() {
-    const jsonApiError = service.normalizeErrorResponse(400, {}, {
-      errors: [
-        { status: 400, title: 'Foo' },
-        { status: 400, title: 'Foo' }
-      ]
-    });
+    const jsonApiError = service.normalizeErrorResponse(
+      400,
+      {},
+      {
+        errors: [{ status: 400, title: 'Foo' }, { status: 400, title: 'Foo' }]
+      }
+    );
     expect(jsonApiError).to.deep.equal([
       { status: '400', title: 'Foo' },
       { status: '400', title: 'Foo' }
@@ -21,12 +22,13 @@ describe('Unit | Mixin | legacy/normalize error response', function() {
   });
 
   it('handles an object with an array of error strings', function() {
-    const payloadWithErrorStrings = service.normalizeErrorResponse(400, {}, {
-      errors: [
-        'This is an error',
-        'This is another error'
-      ]
-    });
+    const payloadWithErrorStrings = service.normalizeErrorResponse(
+      400,
+      {},
+      {
+        errors: ['This is an error', 'This is another error']
+      }
+    );
     expect(payloadWithErrorStrings).to.deep.equal([
       { status: '400', title: 'This is an error' },
       { status: '400', title: 'This is another error' }
@@ -45,9 +47,7 @@ describe('Unit | Mixin | legacy/normalize error response', function() {
   });
 
   it('handles an array of strings', function() {
-    const payloadArrayOfStrings = service.normalizeErrorResponse(400, {}, [
-      'Foo', 'Bar'
-    ]);
+    const payloadArrayOfStrings = service.normalizeErrorResponse(400, {}, ['Foo', 'Bar']);
     expect(payloadArrayOfStrings).to.deep.equal([
       { status: '400', title: 'Foo' },
       { status: '400', title: 'Bar' }
@@ -66,9 +66,13 @@ describe('Unit | Mixin | legacy/normalize error response', function() {
   });
 
   it('handles an arbitrary object', function() {
-    const payloadIsObject = service.normalizeErrorResponse(400, {}, {
-      title: 'Foo'
-    });
+    const payloadIsObject = service.normalizeErrorResponse(
+      400,
+      {},
+      {
+        title: 'Foo'
+      }
+    );
     expect(payloadIsObject).to.deep.equal([
       {
         status: '400',
