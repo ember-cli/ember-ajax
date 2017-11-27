@@ -1,9 +1,6 @@
 /* global najax */
-import Ember from 'ember';
-import isFastBoot from 'ember-ajax/-private/utils/is-fastboot';
+import $ from 'jquery';
 
-const {
-  $
-} = Ember;
+import isFastBoot from 'ember-ajax/-private/utils/is-fastboot';
 
 export default isFastBoot ? najax : $.ajax;

@@ -1,6 +1,4 @@
-import Ember from 'ember';
-
-const { RSVP: { Promise } } = Ember;
+import { Promise } from 'rsvp';
 
 /**
  * AJAX Promise

@@ -1,12 +1,8 @@
-import Ember from 'ember';
+import Mixin from '@ember/object/mixin';
+import { isArray } from '@ember/array';
+import { isNone } from '@ember/utils';
+import { merge } from '@ember/polyfills';
 import isString from 'ember-ajax/-private/utils/is-string';
-
-const {
-  Mixin,
-  isArray,
-  isNone,
-  merge
-} = Ember;
 
 function isObject(object) {
   return typeof object === 'object';

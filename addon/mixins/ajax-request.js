@@ -1,3 +1,11 @@
+import { A } from '@ember/array';
+import EmberError from '@ember/error';
+import Mixin from '@ember/object/mixin';
+import { get } from '@ember/object';
+import { isEmpty } from '@ember/utils';
+import { merge } from '@ember/polyfills';
+import { run } from '@ember/runloop';
+import { warn, runInDebug } from '@ember/debug';
 import Ember from 'ember';
 import {
   AjaxError,
@@ -29,18 +37,9 @@ import isString from 'ember-ajax/-private/utils/is-string';
 import AJAXPromise from 'ember-ajax/-private/promise';
 
 const {
-  A,
-  Error: EmberError,
   Logger,
-  Mixin,
   Test,
-  get,
-  isEmpty,
-  merge,
-  run,
-  runInDebug,
-  testing,
-  warn
+  testing
 } = Ember;
 const JSONContentType = /^application\/(?:vnd\.api\+)?json/i;
 
@@ -213,9 +212,9 @@ export default Mixin.create({
       internalPromise.then(({ response }) => {
         resolve(response);
       })
-      .catch(({ response }) => {
-        reject(response);
-      });
+        .catch(({ response }) => {
+          reject(response);
+        });
     }, `ember-ajax: ${hash.type} ${hash.url} response`);
 
     ajaxPromise.xhr = internalPromise.xhr;
@@ -262,11 +261,11 @@ export default Mixin.create({
       jqXHR
         .done((payload, textStatus, jqXHR) => {
           const response = this.handleResponse(
-                    jqXHR.status,
-                    parseResponseHeaders(jqXHR.getAllResponseHeaders()),
-                    payload,
-                    requestData
-                  );
+            jqXHR.status,
+            parseResponseHeaders(jqXHR.getAllResponseHeaders()),
+            payload,
+            requestData
+          );
 
           if (isAjaxError(response)) {
             run.join(null, reject, { payload, textStatus, jqXHR, response });
@@ -295,10 +294,10 @@ export default Mixin.create({
             response = new AbortError();
           } else {
             response = this.handleResponse(
-               jqXHR.status,
-               parseResponseHeaders(jqXHR.getAllResponseHeaders()),
-               payload,
-               requestData
+              jqXHR.status,
+              parseResponseHeaders(jqXHR.getAllResponseHeaders()),
+              payload,
+              requestData
             );
           }
 
@@ -484,7 +483,7 @@ export default Mixin.create({
     }
 
     // If the URL has already been constructed (presumably, by Ember Data), then we should just leave it alone
-    const hasNamespaceRegex = new RegExp(`^(\/)?${namespace}`);
+    const hasNamespaceRegex = new RegExp(`^(/)?${namespace}`);
     if (hasNamespaceRegex.test(url)) {
       return url;
     }

@@ -1,9 +1,9 @@
+import EmberError from '@ember/error';
 import { describe, it } from 'mocha';
 import { assert } from 'chai';
 
 const { notOk, ok } = assert;
 
-import Ember from 'ember';
 import {
   AjaxError,
   InvalidError,
@@ -27,8 +27,6 @@ import {
   isAbortError,
   isConflictError
 } from 'ember-ajax/errors';
-
-const { Error: EmberError } = Ember;
 
 describe('unit/errors-test - AjaxError', function() {
   it('AjaxError', function() {

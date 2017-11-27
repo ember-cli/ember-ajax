@@ -1,9 +1,15 @@
-import { describe, beforeEach, afterEach, it } from 'mocha';
+import { A } from '@ember/array';
+import { typeOf } from '@ember/utils';
+import {
+  describe,
+  beforeEach,
+  afterEach,
+  it
+} from 'mocha';
 import { expect } from 'chai';
 import td from 'testdouble';
 import wait from 'ember-test-helpers/wait';
 
-import Ember from 'ember';
 import AjaxRequest from 'ember-ajax/ajax-request';
 import {
   AbortError,
@@ -19,7 +25,6 @@ import Pretender from 'pretender';
 import { jsonResponse, jsonFactory } from 'dummy/tests/helpers/json';
 
 const { matchers: { anything, contains: matchContains } } = td;
-const { A, typeOf } = Ember;
 
 describe('Unit | Mixin | ajax request', function() {
   beforeEach(function() {
@@ -862,9 +867,9 @@ describe('Unit | Mixin | ajax request', function() {
       return ajax.request('/jsonp', {
         dataType: 'jsonp'
       })
-      .then((value) => {
-        expect(value).to.deep.equal({ foo: 'bar' });
-      });
+        .then((value) => {
+          expect(value).to.deep.equal({ foo: 'bar' });
+        });
     });
   });
 

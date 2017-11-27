@@ -1,9 +1,8 @@
+import EmberObject from '@ember/object';
 import { expect } from 'chai';
 import { describe, it } from 'mocha';
-import Ember from 'ember';
 import LegacyNormalizeErrorResponseMixin from 'ember-ajax/mixins/legacy/normalize-error-response';
 
-const { Object: EmberObject } = Ember;
 const AjaxRequest = EmberObject.extend(LegacyNormalizeErrorResponseMixin);
 const service = new AjaxRequest();
 
@@ -16,8 +15,8 @@ describe('Unit | Mixin | legacy/normalize error response', function() {
       ]
     });
     expect(jsonApiError).to.deep.equal([
-        { status: '400', title: 'Foo' },
-        { status: '400', title: 'Foo' }
+      { status: '400', title: 'Foo' },
+      { status: '400', title: 'Foo' }
     ]);
   });
 

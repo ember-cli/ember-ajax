@@ -1,8 +1,15 @@
-import Ember from 'ember';
+import Component from '@ember/component';
+import Service, { inject as service } from '@ember/service';
+import { computed } from '@ember/object';
 import hbs from 'htmlbars-inline-precompile';
 
 import { setupComponentTest } from 'ember-mocha';
-import { beforeEach, afterEach, it, describe } from 'mocha';
+import {
+  beforeEach,
+  afterEach,
+  it,
+  describe
+} from 'mocha';
 import { expect } from 'chai';
 
 import AjaxService from 'ember-ajax/services/ajax';
@@ -10,12 +17,6 @@ import Pretender from 'pretender';
 import { jsonFactory as json } from 'dummy/tests/helpers/json';
 import wait from 'ember-test-helpers/wait';
 
-const {
-  Component,
-  Service,
-  inject,
-  computed
-} = Ember;
 const PAYLOAD = { posts: [{ id: 1, title: 'hello world' }] };
 
 describe('AsyncWidgetComponent', function() {
@@ -48,7 +49,7 @@ describe('AsyncWidgetComponent', function() {
 
         return options;
       },
-      session: inject.service(),
+      session: service(),
       headers: computed('session.authToken', {
         get() {
           const headers = {};
@@ -66,7 +67,7 @@ describe('AsyncWidgetComponent', function() {
     let component;
     this.register('component:async-widget', Component.extend({
       url: null,
-      ajax: inject.service('fajax'),
+      ajax: service('fajax'),
       didInsertElement() {
         component = this;
       },
@@ -100,7 +101,7 @@ describe('AsyncWidgetComponent', function() {
     }));
 
     this.register('component:async-widget', Component.extend({
-      ajax: inject.service(),
+      ajax: service(),
       click() {
         this.get('ajax').customPOST(this.get('url'));
       }
@@ -122,7 +123,7 @@ describe('AsyncWidgetComponent', function() {
 
     this.register('component:async-widget', Component.extend({
       layout: hbs`{{yield foo}}`,
-      ajax: inject.service(),
+      ajax: service(),
       foo: 'foo',
       click() {
         this.get('ajax').request('/foo').then(({ foo }) => {

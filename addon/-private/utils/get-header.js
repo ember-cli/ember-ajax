@@ -1,6 +1,5 @@
-import Ember from 'ember';
-
-const { A, isNone } = Ember;
+import { A } from '@ember/array';
+import { isNone } from '@ember/utils';
 
 /**
  * Do a case-insensitive lookup of an HTTP header

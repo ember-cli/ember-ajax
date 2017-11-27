@@ -1,8 +1,6 @@
-import Ember from 'ember';
+import $ from 'jquery';
 import resolver from './helpers/resolver';
 import { setResolver } from 'ember-mocha';
-
-const { $ } = Ember;
 
 setResolver(resolver);
 

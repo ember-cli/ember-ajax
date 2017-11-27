@@ -1,16 +1,20 @@
-import Ember from 'ember';
+import { computed } from '@ember/object';
+import { run } from '@ember/runloop';
 import Service from 'ember-ajax/services/ajax';
 
 import { setupTest } from 'ember-mocha';
-import { beforeEach, afterEach, it, describe } from 'mocha';
+import {
+  beforeEach,
+  afterEach,
+  it,
+  describe
+} from 'mocha';
 import { assert } from 'chai';
 
 const { equal } = assert;
 
 import Pretender from 'pretender';
 import { jsonResponse } from 'dummy/tests/helpers/json';
-
-const { computed, run } = Ember;
 
 let service, server;
 describe('AJAX Service', function() {
