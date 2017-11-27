@@ -1,9 +1,4 @@
-import {
-  describe,
-  beforeEach,
-  afterEach,
-  it
-} from 'mocha';
+import { describe, beforeEach, afterEach, it } from 'mocha';
 import { expect } from 'chai';
 
 import Pretender from 'pretender';
@@ -25,12 +20,11 @@ describe('raw', function() {
     this.server.get('/photos', function() {
       return [200, { 'Content-Type': 'application/json' }, JSON.stringify(photos)];
     });
-    return raw('/photos')
-      .then(function(data) {
-        expect(data.response).to.deep.equal(photos);
-        expect(data.jqXHR).to.be.ok;
-        expect(data.textStatus).to.equal('success');
-      });
+    return raw('/photos').then(function(data) {
+      expect(data.response).to.deep.equal(photos);
+      expect(data.jqXHR).to.be.ok;
+      expect(data.textStatus).to.equal('success');
+    });
   });
 
   it('rejects promise when 404 is returned', function() {

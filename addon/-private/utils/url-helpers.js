@@ -10,9 +10,10 @@ const completeUrlRegex = /^(http|https)/;
  * Borrowed from
  * http://www.sitepoint.com/url-parsing-isomorphic-javascript/
  */
-const isNode = typeof self === 'undefined'
-  && typeof process !== 'undefined'
-  && {}.toString.call(process) === '[object process]';
+const isNode =
+  typeof self === 'undefined' &&
+  typeof process !== 'undefined' &&
+  {}.toString.call(process) === '[object process]';
 
 const url = (function() {
   if (isFastBoot) {
@@ -74,9 +75,5 @@ export function haveSameHost(a, b) {
   a = parseURL(a);
   b = parseURL(b);
 
-  return (
-    (a.protocol === b.protocol)
-    && (a.hostname === b.hostname)
-    && (a.port === b.port)
-  );
+  return a.protocol === b.protocol && a.hostname === b.hostname && a.port === b.port;
 }

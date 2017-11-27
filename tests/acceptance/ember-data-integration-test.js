@@ -1,9 +1,4 @@
-import {
-  describe,
-  beforeEach,
-  afterEach,
-  it
-} from 'mocha';
+import { describe, beforeEach, afterEach, it } from 'mocha';
 import { assert } from 'chai';
 
 const { equal } = assert;
@@ -48,9 +43,12 @@ describe('Acceptance | ember data integration', function() {
   });
 
   it('can set the namespace for all ajax requests', function() {
-    application.register('service:ajaxWithNs', AjaxService.extend({
-      namespace: 'api'
-    }));
+    application.register(
+      'service:ajaxWithNs',
+      AjaxService.extend({
+        namespace: 'api'
+      })
+    );
     application.inject('adapter:application', 'ajaxService', 'service:ajaxWithNs');
 
     server.get('/api/posts/1', function() {

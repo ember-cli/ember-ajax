@@ -8,7 +8,7 @@ describe('Unit | AJAXPromise Class', function() {
     const promise = AJAXPromise.resolve('foo');
     promise.xhr = { foo: 'bar' };
 
-    const childPromise = promise.then((d) => d);
+    const childPromise = promise.then(d => d);
     expect(childPromise.xhr).to.equal(promise.xhr);
   });
 
@@ -16,7 +16,7 @@ describe('Unit | AJAXPromise Class', function() {
     const promise = AJAXPromise.resolve('foo');
     promise.xhr = { foo: 'bar' };
 
-    const childPromise = promise.catch((d) => d);
+    const childPromise = promise.catch(d => d);
     expect(childPromise.xhr).to.equal(promise.xhr);
   });
 
@@ -24,7 +24,7 @@ describe('Unit | AJAXPromise Class', function() {
     const promise = AJAXPromise.resolve('foo');
     promise.xhr = { foo: 'bar' };
 
-    const childPromise = promise.finally((d) => d);
+    const childPromise = promise.finally(d => d);
     expect(childPromise.xhr).to.equal(promise.xhr);
   });
 });

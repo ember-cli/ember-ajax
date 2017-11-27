@@ -41,8 +41,11 @@ UnauthorizedError.prototype = Object.create(AjaxError.prototype);
  * @extends AjaxError
  */
 export function ForbiddenError(payload) {
-  AjaxError.call(this, payload,
-    'Request was rejected because user is not permitted to perform this operation.');
+  AjaxError.call(
+    this,
+    payload,
+    'Request was rejected because user is not permitted to perform this operation.'
+  );
 }
 
 ForbiddenError.prototype = Object.create(AjaxError.prototype);
@@ -284,5 +287,5 @@ export function isServerError(error) {
 export function isSuccess(status) {
   const s = parseInt(status, 10);
 
-  return s >= 200 && s < 300 || s === 304;
+  return (s >= 200 && s < 300) || s === 304;
 }

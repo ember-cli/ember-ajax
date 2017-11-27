@@ -10,7 +10,6 @@ import { Promise } from 'rsvp';
  * @private
  */
 export default class AJAXPromise extends Promise {
-
   /**
    * Overriding `.then` to add XHR to child promise
    *
