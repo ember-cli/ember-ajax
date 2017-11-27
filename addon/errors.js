@@ -1,6 +1,4 @@
-import Ember from 'ember';
-
-const { Error: EmberError } = Ember;
+import EmberError from '@ember/error';
 
 /**
  * @class AjaxError

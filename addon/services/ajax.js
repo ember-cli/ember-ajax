@@ -1,6 +1,4 @@
-import Ember from 'ember';
+import Service from '@ember/service';
 import AjaxRequestMixin from '../mixins/ajax-request';
-
-const { Service } = Ember;
 
 export default Service.extend(AjaxRequestMixin);

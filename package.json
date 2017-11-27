@@ -20,16 +20,16 @@
     "test": "ember try:each"
   },
   "dependencies": {
-    "ember-cli-babel": "^6.1.0"
+    "ember-cli-babel": "^6.6.0"
   },
   "devDependencies": {
     "broccoli-asset-rev": "^2.4.5",
-    "ember-cli": "^2.13.1",
+    "ember-cli": "~2.16.2",
     "ember-cli-chai": "0.4.3",
-    "ember-cli-dependency-checker": "^1.4.0",
-    "ember-cli-eslint": "^3.1.0",
+    "ember-cli-dependency-checker": "^2.0.0",
+    "ember-cli-eslint": "^4.0.0",
     "ember-cli-htmlbars": "^2.0.1",
-    "ember-cli-htmlbars-inline-precompile": "^0.4.2",
+    "ember-cli-htmlbars-inline-precompile": "^1.0.0",
     "ember-cli-inject-live-reload": "^1.4.1",
     "ember-cli-mocha": "^0.14.3",
     "ember-cli-pretender": "^1.0.1",
@@ -38,13 +38,13 @@
     "ember-cli-sri": "^2.1.0",
     "ember-cli-test-loader": "^2.1.0",
     "ember-cli-testdouble": "^0.1.2",
-    "ember-cli-uglify": "^1.2.0",
+    "ember-cli-uglify": "^2.0.0",
     "ember-cli-update": "^0.10.1",
     "ember-data": "^2.13.1",
     "ember-export-application-global": "2.0.0",
     "ember-load-initializers": "1.0.0",
     "ember-resolver": "4.1.0",
-    "ember-source": "^2.13.0",
+    "ember-source": "~2.16.0",
     "eslint": "^4.1.0",
     "eslint-plugin-ember-suave": "^1.0.0",
     "loader.js": "^4.4.0",
@@ -52,7 +52,7 @@
     "testdouble-chai": "^0.5.0"
   },
   "engines": {
-    "node": ">= 4"
+    "node": "^4.5 || 6.* || >= 7.*"
   },
   "ember-addon": {
     "configPath": "tests/dummy/config"

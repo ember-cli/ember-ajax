@@ -1,4 +1,9 @@
-import { describe, beforeEach, afterEach, it } from 'mocha';
+import {
+  describe,
+  beforeEach,
+  afterEach,
+  it
+} from 'mocha';
 import { assert } from 'chai';
 
 const { equal } = assert;

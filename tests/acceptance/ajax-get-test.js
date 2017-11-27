@@ -1,4 +1,9 @@
-import { describe, beforeEach, afterEach, it } from 'mocha';
+import {
+  describe,
+  beforeEach,
+  afterEach,
+  it
+} from 'mocha';
 import { expect } from 'chai';
 
 import destroyApp from 'dummy/tests/helpers/destroy-app';
