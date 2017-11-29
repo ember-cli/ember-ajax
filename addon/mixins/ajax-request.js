@@ -201,21 +201,10 @@ export default Mixin.create({
    */
   request(url, options) {
     const hash = this.options(url, options);
-    const internalPromise = this._makeRequest(hash);
 
-    const ajaxPromise = new AJAXPromise((resolve, reject) => {
-      internalPromise
-        .then(({ response }) => {
-          resolve(response);
-        })
-        .catch(({ response }) => {
-          reject(response);
-        });
-    }, `ember-ajax: ${hash.type} ${hash.url} response`);
-
-    ajaxPromise.xhr = internalPromise.xhr;
-
-    return ajaxPromise;
+    return this._makeRequest(hash)
+      .then(({ response }) => response)
+      .catch(({ response }) => Promise.reject(response));
   },
 
   /**
