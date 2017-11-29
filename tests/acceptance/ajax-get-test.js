@@ -18,46 +18,38 @@ describe('Acceptance | ajax-get component', function() {
     destroyApp(this.application);
   });
 
-  it('waits for a route with async widget', function() {
+  it('waits for a route with async widget', async function() {
     const PAYLOAD = [{ title: 'Foo' }, { title: 'Bar' }, { title: 'Baz' }];
 
     this.server.get('/posts', json(200, PAYLOAD), 300);
 
-    visit('/');
+    await visit('/');
 
-    andThen(function() {
-      expect(currentURL()).to.equal('/');
-      expect(find('.ajax-get').length).to.equal(1);
-    });
+    expect(currentURL()).to.equal('/');
+    expect(find('.ajax-get').length).to.equal(1);
 
-    click('button:contains(Load Data)');
+    await click('button:contains(Load Data)');
 
-    andThen(function() {
-      expect(find('.ajax-get li:eq(0)').text()).to.equal('Foo');
-      expect(find('.ajax-get li:eq(1)').text()).to.equal('Bar');
-      expect(find('.ajax-get li:eq(2)').text()).to.equal('Baz');
-    });
+    expect(find('.ajax-get li:eq(0)').text()).to.equal('Foo');
+    expect(find('.ajax-get li:eq(1)').text()).to.equal('Bar');
+    expect(find('.ajax-get li:eq(2)').text()).to.equal('Baz');
   });
 
-  it('catches errors before they bubble to the console', function() {
+  it('catches errors before they bubble to the console', async function() {
     const errorMessage = 'Not Found';
     this.server.get('/posts', json(404, errorMessage), 300);
 
-    visit('/');
+    await visit('/');
 
-    andThen(function() {
-      expect(currentURL()).to.equal('/');
-      expect(find('.ajax-get').length === 1).to.be.ok;
-    });
+    expect(currentURL()).to.equal('/');
+    expect(find('.ajax-get').length === 1).to.be.ok;
 
-    click('button:contains(Load Data)');
+    await click('button:contains(Load Data)');
 
-    andThen(function() {
-      expect(
-        find('.ajax-get .error')
-          .text()
-          .trim()
-      ).to.equal(errorMessage);
-    });
+    expect(
+      find('.ajax-get .error')
+        .text()
+        .trim()
+    ).to.equal(errorMessage);
   });
 });

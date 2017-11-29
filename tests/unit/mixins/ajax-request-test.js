@@ -14,7 +14,7 @@ import {
   ForbiddenError,
   BadRequestError,
   ServerError,
-  isTimeoutError
+  TimeoutError
 } from 'ember-ajax/errors';
 import Pretender from 'pretender';
 import { jsonResponse, jsonFactory } from 'dummy/tests/helpers/json';
@@ -115,7 +115,7 @@ describe('Unit | Mixin | ajax request', function() {
       });
     });
 
-    it('is only called once per call to request', function() {
+    it('is only called once per call to request', async function() {
       let numberOptionsCalls = 0;
 
       this.server.get('/foo', () => jsonResponse());
@@ -128,12 +128,12 @@ describe('Unit | Mixin | ajax request', function() {
       });
 
       const service = new MonitorOptionsCalls();
-      return service.request('/foo').then(function() {
-        expect(numberOptionsCalls).to.equal(1);
-      });
+      await service.request('/foo');
+
+      expect(numberOptionsCalls).to.equal(1);
     });
 
-    it('is only called once per call to raw', function() {
+    it('is only called once per call to raw', async function() {
       let numberOptionsCalls = 0;
 
       this.server.get('/foo', () => jsonResponse());
@@ -146,9 +146,9 @@ describe('Unit | Mixin | ajax request', function() {
       });
 
       const service = new MonitorOptionsCalls();
-      return service.raw('/foo').then(function() {
-        expect(numberOptionsCalls).to.equal(1);
-      });
+      await service.raw('/foo');
+
+      expect(numberOptionsCalls).to.equal(1);
     });
 
     describe('host', function() {
@@ -245,7 +245,7 @@ describe('Unit | Mixin | ajax request', function() {
     expect(options.contentType).to.equal(defaultContentType);
   });
 
-  it('request with method option makes the correct type of request', function() {
+  it('request with method option makes the correct type of request', async function() {
     const url = '/posts/1';
     const serverResponse = [200, { 'Content-Type': 'application/json' }, JSON.stringify({})];
 
@@ -260,9 +260,9 @@ describe('Unit | Mixin | ajax request', function() {
     service.handleResponse = handleResponse;
     td.when(handleResponse(...expectedArguments)).thenReturn({});
 
-    return service.request(url, { method: 'POST' }).then(() => {
-      expect(handleResponse).to.be.calledWith(...expectedArguments);
-    });
+    await service.request(url, { method: 'POST' });
+
+    expect(handleResponse).to.be.calledWith(...expectedArguments);
   });
 
   describe('explicit host in URL', function() {
@@ -421,7 +421,9 @@ describe('Unit | Mixin | ajax request', function() {
     });
   });
 
-  it('it creates a detailed error message for unmatched server errors with an AJAX payload', function() {
+  it('it creates a detailed error message for unmatched server errors with an AJAX payload', async function(
+    done
+  ) {
     const response = [
       408,
       { 'Content-Type': 'application/json' },
@@ -430,33 +432,35 @@ describe('Unit | Mixin | ajax request', function() {
     this.server.get('/posts', () => response);
 
     const service = new AjaxRequest();
-    return service
-      .request('/posts')
-      .then(function() {
-        throw new Error('success handler should not be called');
-      })
-      .catch(function(result) {
-        expect(result.message).to.contain('Some error response');
-        expect(result.message).to.contain('GET');
-        expect(result.message).to.contain('/posts');
-      });
+
+    try {
+      await service.request('/posts');
+    } catch (result) {
+      expect(result.message).to.contain('Some error response');
+      expect(result.message).to.contain('GET');
+      expect(result.message).to.contain('/posts');
+
+      done();
+    }
   });
 
-  it('it creates a detailed error message for unmatched server errors with a text payload', function() {
+  it('it creates a detailed error message for unmatched server errors with a text payload', async function(
+    done
+  ) {
     const response = [408, { 'Content-Type': 'text/html' }, 'Some error response'];
     this.server.get('/posts', () => response);
 
     const service = new AjaxRequest();
-    return service
-      .request('/posts')
-      .then(function() {
-        throw new Error('success handler should not be called');
-      })
-      .catch(function(result) {
-        expect(result.message).to.contain('Some error response');
-        expect(result.message).to.contain('GET');
-        expect(result.message).to.contain('/posts');
-      });
+
+    try {
+      await service.request('/posts');
+    } catch (result) {
+      expect(result.message).to.contain('Some error response');
+      expect(result.message).to.contain('GET');
+      expect(result.message).to.contain('/posts');
+
+      done();
+    }
   });
 
   it('it throws an error when the user tries to use `.get` to make a request', function() {
@@ -724,59 +728,57 @@ describe('Unit | Mixin | ajax request', function() {
   });
 
   describe('JSONP Requests', function() {
-    it('should make JSONP requests', function() {
+    it('should make JSONP requests', async function() {
       this.server.get('/jsonp', function(req) {
         return [200, {}, `${req.queryParams.callback}({ "foo": "bar" })`];
       });
 
       const ajax = new AjaxRequest();
-      return ajax
-        .request('/jsonp', {
-          dataType: 'jsonp'
-        })
-        .then(value => {
-          expect(value).to.deep.equal({ foo: 'bar' });
-        });
+      const value = await ajax.request('/jsonp', {
+        dataType: 'jsonp'
+      });
+
+      expect(value).to.deep.equal({ foo: 'bar' });
     });
   });
 
   describe('error handlers', function() {
-    it('handles a TimeoutError correctly', function() {
+    it('handles a TimeoutError correctly', async function(done) {
       this.server.get('/posts', jsonFactory(200), 2);
       const service = new AjaxRequest();
-      return service
-        .request('/posts', { timeout: 1 })
-        .then(function() {
-          throw new Error('success handler should not be called');
-        })
-        .catch(function(reason) {
-          expect(isTimeoutError(reason)).to.be.ok;
-          expect(reason.payload).to.be.null;
-        });
+
+      try {
+        await service.request('/posts', { timeout: 1 });
+      } catch (e) {
+        expect(e).to.be.instanceOf(TimeoutError);
+        expect(e).to.have.property('payload', null);
+
+        done();
+      }
     });
 
     function errorHandlerTest(status, errorClass) {
-      it(`handles a ${status} response correctly and preserves the payload`, function() {
+      it(`handles a ${status} response correctly and preserves the payload`, async function(done) {
         this.server.get(
           '/posts',
           jsonFactory(status, { errors: [{ id: 1, message: 'error description' }] })
         );
         const service = new AjaxRequest();
-        return service
-          .request('/posts')
-          .then(function() {
-            throw new Error('success handler should not be called');
-          })
-          .catch(function(reason) {
-            expect(reason instanceof errorClass).to.be.ok;
-            expect(reason.payload).to.not.be.undefined;
 
-            const { errors } = reason.payload;
+        try {
+          await service.request('/posts');
+        } catch (reason) {
+          expect(reason).to.be.instanceOf(errorClass);
+          expect(reason).to.have.property('payload');
 
-            expect(errors && typeOf(errors) === 'array').to.be.ok;
-            expect(errors[0].id).to.equal(1);
-            expect(errors[0].message).to.equal('error description');
-          });
+          const { errors } = reason.payload;
+
+          expect(errors && typeOf(errors) === 'array').to.be.ok;
+          expect(errors[0].id).to.equal(1);
+          expect(errors[0].message).to.equal('error description');
+
+          done();
+        }
       });
     }
 
@@ -803,36 +805,33 @@ describe('Unit | Mixin | ajax request', function() {
       this.server.post('/test', handleRequest.bind(this));
     });
 
-    it('can wait on an AJAX GET request', function() {
+    it('can wait on an AJAX GET request', async function() {
       const service = new AjaxRequest();
       service.request('/test');
 
-      return wait().then(() => {
-        expect(this.requestMade).to.be.ok;
-      });
+      await wait();
+
+      expect(this.requestMade).to.be.ok;
     });
 
-    it('can wait on an AJAX POST request', function() {
+    it('can wait on an AJAX POST request', async function() {
       const service = new AjaxRequest();
       service.post('/test');
 
-      return wait().then(() => {
-        expect(this.requestMade).to.be.ok;
-      });
+      await wait();
+
+      expect(this.requestMade).to.be.ok;
     });
 
-    it('can wait on a JSONP request', function() {
-      let response;
-
+    it('can wait on a JSONP request', async function() {
       this.server.get('/jsonp', function(req) {
         return [200, {}, `${req.queryParams.callback}({ "foo": "bar" })`];
       });
 
       const ajax = new AjaxRequest();
-      ajax.request('/jsonp', { dataType: 'jsonp' }).then(val => (response = val));
-      return wait().then(() => {
-        expect(response).to.deep.equal({ foo: 'bar' });
-      });
+      const response = await ajax.request('/jsonp', { dataType: 'jsonp' });
+
+      expect(response).to.deep.equal({ foo: 'bar' });
     });
   });
 
@@ -850,7 +849,7 @@ describe('Unit | Mixin | ajax request', function() {
 
     // Note: the `.catch` handler _must_ be set up before the request is aborted
     // Without that, the rejection will be treated as un-handled
-    it('can be used to abort the request', function() {
+    it('can be used to abort the request', async function(done) {
       const ajax = new AjaxRequest();
       const promise = ajax
         .request('/foo')
@@ -864,7 +863,9 @@ describe('Unit | Mixin | ajax request', function() {
 
       promise.xhr.abort();
 
-      return promise;
+      await promise;
+
+      done();
     });
 
     describe('passing the XHR to child promises', function() {
@@ -894,7 +895,7 @@ describe('Unit | Mixin | ajax request', function() {
         const promise = ajax
           .request('/foo')
           .then(response => response)
-          .finally(response => response);
+          .then(response => response);
 
         expect(promise.xhr).to.be.ok;
       });

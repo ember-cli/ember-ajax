@@ -22,7 +22,7 @@ describe('Acceptance | ember data integration', function() {
     destroyApp(application);
   });
 
-  it('can apply the Ember Ajax mixin to an Ember Data adapter', function() {
+  it('can apply the Ember Ajax mixin to an Ember Data adapter', async function() {
     server.get('/api/posts/1', function() {
       return jsonResponse(200, {
         data: {
@@ -35,14 +35,12 @@ describe('Acceptance | ember data integration', function() {
       });
     });
 
-    visit('/ember-data-test');
+    await visit('/ember-data-test');
 
-    andThen(function() {
-      equal(currentURL(), '/ember-data-test');
-    });
+    equal(currentURL(), '/ember-data-test');
   });
 
-  it('can set the namespace for all ajax requests', function() {
+  it('can set the namespace for all ajax requests', async function() {
     application.register(
       'service:ajaxWithNs',
       AjaxService.extend({
@@ -63,14 +61,12 @@ describe('Acceptance | ember data integration', function() {
       });
     });
 
-    visit('/ember-data-test');
+    await visit('/ember-data-test');
 
-    andThen(function() {
-      equal(currentURL(), '/ember-data-test');
-    });
+    equal(currentURL(), '/ember-data-test');
   });
 
-  it('respects ajaxOptions on the target adapter', function() {
+  it('respects ajaxOptions on the target adapter', async function() {
     server.get('/api/posts/1', function({ requestHeaders }) {
       equal(requestHeaders['X-Silly-Option'], 'Hi!');
 
@@ -85,10 +81,8 @@ describe('Acceptance | ember data integration', function() {
       });
     });
 
-    visit('/ember-data-test');
+    await visit('/ember-data-test');
 
-    andThen(function() {
-      equal(currentURL(), '/ember-data-test');
-    });
+    equal(currentURL(), '/ember-data-test');
   });
 });

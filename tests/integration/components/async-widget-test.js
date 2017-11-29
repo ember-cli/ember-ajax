@@ -27,7 +27,7 @@ describe('AsyncWidgetComponent', function() {
     this.server.shutdown();
   });
 
-  it('service injected in component', function() {
+  it('service injected in component', async function() {
     this.server.get('/posts', json(200, PAYLOAD));
 
     const authToken = 'foo';
@@ -84,15 +84,16 @@ describe('AsyncWidgetComponent', function() {
     );
 
     this.render(hbs`{{async-widget id="async-widget" url="/posts"}}`);
-    return component.loadData().then(function(response) {
-      component.set('hello', 'world');
-      expect(component.get('helloStyle')).to.equal('hello world');
-      expect(receivedHeaders[0]).to.deep.equal(['authToken', 'foo']);
-      expect(response).to.deep.equal(PAYLOAD);
-    });
+
+    const response = await component.loadData();
+
+    component.set('hello', 'world');
+    expect(component.get('helloStyle')).to.equal('hello world');
+    expect(receivedHeaders[0]).to.deep.equal(['authToken', 'foo']);
+    expect(response).to.deep.equal(PAYLOAD);
   });
 
-  it.skip('error thrown in service can be caught in test', function() {
+  it('error thrown in service can be caught in test', function() {
     this.server.post('/posts/1', json(404, { error: 'not found' }), 200);
 
     this.register(
@@ -114,18 +115,18 @@ describe('AsyncWidgetComponent', function() {
       })
     );
 
-    this.render(
-      hbs`{{#async-widget classNames="async-widget" url="/posts/1"}}
-            Post!
-          {{/async-widget}}`
-    );
+    this.render(hbs`
+      {{#async-widget classNames="async-widget" url="/posts/1"}}
+        Post!
+      {{/async-widget}}
+    `);
 
     expect(function() {
       this.$('.async-widget').click();
     }).to.throw();
   });
 
-  it('waiting for promises to complete', function() {
+  it('waiting for promises to complete', async function() {
     this.server.get('/foo', json(200, { foo: 'bar' }), 300);
 
     this.register(
@@ -149,10 +150,10 @@ describe('AsyncWidgetComponent', function() {
     );
 
     expect(this.$('.async-widget').text()).to.equal('Got: foo for foo');
-    this.$('.async-widget').click();
 
-    return wait().then(() => {
-      expect(this.$('.async-widget').text()).to.equal('Got: bar for foo');
-    });
+    this.$('.async-widget').click();
+    await wait();
+
+    expect(this.$('.async-widget').text()).to.equal('Got: bar for foo');
   });
 });

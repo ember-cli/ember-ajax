@@ -12,7 +12,7 @@ describe('raw', function() {
     this.server.shutdown();
   });
 
-  it('returns jqXHR', function() {
+  it('returns jqXHR', async function() {
     const photos = [
       { id: 10, src: 'http://media.giphy.com/media/UdqUo8xvEcvgA/giphy.gif' },
       { id: 42, src: 'http://media0.giphy.com/media/Ko2pyD26RdYRi/giphy.gif' }
@@ -20,30 +20,25 @@ describe('raw', function() {
     this.server.get('/photos', function() {
       return [200, { 'Content-Type': 'application/json' }, JSON.stringify(photos)];
     });
-    return raw('/photos').then(function(data) {
-      expect(data.response).to.deep.equal(photos);
-      expect(data.jqXHR).to.be.ok;
-      expect(data.textStatus).to.equal('success');
-    });
+
+    const data = await raw('/photos');
+    expect(data.response).to.deep.equal(photos);
+    expect(data.jqXHR).to.be.ok;
+    expect(data.textStatus).to.equal('success');
   });
 
-  it('rejects promise when 404 is returned', function() {
+  it('rejects promise when 404 is returned', async function(done) {
     this.server.get('/photos', function() {
       return [404, { 'Content-Type': 'application/json' }];
     });
 
-    let errorCalled;
-    return raw('/photos')
-      .then(function() {
-        errorCalled = false;
-      })
-      .catch(function(response) {
-        const { errorThrown } = response;
-        expect(errorThrown).to.equal('Not Found');
-        errorCalled = true;
-      })
-      .finally(function() {
-        expect(errorCalled).to.be.ok;
-      });
+    try {
+      await raw('/photos');
+    } catch (response) {
+      const { errorThrown } = response;
+      expect(errorThrown).to.equal('Not Found');
+
+      done();
+    }
   });
 });

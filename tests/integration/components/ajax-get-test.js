@@ -21,7 +21,7 @@ describe('AjaxGetComponent', function() {
     this.server.shutdown();
   });
 
-  it('clicking Load Data loads data', function() {
+  it('clicking Load Data loads data', async function() {
     const PAYLOAD = [{ title: 'Foo' }, { title: 'Bar' }, { title: 'Baz' }];
 
     this.server.get('/foo', json(200, PAYLOAD), 300);
@@ -41,15 +41,14 @@ describe('AjaxGetComponent', function() {
     `);
 
     this.$('.ajax-get button').click();
+    await wait();
 
-    return wait().then(() => {
-      expect(this.$('.ajax-get li:eq(0)').text()).to.equal('Foo');
-      expect(this.$('.ajax-get li:eq(1)').text()).to.equal('Bar');
-      expect(this.$('.ajax-get li:eq(2)').text()).to.equal('Baz');
-    });
+    expect(this.$('.ajax-get li:eq(0)').text()).to.equal('Foo');
+    expect(this.$('.ajax-get li:eq(1)').text()).to.equal('Bar');
+    expect(this.$('.ajax-get li:eq(2)').text()).to.equal('Baz');
   });
 
-  it('clicking Load Data loads data', function() {
+  it('clicking Load Data loads data', async function() {
     const PAYLOAD = [{ title: 'Foo' }, { title: 'Bar' }, { title: 'Baz' }];
 
     this.server.get('/foo', json(200, PAYLOAD), 300);
@@ -69,15 +68,14 @@ describe('AjaxGetComponent', function() {
     `);
 
     this.$('.ajax-get button').click();
+    await wait();
 
-    return wait().then(() => {
-      expect(this.$('.ajax-get li:eq(0)').text()).to.equal('Foo');
-      expect(this.$('.ajax-get li:eq(1)').text()).to.equal('Bar');
-      expect(this.$('.ajax-get li:eq(2)').text()).to.equal('Baz');
-    });
+    expect(this.$('.ajax-get li:eq(0)').text()).to.equal('Foo');
+    expect(this.$('.ajax-get li:eq(1)').text()).to.equal('Bar');
+    expect(this.$('.ajax-get li:eq(2)').text()).to.equal('Baz');
   });
 
-  it('a payload that evaluates falsey but is not null or undefined loads as expected', function() {
+  it('a payload that evaluates falsey but is not null or undefined loads as expected', async function() {
     const PAYLOAD = 0;
 
     this.server.get('/foo', json(200, PAYLOAD), 300);
@@ -93,13 +91,12 @@ describe('AjaxGetComponent', function() {
     `);
 
     this.$('.ajax-get button').click();
+    await wait();
 
-    return wait().then(() => {
-      expect(this.$('.ajax-get p').text()).to.equal('0');
-    });
+    expect(this.$('.ajax-get p').text()).to.equal('0');
   });
 
-  it('clicking Load Data loads data', function() {
+  it('clicking Load Data loads data', async function() {
     const PAYLOAD = [{ title: 'Foo' }, { title: 'Bar' }, { title: 'Baz' }];
 
     this.server.get('/foo', json(200, PAYLOAD), 300);
@@ -119,11 +116,10 @@ describe('AjaxGetComponent', function() {
     `);
 
     this.$('.ajax-get button').click();
+    await wait();
 
-    return wait().then(() => {
-      expect(this.$('.ajax-get li:eq(0)').text()).to.equal('Foo');
-      expect(this.$('.ajax-get li:eq(1)').text()).to.equal('Bar');
-      expect(this.$('.ajax-get li:eq(2)').text()).to.equal('Baz');
-    });
+    expect(this.$('.ajax-get li:eq(0)').text()).to.equal('Foo');
+    expect(this.$('.ajax-get li:eq(1)').text()).to.equal('Bar');
+    expect(this.$('.ajax-get li:eq(2)').text()).to.equal('Baz');
   });
 });
