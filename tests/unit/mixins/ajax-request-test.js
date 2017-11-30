@@ -570,6 +570,7 @@ describe('Unit | Mixin | ajax request', function() {
         expect(result.message).to.contain('Some error response');
         expect(result.message).to.contain('GET');
         expect(result.message).to.contain('/posts');
+        expect(result.status).to.equal(408);
       });
   });
 
@@ -587,6 +588,7 @@ describe('Unit | Mixin | ajax request', function() {
         expect(result.message).to.contain('Some error response');
         expect(result.message).to.contain('GET');
         expect(result.message).to.contain('/posts');
+        expect(result.status).to.equal(408);
       });
   });
 
@@ -883,6 +885,7 @@ describe('Unit | Mixin | ajax request', function() {
         .catch(function(reason) {
           expect(isTimeoutError(reason)).to.be.ok;
           expect(reason.payload).to.be.null;
+          expect(reason.status).to.be.undefined;
         });
     });
 
@@ -901,6 +904,7 @@ describe('Unit | Mixin | ajax request', function() {
           .catch(function(reason) {
             expect(reason instanceof errorClass).to.be.ok;
             expect(reason.payload).to.not.be.undefined;
+            expect(reason.status).to.equal(status);
 
             const { errors } = reason.payload;
 
