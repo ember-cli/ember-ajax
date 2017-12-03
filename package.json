@@ -19,7 +19,8 @@
     "lint": "eslint addon app config tests",
     "lint:fix": "eslint --fix addon app config tests",
     "start": "ember server",
-    "test": "ember try:each"
+    "test": "ember try:each",
+    "test:watch": "NODE_ENV=test ember test --serve"
   },
   "dependencies": {
     "ember-cli-babel": "^6.6.0",
