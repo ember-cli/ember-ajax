@@ -31,11 +31,11 @@ describe('Unit | Mixin | ajax request', function() {
   });
 
   describe('options method', function() {
-    it('sets raw data', function() {
+    it('sets raw data', async function() {
       const service = new AjaxRequest();
       const url = 'test';
       const type = 'GET';
-      const ajaxOptions = service.options(url, { type, data: { key: 'value' } });
+      const ajaxOptions = await service.options(url, { type, data: { key: 'value' } });
 
       expect(ajaxOptions).to.deep.equal({
         contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
@@ -49,12 +49,12 @@ describe('Unit | Mixin | ajax request', function() {
       });
     });
 
-    it('sets options correctly', function() {
+    it('sets options correctly', async function() {
       const service = new AjaxRequest();
       const url = 'test';
       const type = 'POST';
       const data = JSON.stringify({ key: 'value' });
-      const ajaxOptions = service.options(url, {
+      const ajaxOptions = await service.options(url, {
         type,
         data,
         contentType: 'application/json; charset=utf-8'
@@ -70,21 +70,21 @@ describe('Unit | Mixin | ajax request', function() {
       });
     });
 
-    it('does not modify the options object argument', function() {
+    it('does not modify the options object argument', async function() {
       const service = new AjaxRequest();
       const url = 'test';
       const data = JSON.stringify({ key: 'value' });
       const baseOptions = { type: 'POST', data };
-      service.options(url, baseOptions);
+      await service.options(url, baseOptions);
       expect(baseOptions).to.deep.equal({ type: 'POST', data });
     });
 
-    it('does not override contentType when defined', function() {
+    it('does not override contentType when defined', async function() {
       const service = new AjaxRequest();
       const url = 'test';
       const type = 'POST';
       const data = JSON.stringify({ key: 'value' });
-      const ajaxOptions = service.options(url, {
+      const ajaxOptions = await service.options(url, {
         type,
         data,
         contentType: false
@@ -100,11 +100,11 @@ describe('Unit | Mixin | ajax request', function() {
       });
     });
 
-    it('can handle empty data', function() {
+    it('can handle empty data', async function() {
       const service = new AjaxRequest();
       const url = 'test';
       const type = 'POST';
-      const ajaxOptions = service.options(url, { type });
+      const ajaxOptions = await service.options(url, { type });
 
       expect(ajaxOptions).to.deep.equal({
         contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
@@ -152,31 +152,31 @@ describe('Unit | Mixin | ajax request', function() {
     });
 
     describe('host', function() {
-      it('is set on the url (url starting with `/`)', function() {
+      it('is set on the url (url starting with `/`)', async function() {
         const RequestWithHost = AjaxRequest.extend({
           host: 'https://discuss.emberjs.com'
         });
 
         const service = new RequestWithHost();
         const url = '/users/me';
-        const ajaxoptions = service.options(url);
+        const ajaxoptions = await service.options(url);
 
         expect(ajaxoptions.url).to.equal('https://discuss.emberjs.com/users/me');
       });
 
-      it('is set on the url (url not starting with `/`)', function() {
+      it('is set on the url (url not starting with `/`)', async function() {
         const RequestWithHost = AjaxRequest.extend({
           host: 'https://discuss.emberjs.com'
         });
 
         const service = new RequestWithHost();
         const url = 'users/me';
-        const ajaxoptions = service.options(url);
+        const ajaxoptions = await service.options(url);
 
         expect(ajaxoptions.url).to.equal('https://discuss.emberjs.com/users/me');
       });
 
-      it('is overridable on a per-request basis', function() {
+      it('is overridable on a per-request basis', async function() {
         const RequestWithHost = AjaxRequest.extend({
           host: 'https://discuss.emberjs.com'
         });
@@ -184,54 +184,61 @@ describe('Unit | Mixin | ajax request', function() {
         const service = new RequestWithHost();
         const url = 'users/me';
         const host = 'https://myurl.com';
-        const ajaxoptions = service.options(url, { host });
+        const ajaxoptions = await service.options(url, { host });
 
         expect(ajaxoptions.url).to.equal('https://myurl.com/users/me');
       });
     });
 
     describe('namespace', function() {
-      it('is set on the url (namespace starting with `/`)', function() {
+      it('is set on the url (namespace starting with `/`)', async function() {
         const RequestWithHost = AjaxRequest.extend({
           namespace: '/api/v1'
         });
 
         const service = new RequestWithHost();
 
-        expect(service.options('/users/me').url).to.equal('/api/v1/users/me');
-        expect(service.options('users/me').url).to.equal('/api/v1/users/me');
+        const { url: urlWithLeadingSlash } = await service.options('/users/me');
+        expect(urlWithLeadingSlash).to.equal('/api/v1/users/me');
+
+        const { url: urlWithoutLeadingSlash } = await service.options('users/me');
+        expect(urlWithoutLeadingSlash).to.equal('/api/v1/users/me');
       });
 
-      it('can be set on a per-request basis', function() {
+      it('can be set on a per-request basis', async function() {
         const service = new AjaxRequest();
 
-        expect(service.options('users/me', { namespace: 'api' }).url).to.equal('/api/users/me');
+        const { url } = await service.options('users/me', { namespace: 'api' });
+        expect(url).to.equal('/api/users/me');
       });
 
-      it('is set on the url (namespace not starting with `/`)', function() {
+      it('is set on the url (namespace not starting with `/`)', async function() {
         const RequestWithHost = AjaxRequest.extend({
           namespace: 'api/v1'
         });
 
         const service = new RequestWithHost();
 
-        expect(service.options('/users/me').url).to.equal('/api/v1/users/me');
-        expect(service.options('users/me').url).to.equal('/api/v1/users/me');
+        const { url: urlWithLeadingSlash } = await service.options('/users/me');
+        expect(urlWithLeadingSlash).to.equal('/api/v1/users/me');
+
+        const { url: urlWithoutLeadingSlash } = await service.options('users/me');
+        expect(urlWithoutLeadingSlash).to.equal('/api/v1/users/me');
       });
     });
 
     describe('type', function() {
-      it('defaults to GET', function() {
+      it('defaults to GET', async function() {
         const service = new AjaxRequest();
         const url = 'test';
-        const ajaxOptions = service.options(url);
+        const ajaxOptions = await service.options(url);
 
         expect(ajaxOptions.type).to.equal('GET');
       });
     });
   });
 
-  it('can override the default `contentType` for the service', function() {
+  it('can override the default `contentType` for the service', async function() {
     const defaultContentType = 'application/json';
 
     class AjaxServiceWithDefaultContentType extends AjaxRequest {
@@ -241,7 +248,7 @@ describe('Unit | Mixin | ajax request', function() {
     }
 
     const service = new AjaxServiceWithDefaultContentType();
-    const options = service.options('');
+    const options = await service.options('');
     expect(options.contentType).to.equal(defaultContentType);
   });
 
@@ -266,35 +273,35 @@ describe('Unit | Mixin | ajax request', function() {
   });
 
   describe('explicit host in URL', function() {
-    it('overrides host property of class', function() {
+    it('overrides host property of class', async function() {
       const RequestWithHost = AjaxRequest.extend({
         host: 'https://discuss.emberjs.com'
       });
 
       const service = new RequestWithHost();
       const url = 'http://myurl.com/users/me';
-      const ajaxOptions = service.options(url);
+      const ajaxOptions = await service.options(url);
 
       expect(ajaxOptions.url).to.equal('http://myurl.com/users/me');
     });
 
-    it('overrides host property in request config', function() {
+    it('overrides host property in request config', async function() {
       const service = new AjaxRequest();
       const host = 'https://discuss.emberjs.com';
       const url = 'http://myurl.com/users/me';
-      const ajaxOptions = service.options(url, { host });
+      const ajaxOptions = await service.options(url, { host });
 
       expect(ajaxOptions.url).to.equal('http://myurl.com/users/me');
     });
 
-    it('without a protocol does not override config property', function() {
+    it('without a protocol does not override config property', async function() {
       const RequestWithHost = AjaxRequest.extend({
         host: 'https://discuss.emberjs.com'
       });
 
       const service = new RequestWithHost();
       const url = 'myurl.com/users/me';
-      const ajaxOptions = service.options(url);
+      const ajaxOptions = await service.options(url);
 
       expect(ajaxOptions.url).to.equal('https://discuss.emberjs.com/myurl.com/users/me');
     });
@@ -405,19 +412,19 @@ describe('Unit | Mixin | ajax request', function() {
       });
     });
 
-    it('can get the full list from class and request options', function() {
+    it('can get the full list from class and request options', async function() {
       const RequestWithHeaders = AjaxRequest.extend({
         headers: {
           'Content-Type': 'application/vnd.api+json',
           'Other-Value': 'Some Value'
         }
       });
+      const service = RequestWithHeaders.create();
+      const { headers } = await service.options('foo', {
+        headers: { 'Third-Value': 'Other Thing' }
+      });
 
-      const service = new RequestWithHeaders();
-      const headers = { 'Third-Value': 'Other Thing' };
-      expect(Object.keys(service._getFullHeadersHash()).length).to.equal(2);
-      expect(Object.keys(service._getFullHeadersHash(headers)).length).to.equal(3);
-      expect(Object.keys(service.headers).length).to.equal(2);
+      expect(Object.keys(headers).length).to.equal(3);
     });
   });
 

@@ -3,9 +3,10 @@ import EmberError from '@ember/error';
 import Mixin from '@ember/object/mixin';
 import { get } from '@ember/object';
 import { isEmpty } from '@ember/utils';
-import { merge } from '@ember/polyfills';
+import { assign } from '@ember/polyfills';
 import { run } from '@ember/runloop';
 import { warn, runInDebug } from '@ember/debug';
+import { camelize } from '@ember/string';
 import Ember from 'ember';
 import {
   AjaxError,
@@ -101,6 +102,15 @@ if (testing) {
  * @mixin
  */
 export default Mixin.create({
+  async _getPossiblyAsyncProperty(property, ...args) {
+    const methodName = camelize(`build ${property}`);
+    if (this[methodName]) {
+      return this[methodName](...args);
+    }
+
+    return get(this, property);
+  },
+
   /**
    * The default value for the request `contentType`
    *
@@ -199,10 +209,8 @@ export default Mixin.create({
    * @param {Object} options The options for the request
    * @return {Promise} The result of the request
    */
-  request(url, options) {
-    const hash = this.options(url, options);
-
-    return this._makeRequest(hash)
+  async request(url, options) {
+    return this.raw(url, options)
       .then(({ response }) => response)
       .catch(({ response }) => Promise.reject(response));
   },
@@ -216,21 +224,9 @@ export default Mixin.create({
    * @param {Object} options The options for the request
    * @return {Promise} The result of the request
    */
-  raw(url, options) {
-    const hash = this.options(url, options);
-    return this._makeRequest(hash);
-  },
+  async raw(url, options) {
+    const hash = await this.options(url, options);
 
-  /**
-   * Shared method to actually make an AJAX request
-   *
-   * @method _makeRequest
-   * @private
-   * @param {Object} hash The options for the request
-   * @param {string} hash.url The URL to make the request to
-   * @return {Promise} The result of the request
-   */
-  _makeRequest(hash) {
     const method = hash.method || hash.type || 'GET';
     const requestData = { method, type: method, url: hash.url };
 
@@ -309,8 +305,8 @@ export default Mixin.create({
    * @param {Object} options The options for the request
    * @return {Promise} The result of the request
    */
-  post(url, options) {
-    return this.request(url, this._addTypeToOptionsFor(options, 'POST'));
+  post(url, options = {}) {
+    return this.request(url, assign(options, { type: 'POST' }));
   },
 
   /**
@@ -322,8 +318,8 @@ export default Mixin.create({
    * @param {Object} options The options for the request
    * @return {Promise} The result of the request
    */
-  put(url, options) {
-    return this.request(url, this._addTypeToOptionsFor(options, 'PUT'));
+  put(url, options = {}) {
+    return this.request(url, assign(options, { type: 'PUT' }));
   },
 
   /**
@@ -335,8 +331,8 @@ export default Mixin.create({
    * @param {Object} options The options for the request
    * @return {Promise} The result of the request
    */
-  patch(url, options) {
-    return this.request(url, this._addTypeToOptionsFor(options, 'PATCH'));
+  patch(url, options = {}) {
+    return this.request(url, assign(options, { type: 'PATCH' }));
   },
 
   /**
@@ -348,8 +344,8 @@ export default Mixin.create({
    * @param {Object} options The options for the request
    * @return {Promise} The result of the request
    */
-  del(url, options) {
-    return this.request(url, this._addTypeToOptionsFor(options, 'DELETE'));
+  del(url, options = {}) {
+    return this.request(url, assign(options, { type: 'DELETE' }));
   },
 
   /**
@@ -386,53 +382,23 @@ export default Mixin.create({
   },
 
   /**
-   * Manipulates the options hash to include the HTTP method on the type key
-   *
-   * @method _addTypeToOptionsFor
-   * @private
-   * @param {Object} options The original request options
-   * @param {string} method The method to enforce
-   * @return {Object} The new options, with the method set
-   */
-  _addTypeToOptionsFor(options, method) {
-    options = options || {};
-    options.type = method;
-    return options;
-  },
-
-  /**
-   * Get the full "headers" hash, combining the service-defined headers with
-   * the ones provided for the request
-   *
-   * @method _getFullHeadersHash
-   * @private
-   * @param {Object} headers
-   * @return {Object}
-   */
-  _getFullHeadersHash(headers) {
-    const classHeaders = get(this, 'headers');
-    const _headers = merge({}, classHeaders);
-    return merge(_headers, headers);
-  },
-
-  /**
    * @method options
    * @private
    * @param {string} url
    * @param {Object} options
    * @return {Object}
    */
-  options(url, options = {}) {
-    options = merge({}, options);
-    options.url = this._buildURL(url, options);
-    options.type = options.type || 'GET';
-    options.dataType = options.dataType || 'json';
-    options.contentType = isEmpty(options.contentType)
-      ? get(this, 'contentType')
-      : options.contentType;
+  async options(url, options = {}) {
+    options = assign({}, options, {
+      url: this._buildURL(url, options),
+      type: options.type || 'GET',
+      dataType: options.dataType || 'json',
+      contentType: isEmpty(options.contentType) ? get(this, 'contentType') : options.contentType
+    });
 
     if (this._shouldSendHeaders(options)) {
-      options.headers = this._getFullHeadersHash(options.headers);
+      const classHeaders = await this._getPossiblyAsyncProperty('headers');
+      options.headers = assign({}, classHeaders, options.headers);
     } else {
       options.headers = options.headers || {};
     }
