@@ -61,5 +61,26 @@
   },
   "ember-addon": {
     "configPath": "tests/dummy/config"
+  },
+  "greenkeeper": {
+    "ignore": [
+      "broccoli-asset-rev",
+      "ember-cli-babel",
+      "ember-cli-dependency-checker",
+      "ember-cli-eslint",
+      "ember-cli-htmlbars",
+      "ember-cli-htmlbars-inline-precompile",
+      "ember-cli-inject-live-reload",
+      "ember-cli-shims",
+      "ember-cli-sri",
+      "ember-cli-test-loader",
+      "ember-cli-uglify",
+      "ember-data",
+      "ember-export-application-global",
+      "ember-load-initializers",
+      "ember-resolver",
+      "ember-source",
+      "loader.js"
+    ]
   }
 }
