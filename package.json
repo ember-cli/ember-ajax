@@ -41,7 +41,7 @@
     "ember-cli-test-loader": "^2.1.0",
     "ember-cli-testdouble": "^0.1.2",
     "ember-cli-uglify": "^2.0.0",
-    "ember-cli-update": "^0.10.1",
+    "ember-cli-update": "^0.11.0",
     "ember-data": "^2.13.1",
     "ember-export-application-global": "2.0.0",
     "ember-load-initializers": "1.0.0",
