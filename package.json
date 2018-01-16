@@ -53,7 +53,7 @@
     "eslint-plugin-prettier": "^2.3.1",
     "loader.js": "^4.4.0",
     "prettier": "^1.8.2",
-    "testdouble": "3.2.6",
+    "testdouble": "3.3.2",
     "testdouble-chai": "^0.5.0"
   },
   "engines": {
