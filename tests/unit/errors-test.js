@@ -10,6 +10,7 @@ import {
   UnauthorizedError,
   ForbiddenError,
   NotFoundError,
+  GoneError,
   BadRequestError,
   ServerError,
   TimeoutError,
@@ -19,6 +20,7 @@ import {
   isUnauthorizedError,
   isForbiddenError,
   isNotFoundError,
+  isGoneError,
   isInvalidError,
   isBadRequestError,
   isServerError,
@@ -57,6 +59,12 @@ describe('unit/errors-test - AjaxError', function() {
     const error = new NotFoundError();
     ok(error instanceof Error);
     ok(error instanceof NotFoundError);
+  });
+
+  it('GoneError', function() {
+    const error = new GoneError();
+    ok(error instanceof Error);
+    ok(error instanceof GoneError);
   });
 
   it('BadRequestError', function() {
@@ -122,6 +130,20 @@ describe('unit/errors-test - AjaxError', function() {
       const otherError = new Error();
       ok(isNotFoundError(error));
       notOk(isNotFoundError(otherError));
+    });
+  });
+
+  describe('isGoneError', function() {
+    it(': detects error code correctly', function() {
+      ok(isGoneError(410));
+      notOk(isGoneError(400));
+    });
+
+    it('detects error class correctly', function() {
+      const error = new GoneError();
+      const otherError = new Error();
+      ok(isGoneError(error));
+      notOk(isGoneError(otherError));
     });
   });
 

@@ -80,6 +80,17 @@ export function NotFoundError(payload) {
 NotFoundError.prototype = Object.create(AjaxError.prototype);
 
 /**
+ * @class GoneError
+ * @public
+ * @extends AjaxError
+ */
+export function GoneError(payload) {
+  AjaxError.call(this, payload, 'Resource is no longer available.', 410);
+}
+
+GoneError.prototype = Object.create(AjaxError.prototype);
+
+/**
  * @class TimeoutError
  * @public
  * @extends AjaxError
@@ -214,8 +225,8 @@ export function isBadRequestError(error) {
 }
 
 /**
- * Checks if the given status code or AjaxError object represents a
- * "not found" error
+ * Checks if the given status code or AjaxError object represents a "not found"
+ * error
  *
  * @method isNotFoundError
  * @public
@@ -227,6 +238,23 @@ export function isNotFoundError(error) {
     return error instanceof NotFoundError;
   } else {
     return error === 404;
+  }
+}
+
+/**
+ * Checks if the given status code or AjaxError object represents a "gone"
+ * error
+ *
+ * @method isGoneError
+ * @public
+ * @param  {Number | AjaxError} error
+ * @return {Boolean}
+ */
+export function isGoneError(error) {
+  if (isAjaxError(error)) {
+    return error instanceof GoneError;
+  } else {
+    return error === 410;
   }
 }
 
