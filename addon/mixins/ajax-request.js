@@ -485,7 +485,7 @@ export default Mixin.create({
     }
 
     // If the URL has already been constructed (presumably, by Ember Data), then we should just leave it alone
-    const hasNamespaceRegex = new RegExp(`^(/)?${namespace}`);
+    const hasNamespaceRegex = new RegExp(`^(/)?${namespace}/`);
     if (hasNamespaceRegex.test(url)) {
       return url;
     }

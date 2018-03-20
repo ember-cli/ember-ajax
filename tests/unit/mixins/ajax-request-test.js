@@ -825,6 +825,17 @@ describe('Unit | Mixin | ajax request', function() {
       expect(req._buildURL('api/post')).to.equal('api/post', 'URL provided without leading slash');
     });
 
+    it('correctly handles a URL with leading part similar to the namespace', function() {
+      class RequestWithNamespace extends AjaxRequest {
+        get namespace() {
+          return 'admin';
+        }
+      }
+
+      const req = new RequestWithNamespace();
+      expect(req._buildURL('/admin_users/post')).to.equal('/admin/admin_users/post');
+    });
+
     it('does not build the URL if the host is already present', function() {
       class RequestWithHost extends AjaxRequest {
         get host() {
