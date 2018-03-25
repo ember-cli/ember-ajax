@@ -2721,14 +2721,14 @@ ember-cli-test-loader@^2.1.0, ember-cli-test-loader@^2.2.0:
   dependencies:
     ember-cli-babel "^6.8.1"
 
-ember-cli-testdouble@^0.1.2:
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/ember-cli-testdouble/-/ember-cli-testdouble-0.1.2.tgz#dcd601735d5975f544825f5bebb8eb1f3b48a582"
+ember-cli-testdouble@^0.1.3:
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/ember-cli-testdouble/-/ember-cli-testdouble-0.1.3.tgz#2cff62e21d7202be945ad055977667929a4a0226"
   dependencies:
     broccoli-funnel "^1.2.0"
     broccoli-merge-trees "^2.0.0"
-    ember-cli-babel "^6.0.0"
-    testdouble "^2.1.2"
+    ember-cli-babel "^6.6.0"
+    testdouble "^3.5.2"
 
 ember-cli-uglify@^2.0.0:
   version "2.0.0"
@@ -5435,7 +5435,7 @@ lodash@^3.10.0, lodash@^3.10.1, lodash@^3.9.3:
   version "3.10.1"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-3.10.1.tgz#5bf45e8e49ba4189e17d482789dfd15bd140b7b6"
 
-lodash@^4.13.1, lodash@^4.14.0, lodash@^4.15.0, lodash@^4.17.2, lodash@^4.17.4, lodash@^4.3.0, lodash@^4.6.1:
+lodash@^4.13.1, lodash@^4.14.0, lodash@^4.17.2, lodash@^4.17.4, lodash@^4.3.0, lodash@^4.6.1:
   version "4.17.4"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.4.tgz#78203a4d1c328ae1d86dca6460e369b57f4055ae"
 
@@ -6589,7 +6589,7 @@ query-string@^5.0.1:
     object-assign "^4.1.0"
     strict-uri-encode "^1.0.0"
 
-quibble@^0.5.0, quibble@^0.5.1:
+quibble@^0.5.1:
   version "0.5.3"
   resolved "https://registry.yarnpkg.com/quibble/-/quibble-0.5.3.tgz#3dfd53206fc6873f61c96f3bece63b69747b4d0c"
   dependencies:
@@ -7035,7 +7035,7 @@ resolve@1.1.7:
   version "1.1.7"
   resolved "https://registry.yarnpkg.com/resolve/-/resolve-1.1.7.tgz#203114d82ad2c5ed9e8e0411b3932875e889e97b"
 
-resolve@^1.1.6, resolve@^1.1.7, resolve@^1.2.0, resolve@^1.3.0, resolve@^1.3.2, resolve@^1.3.3, resolve@^1.4.0, resolve@^1.5.0:
+resolve@^1.1.6, resolve@^1.1.7, resolve@^1.2.0, resolve@^1.3.0, resolve@^1.3.3, resolve@^1.4.0, resolve@^1.5.0:
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/resolve/-/resolve-1.5.0.tgz#1f09acce796c9a762579f31b2c1cc4c3cddf9f36"
   dependencies:
@@ -7798,23 +7798,13 @@ testdouble-chai@^0.5.0:
   version "0.5.0"
   resolved "https://registry.yarnpkg.com/testdouble-chai/-/testdouble-chai-0.5.0.tgz#ce1af5327238435735c04fbce62962b1a6a7e6fa"
 
-testdouble@3.2.6:
-  version "3.2.6"
-  resolved "https://registry.yarnpkg.com/testdouble/-/testdouble-3.2.6.tgz#8fc47149c59f1becc795bf80f02b41de30ea4035"
+testdouble@^3.5.2, testdouble@^3.6.0:
+  version "3.6.0"
+  resolved "https://registry.yarnpkg.com/testdouble/-/testdouble-3.6.0.tgz#790aa09d97bb00d5c2fb5a81850cb2a9f4a45d12"
   dependencies:
     es6-map "^0.1.5"
     lodash "^4.17.4"
     quibble "^0.5.1"
-    resolve "^1.3.3"
-    stringify-object-es5 "^2.5.0"
-
-testdouble@^2.1.2:
-  version "2.1.2"
-  resolved "https://registry.yarnpkg.com/testdouble/-/testdouble-2.1.2.tgz#8a376c5cb9b2c9cea90780b874168aa5b6eeb8a8"
-  dependencies:
-    lodash "^4.15.0"
-    quibble "^0.5.0"
-    resolve "^1.3.2"
     stringify-object-es5 "^2.5.0"
 
 testem@^2.0.0:
