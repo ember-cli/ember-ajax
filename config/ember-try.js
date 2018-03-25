@@ -106,12 +106,6 @@ module.exports = function() {
               'ember-source': urls[2]
             }
           }
-        },
-        {
-          name: 'ember-default',
-          npm: {
-            devDependencies: {}
-          }
         }
       ]
     };
