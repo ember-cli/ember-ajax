@@ -47,7 +47,10 @@ describe('Unit | Mixin | legacy/normalize error response', function() {
   });
 
   it('handles an array of strings', function() {
-    const payloadArrayOfStrings = service.normalizeErrorResponse(400, {}, ['Foo', 'Bar']);
+    const payloadArrayOfStrings = service.normalizeErrorResponse(400, {}, [
+      'Foo',
+      'Bar'
+    ]);
     expect(payloadArrayOfStrings).to.deep.equal([
       { status: '400', title: 'Foo' },
       { status: '400', title: 'Bar' }

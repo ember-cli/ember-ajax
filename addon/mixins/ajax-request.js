@@ -32,7 +32,11 @@ import {
 import ajax from 'ember-ajax/utils/ajax';
 import parseResponseHeaders from 'ember-ajax/-private/utils/parse-response-headers';
 import getHeader from 'ember-ajax/-private/utils/get-header';
-import { isFullURL, parseURL, haveSameHost } from 'ember-ajax/-private/utils/url-helpers';
+import {
+  isFullURL,
+  parseURL,
+  haveSameHost
+} from 'ember-ajax/-private/utils/url-helpers';
 import isString from 'ember-ajax/-private/utils/is-string';
 import AJAXPromise from 'ember-ajax/-private/promise';
 
@@ -51,7 +55,10 @@ function isJSONStringifyable(method, { contentType, data, headers }) {
     return false;
   }
 
-  if (!isJSONContentType(contentType) && !isJSONContentType(getHeader(headers, 'Content-Type'))) {
+  if (
+    !isJSONContentType(contentType) &&
+    !isJSONContentType(getHeader(headers, 'Content-Type'))
+  ) {
     return false;
   }
 
@@ -271,17 +278,22 @@ export default Mixin.create({
         })
         .fail((jqXHR, textStatus, errorThrown) => {
           runInDebug(function() {
-            const message = `The server returned an empty string for ${requestData.type} ${
+            const message = `The server returned an empty string for ${
+              requestData.type
+            } ${
               requestData.url
             }, which cannot be parsed into a valid JSON. Return either null or {}.`;
-            const validJSONString = !(textStatus === 'parsererror' && jqXHR.responseText === '');
+            const validJSONString = !(
+              textStatus === 'parsererror' && jqXHR.responseText === ''
+            );
 
             warn(message, validJSONString, {
               id: 'ds.adapter.returned-empty-string-as-JSON'
             });
           });
 
-          const payload = this.parseErrorResponse(jqXHR.responseText) || errorThrown;
+          const payload =
+            this.parseErrorResponse(jqXHR.responseText) || errorThrown;
           let response;
 
           if (errorThrown instanceof Error) {
@@ -299,7 +311,13 @@ export default Mixin.create({
             );
           }
 
-          run.join(null, reject, { payload, textStatus, jqXHR, errorThrown, response });
+          run.join(null, reject, {
+            payload,
+            textStatus,
+            jqXHR,
+            errorThrown,
+            response
+          });
         })
         .always(() => {
           pendingRequestCount = pendingRequestCount - 1;
@@ -551,7 +569,12 @@ export default Mixin.create({
     } else if (this.isServerError(status, headers, payload)) {
       error = new ServerError(payload, status);
     } else {
-      const detailedMessage = this.generateDetailedMessage(status, headers, payload, requestData);
+      const detailedMessage = this.generateDetailedMessage(
+        status,
+        headers,
+        payload,
+        requestData
+      );
 
       error = new AjaxError(payload, detailedMessage, status);
     }
@@ -574,7 +597,11 @@ export default Mixin.create({
     } else if (typeof matcher === 'string') {
       return matcher === host;
     } else {
-      Logger.warn('trustedHosts only handles strings or regexes.', matcher, 'is neither.');
+      Logger.warn(
+        'trustedHosts only handles strings or regexes.',
+        matcher,
+        'is neither.'
+      );
       return false;
     }
   },
@@ -608,7 +635,9 @@ export default Mixin.create({
     // Add headers on relative URLs
     if (!isFullURL(url)) {
       return true;
-    } else if (trustedHosts.find(matcher => this._matchHosts(hostname, matcher))) {
+    } else if (
+      trustedHosts.find(matcher => this._matchHosts(hostname, matcher))
+    ) {
       return true;
     }
 
@@ -630,9 +659,13 @@ export default Mixin.create({
    */
   generateDetailedMessage(status, headers, payload, requestData) {
     let shortenedPayload;
-    const payloadContentType = getHeader(headers, 'Content-Type') || 'Empty Content-Type';
+    const payloadContentType =
+      getHeader(headers, 'Content-Type') || 'Empty Content-Type';
 
-    if (payloadContentType.toLowerCase() === 'text/html' && payload.length > 250) {
+    if (
+      payloadContentType.toLowerCase() === 'text/html' &&
+      payload.length > 250
+    ) {
       shortenedPayload = '[Omitted Lengthy HTML]';
     } else {
       shortenedPayload = JSON.stringify(payload);

@@ -75,5 +75,7 @@ export function haveSameHost(a, b) {
   a = parseURL(a);
   b = parseURL(b);
 
-  return a.protocol === b.protocol && a.hostname === b.hostname && a.port === b.port;
+  return (
+    a.protocol === b.protocol && a.hostname === b.hostname && a.port === b.port
+  );
 }

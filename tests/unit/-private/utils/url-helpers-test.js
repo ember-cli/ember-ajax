@@ -1,7 +1,11 @@
 import { describe, it } from 'mocha';
 import { expect } from 'chai';
 
-import { isFullURL, parseURL, haveSameHost } from 'ember-ajax/-private/utils/url-helpers';
+import {
+  isFullURL,
+  parseURL,
+  haveSameHost
+} from 'ember-ajax/-private/utils/url-helpers';
 
 describe('Unit | Utility | url helpers', function() {
   describe('parseURL', function() {

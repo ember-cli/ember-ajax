@@ -1,63 +1,52 @@
 import { describe, beforeEach, afterEach, it } from 'mocha';
 import { expect } from 'chai';
-
-import destroyApp from 'dummy/tests/helpers/destroy-app';
-import startApp from 'dummy/tests/helpers/start-app';
+import { setupApplicationTest } from 'ember-mocha';
+import { click, currentURL, find, findAll, visit } from '@ember/test-helpers';
 
 import Pretender from 'pretender';
 import { jsonFactory as json } from 'dummy/tests/helpers/json';
 
+let server;
+
 describe('Acceptance | ajax-get component', function() {
+  setupApplicationTest();
+
   beforeEach(function() {
-    this.server = new Pretender();
-    this.application = startApp();
+    server = new Pretender();
   });
 
   afterEach(function() {
-    this.server.shutdown();
-    destroyApp(this.application);
+    server.shutdown();
   });
 
-  it('waits for a route with async widget', function() {
+  it('waits for a route with async widget', async function() {
     const PAYLOAD = [{ title: 'Foo' }, { title: 'Bar' }, { title: 'Baz' }];
 
-    this.server.get('/posts', json(200, PAYLOAD), 300);
+    server.get('/posts', json(200, PAYLOAD), 300);
 
-    visit('/');
+    await visit('/');
 
-    andThen(function() {
-      expect(currentURL()).to.equal('/');
-      expect(find('.ajax-get').length).to.equal(1);
-    });
+    expect(currentURL()).to.equal('/');
+    expect(find('.ajax-get')).to.be.ok;
 
-    click('button:contains(Load Data)');
+    await click('button');
 
-    andThen(function() {
-      expect(find('.ajax-get li:eq(0)').text()).to.equal('Foo');
-      expect(find('.ajax-get li:eq(1)').text()).to.equal('Bar');
-      expect(find('.ajax-get li:eq(2)').text()).to.equal('Baz');
-    });
+    expect(findAll('.ajax-get li')[0].textContent).to.equal('Foo');
+    expect(findAll('.ajax-get li')[1].textContent).to.equal('Bar');
+    expect(findAll('.ajax-get li')[2].textContent).to.equal('Baz');
   });
 
-  it('catches errors before they bubble to the console', function() {
+  it('catches errors before they bubble to the console', async function() {
     const errorMessage = 'Not Found';
-    this.server.get('/posts', json(404, errorMessage), 300);
+    server.get('/posts', json(404, errorMessage), 300);
 
-    visit('/');
+    await visit('/');
 
-    andThen(function() {
-      expect(currentURL()).to.equal('/');
-      expect(find('.ajax-get').length === 1).to.be.ok;
-    });
+    expect(currentURL()).to.equal('/');
+    expect(find('.ajax-get')).to.be.ok;
 
-    click('button:contains(Load Data)');
+    await click('button');
 
-    andThen(function() {
-      expect(
-        find('.ajax-get .error')
-          .text()
-          .trim()
-      ).to.equal(errorMessage);
-    });
+    expect(find('.ajax-get .error').textContent.trim()).to.equal(errorMessage);
   });
 });

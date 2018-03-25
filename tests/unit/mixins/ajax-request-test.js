@@ -35,7 +35,10 @@ describe('Unit | Mixin | ajax request', function() {
       const service = new AjaxRequest();
       const url = 'test';
       const type = 'GET';
-      const ajaxOptions = service.options(url, { type, data: { key: 'value' } });
+      const ajaxOptions = service.options(url, {
+        type,
+        data: { key: 'value' }
+      });
 
       expect(ajaxOptions).to.deep.equal({
         contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
@@ -161,7 +164,9 @@ describe('Unit | Mixin | ajax request', function() {
         const url = '/users/me';
         const ajaxoptions = service.options(url);
 
-        expect(ajaxoptions.url).to.equal('https://discuss.emberjs.com/users/me');
+        expect(ajaxoptions.url).to.equal(
+          'https://discuss.emberjs.com/users/me'
+        );
       });
 
       it('is set on the url (url not starting with `/`)', function() {
@@ -173,7 +178,9 @@ describe('Unit | Mixin | ajax request', function() {
         const url = 'users/me';
         const ajaxoptions = service.options(url);
 
-        expect(ajaxoptions.url).to.equal('https://discuss.emberjs.com/users/me');
+        expect(ajaxoptions.url).to.equal(
+          'https://discuss.emberjs.com/users/me'
+        );
       });
 
       it('is overridable on a per-request basis', function() {
@@ -205,7 +212,9 @@ describe('Unit | Mixin | ajax request', function() {
       it('can be set on a per-request basis', function() {
         const service = new AjaxRequest();
 
-        expect(service.options('users/me', { namespace: 'api' }).url).to.equal('/api/users/me');
+        expect(service.options('users/me', { namespace: 'api' }).url).to.equal(
+          '/api/users/me'
+        );
       });
 
       it('is set on the url (namespace not starting with `/`)', function() {
@@ -254,7 +263,11 @@ describe('Unit | Mixin | ajax request', function() {
         post: { title: 'Title', description: 'Some description.' }
       }
     };
-    const serverResponse = [200, { 'Content-Type': 'application/json' }, JSON.stringify(data.data)];
+    const serverResponse = [
+      200,
+      { 'Content-Type': 'application/json' },
+      JSON.stringify(data.data)
+    ];
 
     this.server.get(url, () => serverResponse);
     this.server.post(url, () => serverResponse);
@@ -349,7 +362,11 @@ describe('Unit | Mixin | ajax request', function() {
   it('del() promise label is correct', function() {
     const service = new AjaxRequest();
     const url = '/posts/1';
-    const serverResponse = [200, { 'Content-Type': 'application/json' }, JSON.stringify({})];
+    const serverResponse = [
+      200,
+      { 'Content-Type': 'application/json' },
+      JSON.stringify({})
+    ];
 
     this.server.delete(url, () => serverResponse);
 
@@ -364,12 +381,18 @@ describe('Unit | Mixin | ajax request', function() {
   it('delete() promise label is correct', function() {
     const service = new AjaxRequest();
     const url = '/posts/1';
-    const serverResponse = [200, { 'Content-Type': 'application/json' }, JSON.stringify({})];
+    const serverResponse = [
+      200,
+      { 'Content-Type': 'application/json' },
+      JSON.stringify({})
+    ];
 
     this.server.delete(url, () => serverResponse);
 
     const deletePromise = service.delete(url);
-    expect(deletePromise._label).to.equal('ember-ajax: DELETE /posts/1 response');
+    expect(deletePromise._label).to.equal(
+      'ember-ajax: DELETE /posts/1 response'
+    );
 
     return deletePromise.then(function(response) {
       expect(response).to.deep.equal({});
@@ -378,7 +401,11 @@ describe('Unit | Mixin | ajax request', function() {
 
   it('request with method option makes the correct type of request', function() {
     const url = '/posts/1';
-    const serverResponse = [200, { 'Content-Type': 'application/json' }, JSON.stringify({})];
+    const serverResponse = [
+      200,
+      { 'Content-Type': 'application/json' },
+      JSON.stringify({})
+    ];
 
     this.server.get(url, () => {
       throw new Error("Shouldn't make an AJAX request");
@@ -387,7 +414,12 @@ describe('Unit | Mixin | ajax request', function() {
 
     const service = new AjaxRequest();
     const handleResponse = td.function('handle response');
-    const expectedArguments = [anything(), anything(), anything(), matchContains({ type: 'POST' })];
+    const expectedArguments = [
+      anything(),
+      anything(),
+      anything(),
+      matchContains({ type: 'POST' })
+    ];
     service.handleResponse = handleResponse;
     td.when(handleResponse(...expectedArguments)).thenReturn({});
 
@@ -427,7 +459,9 @@ describe('Unit | Mixin | ajax request', function() {
       const url = 'myurl.com/users/me';
       const ajaxOptions = service.options(url);
 
-      expect(ajaxOptions.url).to.equal('https://discuss.emberjs.com/myurl.com/users/me');
+      expect(ajaxOptions.url).to.equal(
+        'https://discuss.emberjs.com/myurl.com/users/me'
+      );
     });
   });
 
@@ -442,7 +476,10 @@ describe('Unit | Mixin | ajax request', function() {
 
       const RequestWithHeaders = AjaxRequest.extend({
         host: 'http://example.com',
-        headers: { 'Content-Type': 'application/json', 'Other-key': 'Other Value' }
+        headers: {
+          'Content-Type': 'application/json',
+          'Other-key': 'Other Value'
+        }
       });
 
       const service = new RequestWithHeaders();
@@ -458,7 +495,10 @@ describe('Unit | Mixin | ajax request', function() {
       });
 
       const RequestWithHeaders = AjaxRequest.extend({
-        headers: { 'Content-Type': 'application/json', 'Other-key': 'Other Value' }
+        headers: {
+          'Content-Type': 'application/json',
+          'Other-key': 'Other Value'
+        }
       });
 
       const service = new RequestWithHeaders();
@@ -475,7 +515,10 @@ describe('Unit | Mixin | ajax request', function() {
       const RequestWithHeaders = AjaxRequest.extend({
         host: 'some-other-host.com',
         trustedHosts: A([4, 'notmy.example.com', /example\./]),
-        headers: { 'Content-Type': 'application/json', 'Other-key': 'Other Value' }
+        headers: {
+          'Content-Type': 'application/json',
+          'Other-key': 'Other Value'
+        }
       });
 
       const service = new RequestWithHeaders();
@@ -492,7 +535,10 @@ describe('Unit | Mixin | ajax request', function() {
       const RequestWithHeaders = AjaxRequest.extend({
         host: 'some-other-host.com',
         trustedHosts: A(['notmy.example.com', /example\./, 'foo.bar.com']),
-        headers: { 'Content-Type': 'application/json', 'Other-key': 'Other Value' }
+        headers: {
+          'Content-Type': 'application/json',
+          'Other-key': 'Other Value'
+        }
       });
 
       const service = new RequestWithHeaders();
@@ -508,7 +554,10 @@ describe('Unit | Mixin | ajax request', function() {
 
       const RequestWithHeaders = AjaxRequest.extend({
         host: 'some-other-host.com',
-        headers: { 'Content-Type': 'application/json', 'Other-key': 'Other Value' }
+        headers: {
+          'Content-Type': 'application/json',
+          'Other-key': 'Other Value'
+        }
       });
 
       const service = new RequestWithHeaders();
@@ -525,7 +574,10 @@ describe('Unit | Mixin | ajax request', function() {
 
       const RequestWithHeaders = AjaxRequest.extend({
         host: 'http://example.com',
-        headers: { 'Content-Type': 'application/json', 'Other-key': 'Other Value' }
+        headers: {
+          'Content-Type': 'application/json',
+          'Other-key': 'Other Value'
+        }
       });
 
       const service = new RequestWithHeaders();
@@ -547,7 +599,9 @@ describe('Unit | Mixin | ajax request', function() {
       const service = new RequestWithHeaders();
       const headers = { 'Third-Value': 'Other Thing' };
       expect(Object.keys(service._getFullHeadersHash()).length).to.equal(2);
-      expect(Object.keys(service._getFullHeadersHash(headers)).length).to.equal(3);
+      expect(Object.keys(service._getFullHeadersHash(headers)).length).to.equal(
+        3
+      );
       expect(Object.keys(service.headers).length).to.equal(2);
     });
   });
@@ -575,7 +629,11 @@ describe('Unit | Mixin | ajax request', function() {
   });
 
   it('it creates a detailed error message for unmatched server errors with a text payload', function() {
-    const response = [408, { 'Content-Type': 'text/html' }, 'Some error response'];
+    const response = [
+      408,
+      { 'Content-Type': 'text/html' },
+      'Some error response'
+    ];
     this.server.get('/posts', () => response);
 
     const service = new AjaxRequest();
@@ -771,26 +829,33 @@ describe('Unit | Mixin | ajax request', function() {
       { hostType: 'no trailing slash', host: 'http://foo.com' }
     ];
 
-    [NamespaceLeadingSlash, NamespaceTrailingSlash, NamespaceTwoSlash, NamespaceNoSlash].forEach(
-      Klass => {
-        const req = new Klass();
+    [
+      NamespaceLeadingSlash,
+      NamespaceTrailingSlash,
+      NamespaceTwoSlash,
+      NamespaceNoSlash
+    ].forEach(Klass => {
+      const req = new Klass();
 
-        hosts.forEach(exampleHost => {
-          const { host } = exampleHost;
+      hosts.forEach(exampleHost => {
+        const { host } = exampleHost;
 
-          it(`correctly handles ${Klass.slashType} when the host has ${
-            exampleHost.hostType
-          }`, function() {
-            ['/baz', 'baz'].forEach(segment => {
-              expect(req._buildURL(segment, { host })).to.equal('http://foo.com/bar/baz');
-            });
-            ['/baz/', 'baz/'].forEach(segment => {
-              expect(req._buildURL(segment, { host })).to.equal('http://foo.com/bar/baz/');
-            });
+        it(`correctly handles ${Klass.slashType} when the host has ${
+          exampleHost.hostType
+        }`, function() {
+          ['/baz', 'baz'].forEach(segment => {
+            expect(req._buildURL(segment, { host })).to.equal(
+              'http://foo.com/bar/baz'
+            );
+          });
+          ['/baz/', 'baz/'].forEach(segment => {
+            expect(req._buildURL(segment, { host })).to.equal(
+              'http://foo.com/bar/baz/'
+            );
           });
         });
-      }
-    );
+      });
+    });
 
     it('correctly handles a host without a namespace', function() {
       class HostWithoutNamespace extends AjaxRequest {
@@ -805,7 +870,9 @@ describe('Unit | Mixin | ajax request', function() {
 
     it('correctly handles a host provided on the request options', function() {
       const req = new AjaxRequest();
-      expect(req._buildURL('/baz', { host: 'http://foo.com' })).to.equal('http://foo.com/baz');
+      expect(req._buildURL('/baz', { host: 'http://foo.com' })).to.equal(
+        'http://foo.com/baz'
+      );
     });
 
     it('correctly handles no namespace or host', function() {
@@ -821,8 +888,14 @@ describe('Unit | Mixin | ajax request', function() {
       }
 
       const req = new RequestWithNamespace();
-      expect(req._buildURL('/api/post')).to.equal('/api/post', 'URL provided with leading slash');
-      expect(req._buildURL('api/post')).to.equal('api/post', 'URL provided without leading slash');
+      expect(req._buildURL('/api/post')).to.equal(
+        '/api/post',
+        'URL provided with leading slash'
+      );
+      expect(req._buildURL('api/post')).to.equal(
+        'api/post',
+        'URL provided without leading slash'
+      );
     });
 
     it('correctly handles a URL with leading part similar to the namespace', function() {
@@ -833,7 +906,9 @@ describe('Unit | Mixin | ajax request', function() {
       }
 
       const req = new RequestWithNamespace();
-      expect(req._buildURL('/admin_users/post')).to.equal('/admin/admin_users/post');
+      expect(req._buildURL('/admin_users/post')).to.equal(
+        '/admin/admin_users/post'
+      );
     });
 
     it('does not build the URL if the host is already present', function() {
@@ -844,7 +919,9 @@ describe('Unit | Mixin | ajax request', function() {
       }
 
       const req = new RequestWithHost();
-      expect(req._buildURL('https://foo.com/posts')).to.equal('https://foo.com/posts');
+      expect(req._buildURL('https://foo.com/posts')).to.equal(
+        'https://foo.com/posts'
+      );
     });
   });
 
@@ -901,10 +978,14 @@ describe('Unit | Mixin | ajax request', function() {
     });
 
     function errorHandlerTest(status, errorClass) {
-      it(`handles a ${status} response correctly and preserves the payload`, function() {
+      it(`handles a ${
+        status
+      } response correctly and preserves the payload`, function() {
         this.server.get(
           '/posts',
-          jsonFactory(status, { errors: [{ id: 1, message: 'error description' }] })
+          jsonFactory(status, {
+            errors: [{ id: 1, message: 'error description' }]
+          })
         );
         const service = new AjaxRequest();
         return service
@@ -975,7 +1056,9 @@ describe('Unit | Mixin | ajax request', function() {
       });
 
       const ajax = new AjaxRequest();
-      ajax.request('/jsonp', { dataType: 'jsonp' }).then(val => (response = val));
+      ajax
+        .request('/jsonp', { dataType: 'jsonp' })
+        .then(val => (response = val));
       return wait().then(() => {
         expect(response).to.deep.equal({ foo: 'bar' });
       });

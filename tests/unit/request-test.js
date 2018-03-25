@@ -19,7 +19,11 @@ describe('request', function() {
       { id: 42, src: 'http://media0.giphy.com/media/Ko2pyD26RdYRi/giphy.gif' }
     ];
     this.server.get('/photos', function() {
-      return [200, { 'Content-Type': 'application/json' }, JSON.stringify(photos)];
+      return [
+        200,
+        { 'Content-Type': 'application/json' },
+        JSON.stringify(photos)
+      ];
     });
     return request('/photos').then(function(data) {
       expect(data).to.deep.equal(photos);
