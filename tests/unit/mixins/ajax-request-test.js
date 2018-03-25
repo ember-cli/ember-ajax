@@ -978,9 +978,7 @@ describe('Unit | Mixin | ajax request', function() {
     });
 
     function errorHandlerTest(status, errorClass) {
-      it(`handles a ${
-        status
-      } response correctly and preserves the payload`, function() {
+      it(`handles a ${status} response correctly and preserves the payload`, function() {
         this.server.get(
           '/posts',
           jsonFactory(status, {
