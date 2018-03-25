@@ -18,7 +18,11 @@ describe('raw', function() {
       { id: 42, src: 'http://media0.giphy.com/media/Ko2pyD26RdYRi/giphy.gif' }
     ];
     this.server.get('/photos', function() {
-      return [200, { 'Content-Type': 'application/json' }, JSON.stringify(photos)];
+      return [
+        200,
+        { 'Content-Type': 'application/json' },
+        JSON.stringify(photos)
+      ];
     });
     return raw('/photos').then(function(data) {
       expect(data.response).to.deep.equal(photos);

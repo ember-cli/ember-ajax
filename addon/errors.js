@@ -20,7 +20,12 @@ AjaxError.prototype = Object.create(EmberError.prototype);
  * @extends AjaxError
  */
 export function InvalidError(payload) {
-  AjaxError.call(this, payload, 'Request was rejected because it was invalid', 422);
+  AjaxError.call(
+    this,
+    payload,
+    'Request was rejected because it was invalid',
+    422
+  );
 }
 
 InvalidError.prototype = Object.create(AjaxError.prototype);
@@ -102,7 +107,12 @@ AbortError.prototype = Object.create(AjaxError.prototype);
  * @extends AjaxError
  */
 export function ConflictError(payload) {
-  AjaxError.call(this, payload, 'The ajax operation failed due to a conflict', 409);
+  AjaxError.call(
+    this,
+    payload,
+    'The ajax operation failed due to a conflict',
+    409
+  );
 }
 
 ConflictError.prototype = Object.create(AjaxError.prototype);
@@ -113,7 +123,12 @@ ConflictError.prototype = Object.create(AjaxError.prototype);
  * @extends AjaxError
  */
 export function ServerError(payload, status) {
-  AjaxError.call(this, payload, 'Request was rejected due to server error', status);
+  AjaxError.call(
+    this,
+    payload,
+    'Request was rejected due to server error',
+    status
+  );
 }
 
 ServerError.prototype = Object.create(AjaxError.prototype);

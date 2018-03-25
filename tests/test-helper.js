@@ -1,9 +1,5 @@
-import jq from 'jquery';
-import resolver from './helpers/resolver';
-import { setResolver } from 'ember-mocha';
+import Application from '../app';
+import config from '../config/environment';
+import { setApplication } from '@ember/test-helpers';
 
-setResolver(resolver);
-
-if (window.location.search.indexOf('nocontainer') > -1) {
-  jq('#ember-testing-container').css({ visibility: 'hidden' });
-}
+setApplication(Application.create(config.APP));

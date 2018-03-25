@@ -30,7 +30,10 @@ describe('getHeader', function() {
       headers['content-type'],
       'matches direct object access'
     );
-    expect(getHeader(headers, 'date')).to.equal(headers.date, 'matches direct object access');
+    expect(getHeader(headers, 'date')).to.equal(
+      headers.date,
+      'matches direct object access'
+    );
   });
 
   it('performs case-insensitive lookup', function() {
@@ -48,6 +51,9 @@ describe('getHeader', function() {
       headers['content-type'],
       'matches case-insensitive header'
     );
-    expect(getHeader(headers, 'DATE')).to.equal(headers.date, 'matches case-insensitive header');
+    expect(getHeader(headers, 'DATE')).to.equal(
+      headers.date,
+      'matches case-insensitive header'
+    );
   });
 });

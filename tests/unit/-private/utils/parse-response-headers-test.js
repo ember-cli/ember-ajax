@@ -1,4 +1,6 @@
-import parseResponseHeaders, { CRLF } from 'ember-ajax/-private/utils/parse-response-headers';
+import parseResponseHeaders, {
+  CRLF
+} from 'ember-ajax/-private/utils/parse-response-headers';
 import { describe, it } from 'mocha';
 import { expect } from 'chai';
 
@@ -64,7 +66,10 @@ describe('unit/-private/utils/parse-response-headers', function() {
     });
 
     it('can handle a value containing a colon', function() {
-      expect(transform('key: colon : in value')).to.have.property('key', 'colon : in value');
+      expect(transform('key: colon : in value')).to.have.property(
+        'key',
+        'colon : in value'
+      );
     });
   });
 });

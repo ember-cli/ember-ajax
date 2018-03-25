@@ -34,7 +34,10 @@ describe('AJAX Service', function() {
     const CustomService = Service.extend({
       headers: computed({
         get() {
-          return { 'Content-Type': 'application/json', 'Other-key': 'Other Value' };
+          return {
+            'Content-Type': 'application/json',
+            'Other-key': 'Other Value'
+          };
         }
       })
     });
