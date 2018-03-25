@@ -3,7 +3,6 @@
 [![npm version](https://badge.fury.io/js/ember-ajax.svg)](https://badge.fury.io/js/ember-ajax)
 [![Travis CI Build Status](https://travis-ci.org/ember-cli/ember-ajax.svg?branch=master)](https://travis-ci.org/ember-cli/ember-ajax)
 [![Ember Observer Score](http://emberobserver.com/badges/ember-ajax.svg)](http://emberobserver.com/addons/ember-ajax)
-![Ember Version][ember-version]
 
 Service for making AJAX requests in Ember 1.13+ applications.
 
@@ -543,5 +542,3 @@ Ajax requests.
 ## Special Thanks
 
 This addon was based on ajax handing in Ember Data's Adapter.
-
-[ember-version]: https://embadge.io/v1/badge.svg?start=1.13.0
