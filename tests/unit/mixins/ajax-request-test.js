@@ -10,6 +10,7 @@ import {
   AbortError,
   ConflictError,
   InvalidError,
+  GoneError,
   UnauthorizedError,
   ForbiddenError,
   BadRequestError,
@@ -1008,6 +1009,7 @@ describe('Unit | Mixin | ajax request', function() {
     errorHandlerTest(401, UnauthorizedError);
     errorHandlerTest(403, ForbiddenError);
     errorHandlerTest(409, ConflictError);
+    errorHandlerTest(410, GoneError);
     errorHandlerTest(422, InvalidError);
     errorHandlerTest(400, BadRequestError);
     errorHandlerTest(500, ServerError);

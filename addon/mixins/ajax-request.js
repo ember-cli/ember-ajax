@@ -14,6 +14,7 @@ import {
   ForbiddenError,
   BadRequestError,
   NotFoundError,
+  GoneError,
   TimeoutError,
   AbortError,
   ConflictError,
@@ -24,6 +25,7 @@ import {
   isInvalidError,
   isBadRequestError,
   isNotFoundError,
+  isGoneError,
   isConflictError,
   isAbortError,
   isServerError,
@@ -562,6 +564,8 @@ export default Mixin.create({
       error = new BadRequestError(payload);
     } else if (this.isNotFoundError(status, headers, payload)) {
       error = new NotFoundError(payload);
+    } else if (this.isGoneError(status, headers, payload)) {
+      error = new GoneError(payload);
     } else if (this.isAbortError(status, headers, payload)) {
       error = new AbortError(payload);
     } else if (this.isConflictError(status, headers, payload)) {
@@ -754,6 +758,21 @@ export default Mixin.create({
    */
   isNotFoundError(status) {
     return isNotFoundError(status);
+  },
+
+  /**
+   * Default `handleResponse` implementation uses this hook to decide if the
+   * response is a "gone" error.
+   *
+   * @method isGoneError
+   * @private
+   * @param {Number} status
+   * @param {Object} headers
+   * @param {Object} payload
+   * @return {Boolean}
+   */
+  isGoneError(status) {
+    return isGoneError(status);
   },
 
   /**
