@@ -142,6 +142,13 @@ export default AjaxService.extend({
 
 `request('/users/me')` would now target `/api/v1/users/me`
 
+If you need to override the namespace for a custom request, use the `namespace` as an option to the request methods.
+
+```js
+// GET /api/legacy/users/me
+request('/users/me', { namespace: '/api/legacy' })
+```
+
 ### Custom Host
 
 `ember-ajax` allows you to specify a host to be used with a request. This is
