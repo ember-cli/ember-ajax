@@ -16,10 +16,12 @@
   },
   "scripts": {
     "build": "ember build",
-    "lint:js": "eslint --ext js .",
+    "lint:js": "eslint --ext js --ext ts .",
     "start": "ember server",
     "test": "ember test",
-    "test:all": "ember try:each"
+    "test:all": "ember try:each",
+    "prepublishOnly": "ember ts:precompile",
+    "postpublish": "ember ts:clean"
   },
   "husky": {
     "hooks": {
@@ -28,7 +30,7 @@
     }
   },
   "lint-staged": {
-    "*.js": [
+    "*.{js,ts}": [
       "eslint --fix",
       "git add"
     ]
@@ -41,6 +43,13 @@
     "@commitlint/cli": "^7.0.0",
     "@commitlint/config-conventional": "^7.0.1",
     "@commitlint/travis-cli": "^7.0.0",
+    "@types/ember": "^2.8.28",
+    "@types/ember-data": "^2.14.17",
+    "@types/ember-mocha": "^0.12.3",
+    "@types/ember-test-helpers": "^0.7.1",
+    "@types/ember-testing-helpers": "^0.0.3",
+    "@types/mocha": "^5.2.3",
+    "@types/rsvp": "^4.0.2",
     "broccoli-asset-rev": "^2.7.0",
     "chai": "^4.1.2",
     "debug": "^3.1.0",
@@ -58,6 +67,7 @@
     "ember-cli-sri": "^2.1.0",
     "ember-cli-test-loader": "^2.1.0",
     "ember-cli-testdouble": "^0.1.3",
+    "ember-cli-typescript": "^1.3.2",
     "ember-cli-uglify": "^2.1.0",
     "ember-data": "^3.1.1",
     "ember-export-application-global": "2.0.0",
@@ -80,7 +90,14 @@
     "loader.js": "^4.7.0",
     "prettier": "^1.13.5",
     "testdouble": "^3.8.1",
-    "testdouble-chai": "^0.5.0"
+    "testdouble-chai": "^0.5.0",
+    "typescript": "^2.9.2",
+    "typescript-eslint-parser": "^16.0.1"
+  },
+  "resolutions": {
+    "@types/ember": "2.8.28",
+    "@types/mocha": "5.2.3",
+    "@types/rsvp": "4.0.2"
   },
   "engines": {
     "node": "^4.5 || 6.* || >= 7.*"

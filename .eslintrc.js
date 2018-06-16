@@ -27,6 +27,18 @@ module.exports = {
     'no-console': 'off'
   },
   overrides: [
+    // TypeScript files
+    {
+      parser: 'typescript-eslint-parser',
+      files: [
+        'addon/**/*.ts',
+        'tests/**/*.ts'
+      ],
+      rules: {
+        'no-undef': 'off',
+        'no-unused-vars': 'off'
+      }
+    },
     // tests
     {
       env: {
