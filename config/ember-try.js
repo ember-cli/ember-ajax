@@ -90,6 +90,10 @@ module.exports = function() {
               'ember-source': urls[2]
             }
           }
+        },
+        {
+          name: 'fastboot-addon-tests',
+          command: 'ember fastboot:test'
         }
       ]
     };

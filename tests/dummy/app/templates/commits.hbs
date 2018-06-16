@@ -1,0 +1,9 @@
+<ul>
+  {{#each model as |record|}}
+    <li>
+      <a href={{record.commit.url}}>
+        {{record.commit.message}}
+      </a>
+    </li>
+  {{/each}}
+</ul>

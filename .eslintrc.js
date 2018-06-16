@@ -22,16 +22,23 @@ module.exports = {
   rules: {
     'prettier/prettier': 'error',
 
+    'ember/no-global-jquery': 'off',
+
     'no-console': 'off'
   },
   overrides: [
     // tests
     {
+      env: {
+        mocha: true
+      },
       files: [
+        'fastboot-tests/*-test.js',
         'tests/**/*.js'
       ],
       excludedFiles: [
-        'tests/dummy/**/*.js'
+        'tests/dummy/**/*.js',
+        'fastboot-tests/fixtures/**/*.js'
       ],
       rules: {
         'ember/avoid-leaking-state-in-ember-objects': 'off'
@@ -46,12 +53,15 @@ module.exports = {
         'testem.js',
         'blueprints/*/index.js',
         'config/**/*.js',
+        'fastboot-tests/*-test.js',
+        'fastboot-tests/helpers/**/*.js',
         'tests/dummy/config/**/*.js'
       ],
       excludedFiles: [
-        'addon/**',
         'addon-test-support/**',
+        'addon/**',
         'app/**',
+        'fastboot-tests/fixtures/**/*.js',
         'tests/dummy/app/**'
       ],
       parserOptions: {
@@ -65,6 +75,7 @@ module.exports = {
       plugins: ['node'],
       rules: Object.assign({}, require('eslint-plugin-node').configs.recommended.rules, {
         // add your custom rules and overrides for node files here
+        'node/no-unpublished-require': 'off'
       })
     }
   ]

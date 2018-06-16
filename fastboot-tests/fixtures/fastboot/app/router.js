@@ -6,9 +6,6 @@ const Router = EmberRouter.extend({
   rootURL: config.rootURL
 });
 
-Router.map(function() {
-  this.route('commits');
-  this.route('ember-data-test');
-});
+Router.map(function() {});
 
 export default Router;
