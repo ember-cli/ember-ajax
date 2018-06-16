@@ -34,7 +34,8 @@
     ]
   },
   "dependencies": {
-    "ember-cli-babel": "^6.14.1"
+    "ember-cli-babel": "^6.14.1",
+    "najax": "^1.0.3"
   },
   "devDependencies": {
     "@commitlint/cli": "^7.0.0",
@@ -80,7 +81,10 @@
     "node": "^4.5 || 6.* || >= 7.*"
   },
   "ember-addon": {
-    "configPath": "tests/dummy/config"
+    "configPath": "tests/dummy/config",
+    "fastbootDependencies": [
+      "najax"
+    ]
   },
   "greenkeeper": {
     "ignore": [
