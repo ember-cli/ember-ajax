@@ -17,7 +17,9 @@ module.exports = {
     browser: true
   },
   rules: {
-    'prettier/prettier': 'error'
+    'prettier/prettier': 'error',
+
+    'no-console': 'off'
   },
   overrides: [
     // tests

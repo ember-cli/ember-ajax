@@ -42,7 +42,7 @@ import {
 import isString from 'ember-ajax/-private/utils/is-string';
 import AJAXPromise from 'ember-ajax/-private/promise';
 
-const { Logger, Test, testing } = Ember;
+const { Test } = Ember;
 const JSONContentType = /^application\/(?:vnd\.api\+)?json/i;
 
 function isJSONContentType(header) {
@@ -97,7 +97,7 @@ function stripSlashes(path) {
 }
 
 let pendingRequestCount = 0;
-if (testing) {
+if (Ember.testing) {
   Test.registerWaiter(function() {
     return pendingRequestCount === 0;
   });
@@ -601,10 +601,10 @@ export default Mixin.create({
     } else if (typeof matcher === 'string') {
       return matcher === host;
     } else {
-      Logger.warn(
-        'trustedHosts only handles strings or regexes.',
+      console.warn(
+        'trustedHosts only handles strings or regexes. ',
         matcher,
-        'is neither.'
+        ' is neither.'
       );
       return false;
     }
