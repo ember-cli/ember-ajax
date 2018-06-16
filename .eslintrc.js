@@ -16,6 +16,9 @@ module.exports = {
   env: {
     browser: true
   },
+  globals: {
+    FastBoot: true
+  },
   rules: {
     'prettier/prettier': 'error',
 
