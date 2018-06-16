@@ -17,9 +17,7 @@ module.exports = {
     browser: true
   },
   rules: {
-    'prettier/prettier': ['error', {
-      singleQuote: true
-    }]
+    'prettier/prettier': 'error'
   },
   overrides: [
     // tests
