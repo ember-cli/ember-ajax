@@ -37,6 +37,7 @@ module.exports = {
     // node files
     {
       files: [
+        'commitlint.config.js',
         'ember-cli-build.js',
         'index.js',
         'testem.js',
