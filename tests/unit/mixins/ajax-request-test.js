@@ -20,7 +20,9 @@ import {
 import Pretender from 'pretender';
 import { jsonResponse, jsonFactory } from 'dummy/tests/helpers/json';
 
-const { matchers: { anything, contains: matchContains } } = td;
+const {
+  matchers: { anything, contains: matchContains }
+} = td;
 
 describe('Unit | Mixin | ajax request', function() {
   beforeEach(function() {
