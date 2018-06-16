@@ -1,1 +1,6 @@
-/blueprints/*/files/**/*.js
+# Dependencies
+node_modules/
+
+# Output
+dist/
+tmp/
