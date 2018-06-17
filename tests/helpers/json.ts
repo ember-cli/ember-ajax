@@ -6,7 +6,7 @@ export function jsonResponse(status = 200, payload = {}) {
   ];
 }
 
-export function jsonFactory(status, payload) {
+export function jsonFactory(status: number, payload: object) {
   return function json() {
     return jsonResponse(status, payload);
   };

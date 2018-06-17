@@ -42,17 +42,36 @@ import {
 import isString from 'ember-ajax/-private/utils/is-string';
 import AJAXPromise from 'ember-ajax/-private/promise';
 
+import {
+  AJAXOptions,
+  Headers,
+  Matcher,
+  Method,
+  RequestData,
+  Response,
+  RawResponse,
+  RawErrorResponse
+} from '../-private/types';
+
 const { Test } = Ember;
 const JSONContentType = /^application\/(?:vnd\.api\+)?json/i;
 
-function isJSONContentType(header) {
+function isJSONContentType(header: any) {
   if (!isString(header)) {
     return false;
   }
+
   return !!header.match(JSONContentType);
 }
 
-function isJSONStringifyable(method, { contentType, data, headers }) {
+function isJSONStringifyable(
+  method: string,
+  {
+    contentType,
+    data,
+    headers
+  }: { contentType?: string | false; data?: any; headers?: Headers }
+) {
   if (method === 'GET') {
     return false;
   }
@@ -71,19 +90,19 @@ function isJSONStringifyable(method, { contentType, data, headers }) {
   return true;
 }
 
-function startsWithSlash(string) {
+function startsWithSlash(string: string) {
   return string.charAt(0) === '/';
 }
 
-function endsWithSlash(string) {
+function endsWithSlash(string: string) {
   return string.charAt(string.length - 1) === '/';
 }
 
-function removeLeadingSlash(string) {
+function removeLeadingSlash(string: string) {
   return string.substring(1);
 }
 
-function stripSlashes(path) {
+function stripSlashes(path: string) {
   // make sure path starts with `/`
   if (startsWithSlash(path)) {
     path = removeLeadingSlash(path);
@@ -105,9 +124,6 @@ if (Ember.testing) {
 
 /**
  * AjaxRequest Mixin
- *
- * @public
- * @mixin
  */
 export default Mixin.create({
   /**
@@ -117,7 +133,6 @@ export default Mixin.create({
    * future, the default value will be for JSON requests.
    * @property {string} contentType
    * @public
-   * @default
    */
   contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
 
@@ -192,27 +207,38 @@ export default Mixin.create({
    * });
    * ```
    *
-   * @property {Object} headers
+   * @property {Headers} headers
    * @public
-   * @default
    */
-  headers: {},
+  headers: undefined,
+
+  /**
+   * @property {string} host
+   * @public
+   */
+  host: undefined,
+
+  /**
+   * @property {string} namespace
+   * @public
+   */
+  namespace: undefined,
+
+  /**
+   * @property {Matcher[]} trustedHosts
+   * @public
+   */
+  trustedHosts: undefined,
 
   /**
    * Make an AJAX request, ignoring the raw XHR object and dealing only with
    * the response
-   *
-   * @method request
-   * @public
-   * @param {string} url The url to make a request to
-   * @param {Object} options The options for the request
-   * @return {Promise} The result of the request
    */
-  request(url, options) {
+  request<T = Response>(url: string, options?: AJAXOptions): AJAXPromise<T> {
     const hash = this.options(url, options);
-    const internalPromise = this._makeRequest(hash);
+    const internalPromise = this._makeRequest<T>(hash);
 
-    const ajaxPromise = new AJAXPromise((resolve, reject) => {
+    const ajaxPromise = new AJAXPromise<T>((resolve, reject) => {
       internalPromise
         .then(({ response }) => {
           resolve(response);
@@ -229,28 +255,19 @@ export default Mixin.create({
 
   /**
    * Make an AJAX request, returning the raw XHR object along with the response
-   *
-   * @method raw
-   * @public
-   * @param {string} url The url to make a request to
-   * @param {Object} options The options for the request
-   * @return {Promise} The result of the request
    */
-  raw(url, options) {
+  raw<T = Response>(
+    url: string,
+    options?: AJAXOptions
+  ): AJAXPromise<RawResponse<T>> {
     const hash = this.options(url, options);
-    return this._makeRequest(hash);
+    return this._makeRequest<T>(hash);
   },
 
   /**
    * Shared method to actually make an AJAX request
-   *
-   * @method _makeRequest
-   * @private
-   * @param {Object} hash The options for the request
-   * @param {string} hash.url The URL to make the request to
-   * @return {Promise} The result of the request
    */
-  _makeRequest(hash) {
+  _makeRequest<T>(hash: AJAXOptions): AJAXPromise<RawResponse<T>> {
     const method = hash.method || hash.type || 'GET';
     const requestData = { method, type: method, url: hash.url };
 
@@ -260,9 +277,9 @@ export default Mixin.create({
 
     pendingRequestCount = pendingRequestCount + 1;
 
-    const jqXHR = ajax(hash);
+    const jqXHR = ajax(hash.url!, hash);
 
-    const promise = new AJAXPromise((resolve, reject) => {
+    const promise = new AJAXPromise<RawResponse>((resolve, reject) => {
       jqXHR
         .done((payload, textStatus, jqXHR) => {
           const response = this.handleResponse(
@@ -273,9 +290,21 @@ export default Mixin.create({
           );
 
           if (isAjaxError(response)) {
-            run.join(null, reject, { payload, textStatus, jqXHR, response });
+            const rejectionParam: RawErrorResponse = {
+              payload,
+              textStatus,
+              jqXHR,
+              response
+            };
+            run.join(null, reject, rejectionParam);
           } else {
-            run.join(null, resolve, { payload, textStatus, jqXHR, response });
+            const resolutionParam: RawResponse = {
+              payload,
+              textStatus,
+              jqXHR,
+              response
+            };
+            run.join(null, resolve, resolutionParam);
           }
         })
         .fail((jqXHR, textStatus, errorThrown) => {
@@ -298,14 +327,12 @@ export default Mixin.create({
             this.parseErrorResponse(jqXHR.responseText) || errorThrown;
           let response;
 
-          if (errorThrown instanceof Error) {
-            response = errorThrown;
-          } else if (textStatus === 'timeout') {
+          if (textStatus === 'timeout') {
             response = new TimeoutError();
           } else if (textStatus === 'abort') {
             response = new AbortError();
           } else {
-            response = this.handleResponse(
+            response = this.handleResponse<typeof payload>(
               jqXHR.status,
               parseResponseHeaders(jqXHR.getAllResponseHeaders()),
               payload,
@@ -313,13 +340,15 @@ export default Mixin.create({
             );
           }
 
-          run.join(null, reject, {
+          const rejectionParam: RawErrorResponse = {
             payload,
             textStatus,
             jqXHR,
             errorThrown,
             response
-          });
+          };
+
+          run.join(null, reject, rejectionParam);
         })
         .always(() => {
           pendingRequestCount = pendingRequestCount - 1;
@@ -333,53 +362,29 @@ export default Mixin.create({
 
   /**
    * calls `request()` but forces `options.type` to `POST`
-   *
-   * @method post
-   * @public
-   * @param {string} url The url to make a request to
-   * @param {Object} options The options for the request
-   * @return {Promise} The result of the request
    */
-  post(url, options) {
+  post<T = Response>(url: string, options?: AJAXOptions): AJAXPromise<T> {
     return this.request(url, this._addTypeToOptionsFor(options, 'POST'));
   },
 
   /**
    * calls `request()` but forces `options.type` to `PUT`
-   *
-   * @method put
-   * @public
-   * @param {string} url The url to make a request to
-   * @param {Object} options The options for the request
-   * @return {Promise} The result of the request
    */
-  put(url, options) {
+  put<T = Response>(url: string, options?: AJAXOptions): AJAXPromise<T> {
     return this.request(url, this._addTypeToOptionsFor(options, 'PUT'));
   },
 
   /**
    * calls `request()` but forces `options.type` to `PATCH`
-   *
-   * @method patch
-   * @public
-   * @param {string} url The url to make a request to
-   * @param {Object} options The options for the request
-   * @return {Promise} The result of the request
    */
-  patch(url, options) {
+  patch<T = Response>(url: string, options?: AJAXOptions): AJAXPromise<T> {
     return this.request(url, this._addTypeToOptionsFor(options, 'PATCH'));
   },
 
   /**
    * calls `request()` but forces `options.type` to `DELETE`
-   *
-   * @method del
-   * @public
-   * @param {string} url The url to make a request to
-   * @param {Object} options The options for the request
-   * @return {Promise} The result of the request
    */
-  del(url, options) {
+  del<T = Response>(url: string, options?: AJAXOptions): AJAXPromise<T> {
     return this.request(url, this._addTypeToOptionsFor(options, 'DELETE'));
   },
 
@@ -387,15 +392,9 @@ export default Mixin.create({
    * calls `request()` but forces `options.type` to `DELETE`
    *
    * Alias for `del()`
-   *
-   * @method delete
-   * @public
-   * @param {string} url The url to make a request to
-   * @param {Object} options The options for the request
-   * @return {Promise} The result of the request
    */
-  delete() {
-    return this.del(...arguments);
+  delete<T = Response>(url: string, options?: AJAXOptions): AJAXPromise<T> {
+    return this.del(url, options);
   },
 
   /**
@@ -403,11 +402,8 @@ export default Mixin.create({
    *
    * Since `.get` is both an AJAX pattern _and_ an Ember pattern, we want to try
    * to warn users when they try using `.get` to make a request
-   *
-   * @method get
-   * @public
    */
-  get(url) {
+  get(url: string): any {
     if (arguments.length > 1 || url.indexOf('/') !== -1) {
       throw new EmberError(
         'It seems you tried to use `.get` to make a request! Use the `.request` method instead.'
@@ -418,14 +414,11 @@ export default Mixin.create({
 
   /**
    * Manipulates the options hash to include the HTTP method on the type key
-   *
-   * @method _addTypeToOptionsFor
-   * @private
-   * @param {Object} options The original request options
-   * @param {string} method The method to enforce
-   * @return {Object} The new options, with the method set
    */
-  _addTypeToOptionsFor(options, method) {
+  _addTypeToOptionsFor(
+    options: AJAXOptions | undefined,
+    method: Method
+  ): AJAXOptions {
     options = options || {};
     options.type = method;
     return options;
@@ -434,26 +427,18 @@ export default Mixin.create({
   /**
    * Get the full "headers" hash, combining the service-defined headers with
    * the ones provided for the request
-   *
-   * @method _getFullHeadersHash
-   * @private
-   * @param {Object} headers
-   * @return {Object}
    */
-  _getFullHeadersHash(headers) {
+  _getFullHeadersHash(headers?: Headers): Headers {
     const classHeaders = get(this, 'headers');
     const _headers = merge({}, classHeaders);
     return merge(_headers, headers);
   },
 
   /**
-   * @method options
-   * @private
-   * @param {string} url
-   * @param {Object} options
-   * @return {Object}
+   * Created a normalized set of options from the per-request and
+   * service-level settings
    */
-  options(url, options = {}) {
+  options(url: string, options: AJAXOptions = {}): AJAXOptions {
     options = merge({}, options);
     options.url = this._buildURL(url, options);
     options.type = options.type || 'GET';
@@ -478,14 +463,8 @@ export default Mixin.create({
    * directly.  If it is not complete, then the segment provided will be combined
    * with the `host` and `namespace` options of the request class to create the
    * full URL.
-   *
-   * @private
-   * @param {string} url the url, or url segment, to request
-   * @param {Object} [options={}] the options for the request being made
-   * @param {string} [options.host] the host to use for this request
-   * @returns {string} the URL to make a request to
    */
-  _buildURL(url, options = {}) {
+  _buildURL(url: string, options: AJAXOptions = {}) {
     if (isFullURL(url)) {
       return url;
     }
@@ -506,7 +485,7 @@ export default Mixin.create({
 
     // If the URL has already been constructed (presumably, by Ember Data), then we should just leave it alone
     const hasNamespaceRegex = new RegExp(`^(/)?${namespace}/`);
-    if (hasNamespaceRegex.test(url)) {
+    if (namespace && hasNamespaceRegex.test(url)) {
       return url;
     }
 
@@ -531,16 +510,13 @@ export default Mixin.create({
    *
    * 2. Your API might return errors as successful responses with status code
    *    200 and an Errors text or object.
-   *
-   * @method handleResponse
-   * @private
-   * @param  {Number} status
-   * @param  {Object} headers
-   * @param  {Object} payload
-   * @param  {Object} requestData the original request information
-   * @return {Object | AjaxError} response
    */
-  handleResponse(status, headers, payload, requestData) {
+  handleResponse<T>(
+    status: number,
+    headers: Headers,
+    payload: T,
+    requestData: RequestData
+  ): AjaxError | T {
     if (this.isSuccess(status, headers, payload)) {
       return payload;
     }
@@ -551,7 +527,12 @@ export default Mixin.create({
     return this._createCorrectError(status, headers, payload, requestData);
   },
 
-  _createCorrectError(status, headers, payload, requestData) {
+  _createCorrectError(
+    status: number,
+    headers: Headers,
+    payload: any,
+    requestData: RequestData
+  ) {
     let error;
 
     if (this.isUnauthorizedError(status, headers, payload)) {
@@ -567,7 +548,7 @@ export default Mixin.create({
     } else if (this.isGoneError(status, headers, payload)) {
       error = new GoneError(payload);
     } else if (this.isAbortError(status, headers, payload)) {
-      error = new AbortError(payload);
+      error = new AbortError();
     } else if (this.isConflictError(status, headers, payload)) {
       error = new ConflictError(payload);
     } else if (this.isServerError(status, headers, payload)) {
@@ -588,15 +569,13 @@ export default Mixin.create({
 
   /**
    * Match the host to a provided array of strings or regexes that can match to a host
-   *
-   * @method matchHosts
-   * @private
-   * @param {string} host the host you are sending too
-   * @param {RegExp | string} matcher a string or regex that you can match the host to.
-   * @returns {Boolean} if the host passed the matcher
    */
-  _matchHosts(host, matcher) {
-    if (matcher.constructor === RegExp) {
+  _matchHosts(host: string | undefined, matcher?: Matcher): boolean {
+    if (!isString(host)) {
+      return false;
+    }
+
+    if (matcher instanceof RegExp) {
       return matcher.test(host);
     } else if (typeof matcher === 'string') {
       return matcher === host;
@@ -623,17 +602,12 @@ export default Mixin.create({
    *
    * By default, the headers are sent if the host of the request matches the
    * `host` property designated on the class.
-   *
-   * @method _shouldSendHeaders
-   * @private
-   * @property {Object} hash request options hash
-   * @returns {Boolean} whether or not headers should be sent
    */
-  _shouldSendHeaders({ url, host }) {
+  _shouldSendHeaders({ url, host }: AJAXOptions) {
     url = url || '';
     host = host || get(this, 'host') || '';
 
-    const trustedHosts = get(this, 'trustedHosts') || A();
+    const trustedHosts = get(this, 'trustedHosts') || A<Matcher>();
     const { hostname } = parseURL(url);
 
     // Add headers on relative URLs
@@ -652,16 +626,13 @@ export default Mixin.create({
   /**
    * Generates a detailed ("friendly") error message, with plenty
    * of information for debugging (good luck!)
-   *
-   * @method generateDetailedMessage
-   * @private
-   * @param  {Number} status
-   * @param  {Object} headers
-   * @param  {Object} payload
-   * @param  {Object} requestData the original request information
-   * @return {Object} request information
    */
-  generateDetailedMessage(status, headers, payload, requestData) {
+  generateDetailedMessage(
+    status: number,
+    headers: Headers,
+    payload: any,
+    requestData: RequestData
+  ): string {
     let shortenedPayload;
     const payloadContentType =
       getHeader(headers, 'Content-Type') || 'Empty Content-Type';
@@ -688,160 +659,84 @@ export default Mixin.create({
   /**
    * Default `handleResponse` implementation uses this hook to decide if the
    * response is a an authorized error.
-   *
-   * @method isUnauthorizedError
-   * @private
-   * @param {Number} status
-   * @param {Object} headers
-   * @param {Object} payload
-   * @return {Boolean}
    */
-  isUnauthorizedError(status) {
+  isUnauthorizedError(status: number, _headers: Headers, _payload: any) {
     return isUnauthorizedError(status);
   },
 
   /**
    * Default `handleResponse` implementation uses this hook to decide if the
    * response is a forbidden error.
-   *
-   * @method isForbiddenError
-   * @private
-   * @param {Number} status
-   * @param {Object} headers
-   * @param {Object} payload
-   * @return {Boolean}
    */
-  isForbiddenError(status) {
+  isForbiddenError(status: number, _headers: Headers, _payload: any) {
     return isForbiddenError(status);
   },
 
   /**
    * Default `handleResponse` implementation uses this hook to decide if the
    * response is a an invalid error.
-   *
-   * @method isInvalidError
-   * @private
-   * @param {Number} status
-   * @param {Object} headers
-   * @param {Object} payload
-   * @return {Boolean}
    */
-  isInvalidError(status) {
+  isInvalidError(status: number, _headers: Headers, _payload: any) {
     return isInvalidError(status);
   },
 
   /**
    * Default `handleResponse` implementation uses this hook to decide if the
    * response is a bad request error.
-   *
-   * @method isBadRequestError
-   * @private
-   * @param {Number} status
-   * @param {Object} headers
-   * @param {Object} payload
-   * @return {Boolean}
    */
-  isBadRequestError(status) {
+  isBadRequestError(status: number, _headers: Headers, _payload: any) {
     return isBadRequestError(status);
   },
 
   /**
    * Default `handleResponse` implementation uses this hook to decide if the
    * response is a "not found" error.
-   *
-   * @method isNotFoundError
-   * @private
-   * @param {Number} status
-   * @param {Object} headers
-   * @param {Object} payload
-   * @return {Boolean}
    */
-  isNotFoundError(status) {
+  isNotFoundError(status: number, _headers: Headers, _payload: any) {
     return isNotFoundError(status);
   },
 
   /**
    * Default `handleResponse` implementation uses this hook to decide if the
    * response is a "gone" error.
-   *
-   * @method isGoneError
-   * @private
-   * @param {Number} status
-   * @param {Object} headers
-   * @param {Object} payload
-   * @return {Boolean}
    */
-  isGoneError(status) {
+  isGoneError(status: number, _headers: Headers, _payload: any) {
     return isGoneError(status);
   },
 
   /**
    * Default `handleResponse` implementation uses this hook to decide if the
    * response is an "abort" error.
-   *
-   * @method isAbortError
-   * @private
-   * @param {Number} status
-   * @param {Object} headers
-   * @param {Object} payload
-   * @return {Boolean}
    */
-  isAbortError(status) {
+  isAbortError(status: number, _headers: Headers, _payload: any) {
     return isAbortError(status);
   },
 
   /**
    * Default `handleResponse` implementation uses this hook to decide if the
    * response is a "conflict" error.
-   *
-   * @method isConflictError
-   * @private
-   * @param {Number} status
-   * @param {Object} headers
-   * @param {Object} payload
-   * @return {Boolean}
    */
-  isConflictError(status) {
+  isConflictError(status: number, _headers: Headers, _payload: any) {
     return isConflictError(status);
   },
 
   /**
    * Default `handleResponse` implementation uses this hook to decide if the
    * response is a server error.
-   *
-   * @method isServerError
-   * @private
-   * @param {Number} status
-   * @param {Object} headers
-   * @param {Object} payload
-   * @return {Boolean}
    */
-  isServerError(status) {
+  isServerError(status: number, _headers: Headers, _payload: any) {
     return isServerError(status);
   },
 
   /**
    * Default `handleResponse` implementation uses this hook to decide if the
    * response is a success.
-   *
-   * @method isSuccess
-   * @private
-   * @param {Number} status
-   * @param {Object} headers
-   * @param {Object} payload
-   * @return {Boolean}
    */
-  isSuccess(status) {
+  isSuccess(status: number, _headers: Headers, _payload: any) {
     return isSuccess(status);
   },
 
-  /**
-   * @method parseErrorResponse
-   * @private
-   * @param {string} responseText
-   * @return {Object}
-   */
-  parseErrorResponse(responseText) {
+  parseErrorResponse(responseText: string): any {
     try {
       return JSON.parse(responseText);
     } catch (e) {
@@ -849,17 +744,7 @@ export default Mixin.create({
     }
   },
 
-  /**
-   * Can be overwritten to allow re-formatting of error messages
-   *
-   * @method normalizeErrorResponse
-   * @private
-   * @param  {Number} status
-   * @param  {Object} headers
-   * @param  {Object} payload
-   * @return {*} error response
-   */
-  normalizeErrorResponse(status, headers, payload) {
+  normalizeErrorResponse(_status: number, _headers: Headers, payload: any) {
     return payload;
   }
 });

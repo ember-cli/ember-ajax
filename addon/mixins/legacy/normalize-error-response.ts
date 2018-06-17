@@ -2,10 +2,46 @@ import Mixin from '@ember/object/mixin';
 import { isArray } from '@ember/array';
 import { isNone } from '@ember/utils';
 import { merge } from '@ember/polyfills';
-import isString from 'ember-ajax/-private/utils/is-string';
 
-function isObject(object) {
+import isString from '../../-private/utils/is-string';
+import { Headers } from '../../-private/types';
+
+interface JsonApiErrorObject {
+  title: string;
+  status: string;
+  detail?: any;
+}
+
+interface JsonApiErrorResponse {
+  errors: JsonApiErrorObject[];
+}
+
+type Payload = JsonApiErrorResponse | JsonApiErrorObject[] | any;
+
+function isObject(object: any): object is object {
   return typeof object === 'object';
+}
+
+function isJsonApiErrorResponse(
+  object: Payload
+): object is JsonApiErrorResponse {
+  if (!isObject(object)) {
+    return false;
+  }
+
+  const payloadAsErrorResponse = object as JsonApiErrorResponse;
+
+  if (payloadAsErrorResponse.errors) {
+    return isArray(payloadAsErrorResponse.errors);
+  }
+
+  return false;
+}
+
+function isJsonApiErrorObjectArray(
+  object: any
+): object is JsonApiErrorObject[] {
+  return isArray(object);
 }
 
 export default Mixin.create({
@@ -36,18 +72,15 @@ export default Mixin.create({
    * If your server returns something other than a JSON API format, it's
    * suggested that you override this method to convert your own errors into the
    * one described above.
-   *
-   * @method normalizeErrorResponse
-   * @private
-   * @param  {Number} status
-   * @param  {Object} headers
-   * @param  {Object} payload
-   * @return {Array} An array of JSON API-formatted error objects
    */
-  normalizeErrorResponse(status, headers, payload) {
+  normalizeErrorResponse(
+    status: number,
+    _headers: Headers,
+    payload?: Payload
+  ): JsonApiErrorObject[] {
     payload = isNone(payload) ? {} : payload;
 
-    if (isArray(payload.errors)) {
+    if (isJsonApiErrorResponse(payload)) {
       return payload.errors.map(function(error) {
         if (isObject(error)) {
           const ret = merge({}, error);
@@ -60,7 +93,7 @@ export default Mixin.create({
           };
         }
       });
-    } else if (isArray(payload)) {
+    } else if (isJsonApiErrorObjectArray(payload)) {
       return payload.map(function(error) {
         if (isObject(error)) {
           return {

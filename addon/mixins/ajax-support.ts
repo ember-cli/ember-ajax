@@ -1,5 +1,6 @@
 import Mixin from '@ember/object/mixin';
 import { inject as service } from '@ember/service';
+import { get } from '@ember/object';
 import { alias } from '@ember/object/computed';
 
 export default Mixin.create({
@@ -29,9 +30,10 @@ export default Mixin.create({
    */
   headers: alias('ajaxService.headers'),
 
-  ajax(url) {
-    const augmentedOptions = this.ajaxOptions(...arguments);
+  ajax(url: string, _method: string, _options: object) {
+    // @ts-ignore
+    const augmentedOptions: object = this.ajaxOptions(...arguments);
 
-    return this.get('ajaxService').request(url, augmentedOptions);
+    return get(this, 'ajaxService').request(url, augmentedOptions);
   }
 });
