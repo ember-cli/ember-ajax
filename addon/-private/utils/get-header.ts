@@ -1,23 +1,24 @@
 import { A } from '@ember/array';
 import { isNone } from '@ember/utils';
+import { Headers } from '../types';
 
 /**
  * Do a case-insensitive lookup of an HTTP header
  *
  * @function getHeader
  * @private
- * @param {Object} headers
- * @param {string} name
- * @return {string}
  */
-export default function getHeader(headers, name) {
+export default function getHeader(
+  headers: Headers | undefined,
+  name: string | undefined
+): string | undefined | null {
   if (isNone(headers) || isNone(name)) {
-    return; // ask for nothing, get nothing.
+    return undefined;
   }
 
   const matchedKey = A(Object.keys(headers)).find(key => {
     return key.toLowerCase() === name.toLowerCase();
   });
 
-  return headers[matchedKey];
+  return matchedKey ? headers[matchedKey] : undefined;
 }

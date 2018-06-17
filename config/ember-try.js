@@ -93,7 +93,7 @@ module.exports = function() {
         },
         {
           name: 'fastboot-addon-tests',
-          command: 'ember fastboot:test'
+          command: 'ember ts:precompile && ember fastboot:test'
         }
       ]
     };

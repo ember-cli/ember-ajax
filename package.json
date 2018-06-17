@@ -19,6 +19,7 @@
     "lint:js": "eslint --ext js --ext ts .",
     "start": "ember server",
     "test": "ember test",
+    "test:watch": "ember test --serve ",
     "test:all": "ember try:each",
     "prepublishOnly": "ember ts:precompile",
     "postpublish": "ember ts:clean"
@@ -44,11 +45,13 @@
     "@commitlint/config-conventional": "^7.0.1",
     "@commitlint/travis-cli": "^7.0.0",
     "@types/ember": "^2.8.28",
+    "@types/chai": "^4.1.4",
     "@types/ember-data": "^2.14.17",
     "@types/ember-mocha": "^0.12.3",
     "@types/ember-test-helpers": "^0.7.1",
     "@types/ember-testing-helpers": "^0.0.3",
     "@types/mocha": "^5.2.3",
+    "@types/node": "^10.3.3",
     "@types/rsvp": "^4.0.2",
     "broccoli-asset-rev": "^2.7.0",
     "chai": "^4.1.2",
@@ -105,7 +108,8 @@
   "ember-addon": {
     "configPath": "tests/dummy/config",
     "fastbootDependencies": [
-      "najax"
+      "najax",
+      "url"
     ]
   },
   "greenkeeper": {

@@ -48,6 +48,8 @@ jobs:
       script: yarn lint:js
     - stage: lint
       script: yarn commitlint-travis
+    - stage: lint
+      script: yarn ember ts:precompile
 
 script:
   # Usually, it's ok to finish the test scenario without reverting
