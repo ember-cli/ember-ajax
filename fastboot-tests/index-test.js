@@ -9,8 +9,8 @@ var POSTS = require('./helpers/fixtures').POSTS;
 describe('ember-ajax', function() {
   setupTest('fastboot' /*, options */);
 
-  beforeEach(function() {
-    this.server = expressApp.listen(3000);
+  beforeEach(function(done) {
+    this.server = expressApp.listen(3000, done);
   });
 
   afterEach(function() {
