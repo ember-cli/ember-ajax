@@ -43,6 +43,7 @@
     "@commitlint/travis-cli": "^7.0.0",
     "broccoli-asset-rev": "^2.7.0",
     "chai": "^4.1.2",
+    "debug": "^3.1.0",
     "ember-cli": "~3.1.4",
     "ember-cli-chai": "^0.5.0",
     "ember-cli-dependency-checker": "^2.1.1",
