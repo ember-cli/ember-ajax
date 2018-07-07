@@ -980,6 +980,25 @@ describe('Unit | Mixin | ajax request', function() {
         });
     });
 
+    it('does not swallow errors from making the request', function() {
+      this.server.post('/posts', jsonFactory(200), 2);
+
+      class SomeThing {
+        toJSON() {
+          throw new Error('Some user error');
+        }
+      }
+
+      const service = new AjaxRequest();
+
+      expect(() => {
+        service.post('/posts', {
+          contentType: 'application/json',
+          data: new SomeThing()
+        });
+      }, 'Error was not swallowed').to.throw('Some user error');
+    });
+
     function errorHandlerTest(status, errorClass) {
       it(`handles a ${status} response correctly and preserves the payload`, function() {
         this.server.get(
