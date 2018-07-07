@@ -19,6 +19,7 @@ import {
 } from 'ember-ajax/errors';
 import Pretender from 'pretender';
 import { jsonResponse, jsonFactory } from 'dummy/tests/helpers/json';
+import AjaxService from 'dummy/services/ajax';
 
 const {
   matchers: { anything, contains: matchContains }
@@ -788,6 +789,20 @@ describe('Unit | Mixin | ajax request', function() {
         foo: 'bar'
       }
     });
+  });
+
+  it('can handle an empty response', async function() {
+    this.server.post('/posts', () => [201, {}, undefined]);
+
+    const service = new AjaxService();
+
+    // NOTE: `dataType` must be set to `text`, otherwise jQuery will attempt
+    // to convert the response to JSON automatically
+    const response = await service.post('/posts', {
+      dataType: 'text'
+    });
+
+    expect(response).to.equal('');
   });
 
   describe('URL building', function() {
