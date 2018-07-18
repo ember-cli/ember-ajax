@@ -42,6 +42,6 @@ describe('AJAX Service', function() {
       })
     });
     service = CustomService.create();
-    return service.request('example.com');
+    return service.request('/example.com');
   });
 });

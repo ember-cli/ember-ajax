@@ -102,6 +102,10 @@ function removeLeadingSlash(string: string) {
   return string.substring(1);
 }
 
+function removeTrailingSlash(string: string) {
+  return string.slice(0, -1);
+}
+
 function stripSlashes(path: string) {
   // make sure path starts with `/`
   if (startsWithSlash(path)) {
@@ -110,7 +114,7 @@ function stripSlashes(path: string) {
 
   // remove end `/`
   if (endsWithSlash(path)) {
-    path = path.slice(0, -1);
+    path = removeTrailingSlash(path);
   }
   return path;
 }
@@ -473,25 +477,29 @@ export default Mixin.create({
 
     let host = options.host || get(this, 'host');
     if (host) {
-      host = stripSlashes(host);
+      host = endsWithSlash(host) ? removeTrailingSlash(host) : host;
+      urlParts.push(host);
     }
-    urlParts.push(host);
 
     let namespace = options.namespace || get(this, 'namespace');
     if (namespace) {
-      namespace = stripSlashes(namespace);
+      // If the URL has already been constructed (presumably, by Ember Data), then we should just leave it alone
+      const hasNamespaceRegex = new RegExp(`^(/)?${stripSlashes(namespace)}/`);
+      if (hasNamespaceRegex.test(url)) {
+        return url;
+      }
+      // If host is given then we need to strip leading slash too( as it will be added through join)
+      if (host) {
+        namespace = stripSlashes(namespace);
+      } else if (endsWithSlash(namespace)) {
+        namespace = removeTrailingSlash(namespace);
+      }
       urlParts.push(namespace);
     }
 
-    // If the URL has already been constructed (presumably, by Ember Data), then we should just leave it alone
-    const hasNamespaceRegex = new RegExp(`^(/)?${namespace}/`);
-    if (namespace && hasNamespaceRegex.test(url)) {
-      return url;
-    }
-
-    // *Only* remove a leading slash -- we need to maintain a trailing slash for
+    // *Only* remove a leading slash when there is host or namespace -- we need to maintain a trailing slash for
     // APIs that differentiate between it being and not being present
-    if (startsWithSlash(url)) {
+    if (startsWithSlash(url) && urlParts.length !== 0) {
       url = removeLeadingSlash(url);
     }
     urlParts.push(url);
