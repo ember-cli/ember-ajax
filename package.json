@@ -95,7 +95,7 @@
     "testdouble": "^3.8.1",
     "testdouble-chai": "^0.5.0",
     "typescript": "^2.9.2",
-    "typescript-eslint-parser": "^16.0.1"
+    "typescript-eslint-parser": "^17.0.0"
   },
   "resolutions": {
     "@types/ember": "2.8.28",
