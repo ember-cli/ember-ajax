@@ -47,7 +47,7 @@
     "@types/ember": "^2.8.28",
     "@types/chai": "^4.1.4",
     "@types/ember-data": "^2.14.17",
-    "@types/ember-mocha": "^0.12.3",
+    "@types/ember-mocha": "^0.14.0",
     "@types/ember-test-helpers": "^0.7.1",
     "@types/ember-testing-helpers": "^0.0.3",
     "@types/mocha": "^5.2.3",
