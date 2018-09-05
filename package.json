@@ -46,7 +46,7 @@
     "@commitlint/travis-cli": "^7.0.0",
     "@types/ember": "^2.8.28",
     "@types/chai": "^4.1.4",
-    "@types/ember-data": "^2.14.17",
+    "@types/ember-data": "^3.0.0",
     "@types/ember-mocha": "^0.12.3",
     "@types/ember-test-helpers": "^0.7.1",
     "@types/ember-testing-helpers": "^0.0.3",
