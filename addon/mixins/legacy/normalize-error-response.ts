@@ -1,7 +1,7 @@
 import Mixin from '@ember/object/mixin';
 import { isArray } from '@ember/array';
 import { isNone } from '@ember/utils';
-import { merge } from '@ember/polyfills';
+import { assign } from '@ember/polyfills';
 
 import isString from '../../-private/utils/is-string';
 import { Headers } from '../../-private/types';
@@ -83,7 +83,7 @@ export default Mixin.create({
     if (isJsonApiErrorResponse(payload)) {
       return payload.errors.map(function(error) {
         if (isObject(error)) {
-          const ret = merge({}, error);
+          const ret = assign({}, error);
           ret.status = `${error.status}`;
           return ret;
         } else {
