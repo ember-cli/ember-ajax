@@ -3,7 +3,7 @@ import EmberError from '@ember/error';
 import Mixin from '@ember/object/mixin';
 import { get } from '@ember/object';
 import { isEmpty } from '@ember/utils';
-import { merge } from '@ember/polyfills';
+import { assign } from '@ember/polyfills';
 import { run } from '@ember/runloop';
 import { warn, runInDebug } from '@ember/debug';
 import Ember from 'ember';
@@ -434,8 +434,7 @@ export default Mixin.create({
    */
   _getFullHeadersHash(headers?: Headers): Headers {
     const classHeaders = get(this, 'headers');
-    const _headers = merge({}, classHeaders);
-    return merge(_headers, headers);
+    return assign({}, classHeaders, headers);
   },
 
   /**
@@ -443,7 +442,7 @@ export default Mixin.create({
    * service-level settings
    */
   options(url: string, options: AJAXOptions = {}): AJAXOptions {
-    options = merge({}, options);
+    options = assign({}, options);
     options.url = this._buildURL(url, options);
     options.type = options.type || 'GET';
     options.dataType = options.dataType || 'json';
