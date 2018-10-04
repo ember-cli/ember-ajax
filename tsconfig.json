@@ -33,15 +33,23 @@
       "ember-ajax/*": [
         "addon/*"
       ],
+      "ember-ajax/test-support": [
+        "addon-test-support"
+      ],
+      "ember-ajax/test-support/*": [
+        "addon-test-support/*"
+      ],
       "*": [
         "types/*"
       ]
     }
   },
   "include": [
-    "app",
-    "addon",
-    "tests",
-    "types"
+    "app/**/*",
+    "addon/**/*",
+    "tests/**/*",
+    "types/**/*",
+    "test-support/**/*",
+    "addon-test-support/**/*"
   ]
 }
