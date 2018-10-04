@@ -434,7 +434,7 @@ export default Mixin.create({
    */
   _getFullHeadersHash(headers?: Headers): Headers {
     const classHeaders = get(this, 'headers');
-    return assign({}, classHeaders, headers);
+    return assign({}, classHeaders!, headers!);
   },
 
   /**
