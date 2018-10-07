@@ -482,18 +482,18 @@ export default Mixin.create({
 
     let namespace = options.namespace || get(this, 'namespace');
     if (namespace) {
-      // If the URL has already been constructed (presumably, by Ember Data), then we should just leave it alone
-      const hasNamespaceRegex = new RegExp(`^(/)?${stripSlashes(namespace)}/`);
-      if (hasNamespaceRegex.test(url)) {
-        return url;
-      }
       // If host is given then we need to strip leading slash too( as it will be added through join)
       if (host) {
         namespace = stripSlashes(namespace);
       } else if (endsWithSlash(namespace)) {
         namespace = removeTrailingSlash(namespace);
       }
-      urlParts.push(namespace);
+
+      // If the URL has already been constructed (presumably, by Ember Data), then we should just leave it alone
+      const hasNamespaceRegex = new RegExp(`^(/)?${stripSlashes(namespace)}/`);
+      if (!hasNamespaceRegex.test(url)) {
+        urlParts.push(namespace);
+      }
     }
 
     // *Only* remove a leading slash when there is host or namespace -- we need to maintain a trailing slash for

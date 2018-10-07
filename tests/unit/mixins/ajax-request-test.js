@@ -227,6 +227,20 @@ describe('Unit | Mixin | ajax request', function() {
         );
       });
 
+      it('is set on the url containing namespace', function() {
+        const RequestWithHostAndNamespace = AjaxRequest.extend({
+          host: 'https://discuss.emberjs.com',
+          namespace: '/api/v1'
+        });
+        const service = new RequestWithHostAndNamespace();
+        const url = '/api/v1/users/me';
+        const ajaxoptions = service.options(url);
+
+        expect(ajaxoptions.url).to.equal(
+          'https://discuss.emberjs.com/api/v1/users/me'
+        );
+      });
+
       it('is set with the host address as `//` and url not starting with `/`', function() {
         const RequestWithHostAndNamespace = AjaxRequest.extend({
           host: '//'
