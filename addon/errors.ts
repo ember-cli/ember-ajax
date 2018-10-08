@@ -87,9 +87,7 @@ export function isAjaxError(error: any): error is AjaxError {
  * Checks if the given status code or AjaxError object represents an
  * unauthorized request error
  */
-export function isUnauthorizedError(
-  error: UnauthorizedError | number
-): boolean {
+export function isUnauthorizedError(error: AjaxError | number): boolean {
   if (isAjaxError(error)) {
     return error instanceof UnauthorizedError;
   } else {
@@ -101,7 +99,7 @@ export function isUnauthorizedError(
  * Checks if the given status code or AjaxError object represents a forbidden
  * request error
  */
-export function isForbiddenError(error: ForbiddenError | number): boolean {
+export function isForbiddenError(error: AjaxError | number): boolean {
   if (isAjaxError(error)) {
     return error instanceof ForbiddenError;
   } else {
@@ -113,7 +111,7 @@ export function isForbiddenError(error: ForbiddenError | number): boolean {
  * Checks if the given status code or AjaxError object represents an invalid
  * request error
  */
-export function isInvalidError(error: InvalidError | number): boolean {
+export function isInvalidError(error: AjaxError | number): boolean {
   if (isAjaxError(error)) {
     return error instanceof InvalidError;
   } else {
@@ -125,7 +123,7 @@ export function isInvalidError(error: InvalidError | number): boolean {
  * Checks if the given status code or AjaxError object represents a bad request
  * error
  */
-export function isBadRequestError(error: BadRequestError | number): boolean {
+export function isBadRequestError(error: AjaxError | number): boolean {
   if (isAjaxError(error)) {
     return error instanceof BadRequestError;
   } else {
@@ -137,7 +135,7 @@ export function isBadRequestError(error: BadRequestError | number): boolean {
  * Checks if the given status code or AjaxError object represents a "not found"
  * error
  */
-export function isNotFoundError(error: NotFoundError | number): boolean {
+export function isNotFoundError(error: AjaxError | number): boolean {
   if (isAjaxError(error)) {
     return error instanceof NotFoundError;
   } else {
@@ -149,7 +147,7 @@ export function isNotFoundError(error: NotFoundError | number): boolean {
  * Checks if the given status code or AjaxError object represents a "gone"
  * error
  */
-export function isGoneError(error: GoneError | number): boolean {
+export function isGoneError(error: AjaxError | number): boolean {
   if (isAjaxError(error)) {
     return error instanceof GoneError;
   } else {
@@ -168,7 +166,7 @@ export function isTimeoutError(error: any) {
  * Checks if the given status code or AjaxError object represents an
  * "abort" error
  */
-export function isAbortError(error: AbortError | number): boolean {
+export function isAbortError(error: AjaxError | number): boolean {
   if (isAjaxError(error)) {
     return error instanceof AbortError;
   } else {
@@ -180,7 +178,7 @@ export function isAbortError(error: AbortError | number): boolean {
  * Checks if the given status code or AjaxError object represents a
  * conflict error
  */
-export function isConflictError(error: ConflictError | number): boolean {
+export function isConflictError(error: AjaxError | number): boolean {
   if (isAjaxError(error)) {
     return error instanceof ConflictError;
   } else {
@@ -191,7 +189,7 @@ export function isConflictError(error: ConflictError | number): boolean {
 /**
  * Checks if the given status code or AjaxError object represents a server error
  */
-export function isServerError(error: ServerError | number): boolean {
+export function isServerError(error: AjaxError | number): boolean {
   if (isAjaxError(error)) {
     return error instanceof ServerError;
   } else {
