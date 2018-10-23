@@ -233,10 +233,26 @@ describe('Unit | Mixin | ajax request', function() {
           namespace: '/api/v1'
         });
         const service = new RequestWithHostAndNamespace();
-        const url = '/api/v1/users/me';
-        const ajaxoptions = service.options(url);
 
-        expect(ajaxoptions.url).to.equal(
+        expect(service.options('/api/v1/users/me').url).to.equal(
+          'https://discuss.emberjs.com/api/v1/users/me'
+        );
+        expect(service.options('api/v1/users/me').url).to.equal(
+          'https://discuss.emberjs.com/api/v1/users/me'
+        );
+      });
+
+      it('is set on the url containing namespace no leading slash', function() {
+        const RequestWithHostAndNamespace = AjaxRequest.extend({
+          host: 'https://discuss.emberjs.com',
+          namespace: 'api/v1'
+        });
+        const service = new RequestWithHostAndNamespace();
+
+        expect(service.options('/api/v1/users/me').url).to.equal(
+          'https://discuss.emberjs.com/api/v1/users/me'
+        );
+        expect(service.options('api/v1/users/me').url).to.equal(
           'https://discuss.emberjs.com/api/v1/users/me'
         );
       });
