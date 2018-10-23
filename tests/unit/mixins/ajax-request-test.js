@@ -36,7 +36,7 @@ describe('Unit | Mixin | ajax request', function() {
   describe('options method', function() {
     it('sets raw data', function() {
       const service = new AjaxRequest();
-      const url = '/test';
+      const url = 'test';
       const type = 'GET';
       const ajaxOptions = service.options(url, {
         type,
@@ -57,7 +57,7 @@ describe('Unit | Mixin | ajax request', function() {
 
     it('sets options correctly', function() {
       const service = new AjaxRequest();
-      const url = '/test';
+      const url = 'test';
       const type = 'POST';
       const data = JSON.stringify({ key: 'value' });
       const ajaxOptions = service.options(url, {
@@ -87,7 +87,7 @@ describe('Unit | Mixin | ajax request', function() {
 
     it('does not override contentType when defined', function() {
       const service = new AjaxRequest();
-      const url = '/test';
+      const url = 'test';
       const type = 'POST';
       const data = JSON.stringify({ key: 'value' });
       const ajaxOptions = service.options(url, {
@@ -108,7 +108,7 @@ describe('Unit | Mixin | ajax request', function() {
 
     it('can handle empty data', function() {
       const service = new AjaxRequest();
-      const url = '/test';
+      const url = 'test';
       const type = 'POST';
       const ajaxOptions = service.options(url, { type });
 
@@ -198,70 +198,6 @@ describe('Unit | Mixin | ajax request', function() {
 
         expect(ajaxoptions.url).to.equal('https://myurl.com/users/me');
       });
-
-      it('is set on the namespace(namespace not starting with `/`)', function() {
-        const RequestWithHostAndNamespace = AjaxRequest.extend({
-          host: 'https://discuss.emberjs.com',
-          namespace: 'api/v1'
-        });
-        const service = new RequestWithHostAndNamespace();
-        const url = 'users/me';
-        const ajaxoptions = service.options(url);
-
-        expect(ajaxoptions.url).to.equal(
-          'https://discuss.emberjs.com/api/v1/users/me'
-        );
-      });
-
-      it('is set on the namespace(namespace starting with `/`)', function() {
-        const RequestWithHostAndNamespace = AjaxRequest.extend({
-          host: 'https://discuss.emberjs.com',
-          namespace: '/api/v1'
-        });
-        const service = new RequestWithHostAndNamespace();
-        const url = 'users/me';
-        const ajaxoptions = service.options(url);
-
-        expect(ajaxoptions.url).to.equal(
-          'https://discuss.emberjs.com/api/v1/users/me'
-        );
-      });
-
-      it('is set on the url containing namespace', function() {
-        const RequestWithHostAndNamespace = AjaxRequest.extend({
-          host: 'https://discuss.emberjs.com',
-          namespace: '/api/v1'
-        });
-        const service = new RequestWithHostAndNamespace();
-        const url = '/api/v1/users/me';
-        const ajaxoptions = service.options(url);
-
-        expect(ajaxoptions.url).to.equal(
-          'https://discuss.emberjs.com/api/v1/users/me'
-        );
-      });
-
-      it('is set with the host address as `//` and url not starting with `/`', function() {
-        const RequestWithHostAndNamespace = AjaxRequest.extend({
-          host: '//'
-        });
-        const service = new RequestWithHostAndNamespace();
-        const url = 'users/me';
-        const ajaxoptions = service.options(url);
-
-        expect(ajaxoptions.url).to.equal('//users/me');
-      });
-
-      it('is set with the host address as `//` and url starting with `/`', function() {
-        const RequestWithHostAndNamespace = AjaxRequest.extend({
-          host: '//'
-        });
-        const service = new RequestWithHostAndNamespace();
-        const url = '/users/me';
-        const ajaxoptions = service.options(url);
-
-        expect(ajaxoptions.url).to.equal('//users/me');
-      });
     });
 
     describe('namespace', function() {
@@ -279,11 +215,8 @@ describe('Unit | Mixin | ajax request', function() {
       it('can be set on a per-request basis', function() {
         const service = new AjaxRequest();
 
-        expect(service.options('users/me', { namespace: '/api' }).url).to.equal(
-          '/api/users/me'
-        );
         expect(service.options('users/me', { namespace: 'api' }).url).to.equal(
-          'api/users/me'
+          '/api/users/me'
         );
       });
 
@@ -294,8 +227,8 @@ describe('Unit | Mixin | ajax request', function() {
 
         const service = new RequestWithHost();
 
-        expect(service.options('/users/me').url).to.equal('api/v1/users/me');
-        expect(service.options('users/me').url).to.equal('api/v1/users/me');
+        expect(service.options('/users/me').url).to.equal('/api/v1/users/me');
+        expect(service.options('users/me').url).to.equal('/api/v1/users/me');
       });
     });
 
@@ -948,7 +881,6 @@ describe('Unit | Mixin | ajax request', function() {
     it('correctly handles no namespace or host', function() {
       const req = new AjaxRequest();
       expect(req._buildURL('/baz')).to.equal('/baz');
-      expect(req._buildURL('baz')).to.equal('baz');
     });
 
     it('does not build the URL if the namespace is already present', function() {
@@ -978,7 +910,7 @@ describe('Unit | Mixin | ajax request', function() {
 
       const req = new RequestWithNamespace();
       expect(req._buildURL('/admin_users/post')).to.equal(
-        'admin/admin_users/post'
+        '/admin/admin_users/post'
       );
     });
 
