@@ -860,6 +860,11 @@ describe('Unit | Mixin | ajax request', function() {
       });
     });
 
+    it('makes URLs into absolute paths implicitly', function() {
+      const req = new AjaxRequest();
+      expect(req._buildURL('foobar')).to.equal('/foobar');
+    });
+
     it('correctly handles a host without a namespace', function() {
       class HostWithoutNamespace extends AjaxRequest {
         get host() {
