@@ -943,17 +943,6 @@ describe('Unit | Mixin | ajax request', function() {
       });
     });
 
-    it('correctly handles a host without a namespace', function() {
-      class HostWithoutNamespace extends AjaxRequest {
-        get host() {
-          return 'http://foo.com';
-        }
-      }
-
-      const req = new HostWithoutNamespace();
-      expect(req._buildURL('baz')).to.equal('http://foo.com/baz');
-    });
-
     it('correctly handles a host provided on the request options', function() {
       const req = new AjaxRequest();
       expect(req._buildURL('/baz', { host: 'http://foo.com' })).to.equal(
@@ -998,17 +987,54 @@ describe('Unit | Mixin | ajax request', function() {
       );
     });
 
-    it('does not build the URL if the host is already present', function() {
-      class RequestWithHost extends AjaxRequest {
-        get host() {
-          return 'https://foo.com';
+    describe('building relative URLs', function() {
+      it('works with a relative namespace with no trailing slash', function() {
+        class RelativeNamespace extends AjaxRequest {
+          get namespace() {
+            return 'api/v1';
+          }
         }
-      }
 
-      const req = new RequestWithHost();
-      expect(req._buildURL('https://foo.com/posts')).to.equal(
-        'https://foo.com/posts'
-      );
+        const req = new RelativeNamespace();
+        expect(req._buildURL('foobar')).to.equal('api/v1/foobar');
+      });
+
+      it('works with a relative namespace with a trailing slash', function() {
+        class RelativeNamespace extends AjaxRequest {
+          get namespace() {
+            return 'api/v1/';
+          }
+        }
+
+        const req = new RelativeNamespace();
+        expect(req._buildURL('foobar')).to.equal('api/v1/foobar');
+      });
+    });
+
+    describe('building a URL with a host', function() {
+      it('correctly handles a host without a namespace', function() {
+        class HostWithoutNamespace extends AjaxRequest {
+          get host() {
+            return 'http://foo.com';
+          }
+        }
+
+        const req = new HostWithoutNamespace();
+        expect(req._buildURL('baz')).to.equal('http://foo.com/baz');
+      });
+
+      it('does not build the URL if the host is already present', function() {
+        class RequestWithHost extends AjaxRequest {
+          get host() {
+            return 'https://foo.com';
+          }
+        }
+
+        const req = new RequestWithHost();
+        expect(req._buildURL('https://foo.com/posts')).to.equal(
+          'https://foo.com/posts'
+        );
+      });
     });
   });
 
