@@ -4017,10 +4017,10 @@ ember-rfc176-data@^0.3.0, ember-rfc176-data@^0.3.1:
   resolved "https://registry.yarnpkg.com/ember-rfc176-data/-/ember-rfc176-data-0.3.1.tgz#6a5a4b8b82ec3af34f3010965fa96b936ca94519"
   integrity sha512-u+W5rUvYO7xyKJjiPuCM7bIAvFyPwPTJ66fOZz1xuCv3AyReI9Oev5oOADOO6YJZk+vEn0xWiZ9N6zSf8WU7Fg==
 
-ember-rfc176-data@^0.3.3:
-  version "0.3.3"
-  resolved "https://registry.yarnpkg.com/ember-rfc176-data/-/ember-rfc176-data-0.3.3.tgz#27fba08d540a7463a4366c48eaa19c5a44971a39"
-  integrity sha1-J/ugjVQKdGOkNmxI6qGcWkSXGjk=
+ember-rfc176-data@^0.3.5:
+  version "0.3.5"
+  resolved "https://registry.yarnpkg.com/ember-rfc176-data/-/ember-rfc176-data-0.3.5.tgz#f630e550572c81a5e5c7220f864c0f06eee9e977"
+  integrity sha512-5NfL1iTkIQDYs16/IZ7/jWCEglNsUrigLelBkBMsNcib9T3XzQwmhhVTjoSsk66s57LmWJ1bQu+2c1CAyYCV7A==
 
 ember-router-generator@^1.2.2, ember-router-generator@^1.2.3:
   version "1.2.3"
@@ -4259,11 +4259,11 @@ eslint-config-prettier@^2.9.0:
     get-stdin "^5.0.1"
 
 eslint-plugin-ember@^5.2.0:
-  version "5.2.0"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-ember/-/eslint-plugin-ember-5.2.0.tgz#fa436e0497dfc01d1d38608229cd616e7c5b6067"
-  integrity sha1-+kNuBJffwB0dOGCCKc1hbnxbYGc=
+  version "5.4.0"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-ember/-/eslint-plugin-ember-5.4.0.tgz#2980a4389119b37d0450fff8e82d59c9aab126d0"
+  integrity sha512-tYMuxUrTad4f7Dq9gY9GUs9lXwKY+fZklzCJ0JoYbzK2PwSfdrPInr2Y4tHornc9dzPvNbRxsn5b26PrWp2iZg==
   dependencies:
-    ember-rfc176-data "^0.3.3"
+    ember-rfc176-data "^0.3.5"
     snake-case "^2.1.0"
 
 eslint-plugin-node@^6.0.1:
