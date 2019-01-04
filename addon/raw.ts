@@ -15,7 +15,7 @@ export default function raw<T = Response>(
   url: string,
   options?: AJAXOptions
 ): AJAXPromise<RawResponse<T>> {
-  const ajax = new AjaxRequest();
+  const ajax = AjaxRequest.create();
 
   return ajax.raw(url, options);
 }

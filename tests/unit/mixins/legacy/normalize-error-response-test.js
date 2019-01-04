@@ -4,7 +4,7 @@ import { describe, it } from 'mocha';
 import LegacyNormalizeErrorResponseMixin from 'ember-ajax/mixins/legacy/normalize-error-response';
 
 const AjaxRequest = EmberObject.extend(LegacyNormalizeErrorResponseMixin);
-const service = new AjaxRequest();
+const service = AjaxRequest.create();
 
 describe('Unit | Mixin | legacy/normalize error response', function() {
   it('handles JSON:API formatted error objects', function() {
