@@ -13,7 +13,7 @@ export default function request<T = Response>(
   url: string,
   options?: AJAXOptions
 ): AJAXPromise<T> {
-  const ajax = new AjaxRequest();
+  const ajax = AjaxRequest.create();
 
   return ajax.request(url, options);
 }

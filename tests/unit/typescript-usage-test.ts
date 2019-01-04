@@ -28,14 +28,14 @@ describe('TypeScript Usage', function() {
       });
 
       it('works without the generic defined', async function() {
-        const ajax = new AjaxRequest();
+        const ajax = AjaxRequest.create();
         const response = await ajax.request('/users/1');
 
         expect(response).to.deep.equal({ name: 'Alex' });
       });
 
       it('can provide a generic type to resolve to', async function() {
-        const ajax = new AjaxRequest();
+        const ajax = AjaxRequest.create();
         const response = await ajax.request<User>('/users/1');
 
         expect(response).to.deep.equal({ name: 'Alex' });
