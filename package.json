@@ -1,6 +1,6 @@
 {
   "name": "ember-ajax",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "description": "Service for making AJAX requests in Ember applications.",
   "keywords": [
     "ember-addon"

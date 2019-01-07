@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="4.0.2"></a>
+## [4.0.2](https://github.com/ember-cli/ember-ajax/compare/v4.0.1...v4.0.2) (2019-01-07)
+
+
+### Bug Fixes
+
+* **deprecation:** the new EmberObject is deprecated ([80e6e15](https://github.com/ember-cli/ember-ajax/commit/80e6e15))
+
+
+
 <a name="4.0.1"></a>
 ## [4.0.1](https://github.com/ember-cli/ember-ajax/compare/v4.0.0...v4.0.1) (2018-12-10)
 
