@@ -360,6 +360,7 @@ This information is only relevant if you're looking to contribute to `ember-ajax
 ### Compatibility
 
 - Ember CLI v2.13 or above
+- Ember.js v2.18 or above
 
 ### Installation
 
