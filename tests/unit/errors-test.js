@@ -1,4 +1,3 @@
-import EmberError from '@ember/error';
 import { describe, it } from 'mocha';
 import { assert } from 'chai';
 
@@ -34,7 +33,6 @@ describe('unit/errors-test - AjaxError', function() {
   it('AjaxError', function() {
     const error = new AjaxError();
     ok(error instanceof Error);
-    ok(error instanceof EmberError);
   });
 
   it('InvalidError', function() {
