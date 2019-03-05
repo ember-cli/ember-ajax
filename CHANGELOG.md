@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="5.0.0"></a>
+## [5.0.0](https://github.com/ember-cli/ember-ajax/compare/v4.0.2...v5.0.0) (2019-03-05)
+
+
+### Breaking Changes
+
+- Update `ember-cli-babel` to v7.x
+  (this requires apps to use Ember CLI 2.13 or above)
+
+- Extend the native `Error` class instead of `EmberError`
+  (fixes compatibility with Ember 3.8)
+
+- Drop Node 4 from `engines` declaration in `package.json`
+  (CI had already been running on Node 6 for a while already)
+
+
+### Bug Fixes
+
+- Restore ability to override the `ajax` service using a JS file
+
+
+### Documentation
+
+- Add "Compatibility" section to the `README` file
+
+
 <a name="4.0.2"></a>
 ## [4.0.2](https://github.com/ember-cli/ember-ajax/compare/v4.0.1...v4.0.2) (2019-01-07)
 
