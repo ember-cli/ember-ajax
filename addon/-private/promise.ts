@@ -21,7 +21,6 @@ export default class AJAXPromise<T> extends Promise<T> {
     ) => void,
     label?: string
   ) {
-    // @ts-ignore
     super(executor, label);
   }
 

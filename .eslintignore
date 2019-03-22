@@ -7,3 +7,4 @@ tmp/
 
 # TypeScript Declarations
 types/
+type-tests/

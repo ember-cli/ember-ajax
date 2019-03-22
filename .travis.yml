@@ -3,7 +3,7 @@ language: node_js
 node_js:
   # we recommend testing addons with the same minimum supported node version as Ember CLI
   # so that your addon works for all apps
-  - "6"
+  - '6'
 
 sudo: false
 dist: trusty
@@ -15,6 +15,7 @@ cache:
   yarn: true
   directories:
     - $HOME/.npm
+    - $HOME/.dts
 
 env:
   global:
@@ -46,6 +47,10 @@ jobs:
   include:
     - stage: lint
       script: yarn lint:js
+    - stage: lint
+      name: 'type information tests'
+      node_js: 10
+      script: ./node_modules/.bin/dtslint type-tests
     - stage: lint
       script: yarn commitlint-travis
     - stage: lint
