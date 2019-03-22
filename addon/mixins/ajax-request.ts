@@ -214,25 +214,25 @@ export default Mixin.create({
    * @property {Headers} headers
    * @public
    */
-  headers: undefined,
+  headers: undefined as undefined | Headers,
 
   /**
    * @property {string} host
    * @public
    */
-  host: undefined,
+  host: undefined as undefined | string,
 
   /**
    * @property {string} namespace
    * @public
    */
-  namespace: undefined,
+  namespace: undefined as undefined | string,
 
   /**
    * @property {Matcher[]} trustedHosts
    * @public
    */
-  trustedHosts: undefined,
+  trustedHosts: undefined as undefined | Matcher[],
 
   /**
    * Make an AJAX request, ignoring the raw XHR object and dealing only with
