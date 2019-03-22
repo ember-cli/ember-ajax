@@ -285,75 +285,87 @@ export default Mixin.create({
 
     const promise = new AJAXPromise<RawResponse>((resolve, reject) => {
       jqXHR
-        .done((payload, textStatus, jqXHR) => {
-          const response = this.handleResponse(
-            jqXHR.status,
-            parseResponseHeaders(jqXHR.getAllResponseHeaders()),
-            payload,
-            requestData
-          );
-
-          if (isAjaxError(response)) {
-            const rejectionParam: RawErrorResponse = {
-              payload,
-              textStatus,
-              jqXHR,
-              response
-            };
-            run.join(null, reject, rejectionParam);
-          } else {
-            const resolutionParam: RawResponse = {
-              payload,
-              textStatus,
-              jqXHR,
-              response
-            };
-            run.join(null, resolve, resolutionParam);
-          }
-        })
-        .fail((jqXHR, textStatus, errorThrown) => {
-          runInDebug(function() {
-            const message = `The server returned an empty string for ${
-              requestData.type
-            } ${
-              requestData.url
-            }, which cannot be parsed into a valid JSON. Return either null or {}.`;
-            const validJSONString = !(
-              textStatus === 'parsererror' && jqXHR.responseText === ''
-            );
-
-            warn(message, validJSONString, {
-              id: 'ds.adapter.returned-empty-string-as-JSON'
-            });
-          });
-
-          const payload =
-            this.parseErrorResponse(jqXHR.responseText) || errorThrown;
-          let response;
-
-          if (textStatus === 'timeout') {
-            response = new TimeoutError();
-          } else if (textStatus === 'abort') {
-            response = new AbortError();
-          } else {
-            response = this.handleResponse<typeof payload>(
+        .done(
+          (
+            payload: any,
+            textStatus: JQuery.Ajax.SuccessTextStatus,
+            jqXHR: JQuery.jqXHR
+          ) => {
+            const response = this.handleResponse(
               jqXHR.status,
               parseResponseHeaders(jqXHR.getAllResponseHeaders()),
               payload,
               requestData
             );
+
+            if (isAjaxError(response)) {
+              const rejectionParam: RawErrorResponse = {
+                payload,
+                textStatus,
+                jqXHR,
+                response
+              };
+              run.join(null, reject, rejectionParam);
+            } else {
+              const resolutionParam: RawResponse = {
+                payload,
+                textStatus,
+                jqXHR,
+                response
+              };
+              run.join(null, resolve, resolutionParam);
+            }
           }
+        )
+        .fail(
+          (
+            jqXHR: JQuery.jqXHR,
+            textStatus: JQuery.Ajax.TextStatus,
+            errorThrown: string
+          ) => {
+            runInDebug(function() {
+              const message = `The server returned an empty string for ${
+                requestData.type
+              } ${
+                requestData.url
+              }, which cannot be parsed into a valid JSON. Return either null or {}.`;
+              const validJSONString = !(
+                textStatus === 'parsererror' && jqXHR.responseText === ''
+              );
 
-          const rejectionParam: RawErrorResponse = {
-            payload,
-            textStatus,
-            jqXHR,
-            errorThrown,
-            response
-          };
+              warn(message, validJSONString, {
+                id: 'ds.adapter.returned-empty-string-as-JSON'
+              });
+            });
 
-          run.join(null, reject, rejectionParam);
-        })
+            const payload =
+              this.parseErrorResponse(jqXHR.responseText) || errorThrown;
+            let response;
+
+            if (textStatus === 'timeout') {
+              response = new TimeoutError();
+            } else if (textStatus === 'abort') {
+              response = new AbortError();
+            } else {
+              response = this.handleResponse<typeof payload>(
+                jqXHR.status,
+                parseResponseHeaders(jqXHR.getAllResponseHeaders()),
+                payload,
+                requestData
+              );
+            }
+
+            const rejectionParam: RawErrorResponse = {
+              payload,
+              textStatus,
+              jqXHR,
+              errorThrown,
+              response
+            };
+
+            run.join(null, reject, rejectionParam);
+          }
+        )
         .always(() => {
           pendingRequestCount = pendingRequestCount - 1;
         });
