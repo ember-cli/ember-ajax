@@ -11,6 +11,14 @@ Service for making AJAX requests in Ember applications.
 - improved error handling
 - ability to specify request headers
 
+#### Contents 
+
+- [Getting Started](#Getting-started)
+- [Ajax Service](#Ajax-Service)
+- [Usage with Ember Data](#Usage-with-Ember-Data)
+- [Stand-Alone Usage](#Stand-Alone-Usage)
+- [CONTRIBUTING](.github/CONTRIBUTING.md)
+
 ## Getting started
 
 If you're just starting out, you already have `ember-ajax` installed! However, if it's missing from your `package.json`, you can add it by doing:
@@ -198,8 +206,8 @@ You can also override the Content-Type per `request` with the `options` paramete
 #### Customize isSuccess
 
 Some APIs respond with status code 200, even though an error has occurred and
-provide a status code in the payload. With the service, you can easily account
-for this behaviour by overwriting the `isSuccess` method.
+provide a status code in the payload. With the service, you can account for this 
+behaviour by overwriting the `isSuccess` method.
 
 ```js
 // app/services/ajax.js
@@ -227,7 +235,8 @@ error result to the service instead of sprinkling it around your code.
 
 #### Built in error types
 
-`ember-ajax` has built-in error types that will be returned from the service in the event of an error:
+`ember-ajax` has built-in error types that will be returned from the service in 
+the event of an error:
 
 - `BadRequestError` (400)
 - `UnauthorizedError`(401)
@@ -242,9 +251,12 @@ All of the above errors are subtypes of `AjaxError`.
 
 #### Error detection helpers
 
-`ember-ajax` comes with helper functions for matching response errors to their respective `ember-ajax` error type. Each of the errors listed above has a corresponding `is*` function (e.g., `isBadRequestError`).
+`ember-ajax` comes with helper functions for matching response errors to their 
+respective `ember-ajax` error type. Each of the errors listed above has a 
+corresponding `is*` function (e.g., `isBadRequestError`).
 
-Use of these functions is **strongly encouraged** to help eliminate the need for boilerplate error detection code.
+Use of these functions is **strongly encouraged** to help eliminate the need for 
+boilerplate error detection code.
 
 ```js
 import Ember from 'ember';
@@ -282,11 +294,13 @@ export default Ember.Route.extend({
 });
 ```
 
-If your errors aren't standard, the helper function for that error type can be used as the base to build your custom detection function.
+If your errors aren't standard, the helper function for that error type can be 
+used as the base to build your custom detection function.
 
 #### Access the response in case of error
 
-If you need to access the json response of a request that failed, you can use the `raw` method instead of `request`.
+If you need to access the json response of a request that failed, you can use the 
+`raw` method instead of `request`.
 
 ```js
 this.get('ajax')
@@ -295,11 +309,15 @@ this.get('ajax')
   .catch(({ response, jqXHR, payload }) => this.handleError(response));
 ```
 
-Note that in this use case there's no access to the error object. You can inspect the `jqXHR` object for additional information about the failed request. In particular `jqXHR.status` returns the relevant HTTP error code.
+Note that in this use case there's no access to the error object. You can inspect 
+the `jqXHR` object for additional information about the failed request. In 
+particular `jqXHR.status` returns the relevant HTTP error code.
 
 ## Usage with Ember Data
 
-Ember AJAX provides a mixin that can be used in an Ember Data Adapter to avoid the networking code provided by Ember Data and rely on Ember AJAX instead. This serves as a first step toward true integration of Ember AJAX into Ember Data.
+Ember AJAX provides a mixin that can be used in an Ember Data Adapter to avoid 
+the networking code provided by Ember Data and rely on Ember AJAX instead. This 
+serves as a first step toward true integration of Ember AJAX into Ember Data.
 
 To use the mixin, you can include the mixin into an Adapter, like so:
 
@@ -311,9 +329,12 @@ import AjaxServiceSupport from 'ember-ajax/mixins/ajax-support';
 export default DS.JSONAPIAdapter.extend(AjaxServiceSupport);
 ```
 
-That's all the configuration required! If you want to customize the adapter, such as using an alternative AJAX service (like one you extended yourself), hooks to do so are provided; check out the mixin's implementation for details.
+That's all the configuration required! If you want to customize the adapter, such 
+as using an alternative AJAX service (like one you extended yourself), hooks to 
+do so are provided; check out the mixin's implementation for details.
 
-Note that instead of using the Ember Data error checking code in your application, you should use the ones provided by Ember AJAX.
+Note that instead of using the Ember Data error checking code in your application, 
+you should use the ones provided by Ember AJAX.
 
 ## Stand-Alone Usage
 
@@ -335,8 +356,8 @@ export default function someUtility(url) {
 }
 ```
 
-Which will have the same API as the `ajax` service. If you want the raw jQuery XHR object
-then you can use the `raw` method instead:
+Which will have the same API as the `ajax` service. If you want the raw jQuery 
+XHR object then you can use the `raw` method instead:
 
 ```js
 import raw from 'ember-ajax/raw';
@@ -352,33 +373,3 @@ export default function someOtherUtility(url) {
   });
 }
 ```
-
-## Local Development
-
-This information is only relevant if you're looking to contribute to `ember-ajax`.
-
-### Compatibility
-
-- Node.js 6 or above
-- Ember CLI v2.13 or above
-
-### Installation
-
-- `git clone` this repository
-- `npm install`
-
-### Running
-
-- `ember server`
-- Visit your app at http://localhost:4200.
-
-### Running Tests
-
-- `ember test`
-- `ember test --server`
-
-### Building
-
-- `ember build`
-
-For more information on using ember-cli, visit [http://www.ember-cli.com/](http://www.ember-cli.com/).
