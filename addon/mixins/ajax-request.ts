@@ -445,7 +445,7 @@ export default Mixin.create({
     options = assign({}, options);
     options.url = this._buildURL(url, options);
     options.type = options.type || 'GET';
-    options.dataType = options.dataType || 'json';
+    options.dataType = options.hasOwnProperty('dataType') ? options.dataType : 'json';
     options.contentType = isEmpty(options.contentType)
       ? get(this, 'contentType')
       : options.contentType;
