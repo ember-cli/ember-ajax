@@ -4,7 +4,7 @@ import Mixin from '@ember/object/mixin';
 import { get } from '@ember/object';
 import { isEmpty } from '@ember/utils';
 import { assign } from '@ember/polyfills';
-import { run } from '@ember/runloop';
+import { join } from '@ember/runloop';
 import { warn, runInDebug } from '@ember/debug';
 import Ember from 'ember';
 import {
@@ -300,7 +300,7 @@ export default Mixin.create({
               jqXHR,
               response
             };
-            run.join(null, reject, rejectionParam);
+            join(null, reject, rejectionParam);
           } else {
             const resolutionParam: RawResponse = {
               payload,
@@ -308,7 +308,7 @@ export default Mixin.create({
               jqXHR,
               response
             };
-            run.join(null, resolve, resolutionParam);
+            join(null, resolve, resolutionParam);
           }
         })
         .fail((jqXHR, textStatus, errorThrown) => {
@@ -352,7 +352,7 @@ export default Mixin.create({
             response
           };
 
-          run.join(null, reject, rejectionParam);
+          join(null, reject, rejectionParam);
         })
         .always(() => {
           pendingRequestCount = pendingRequestCount - 1;
