@@ -39,7 +39,7 @@
   },
   "dependencies": {
     "ember-cli-babel": "^7.5.0",
-    "najax": "github:najaxjs/najax#master"
+    "najax": "^1.0.7"
   },
   "devDependencies": {
     "@commitlint/cli": "^7.0.0",
