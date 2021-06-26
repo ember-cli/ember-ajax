@@ -19,6 +19,7 @@ import {
 } from 'ember-ajax/errors';
 import Pretender from 'pretender';
 import { jsonResponse, jsonFactory } from 'dummy/tests/helpers/json';
+import AjaxService from 'dummy/services/ajax';
 
 const {
   matchers: { anything, contains: matchContains }
@@ -873,6 +874,20 @@ describe('Unit | Mixin | ajax request', function() {
     });
   });
 
+  it('can handle an empty response', async function() {
+    this.server.post('/posts', () => [201, {}, undefined]);
+
+    const service = new AjaxService();
+
+    // NOTE: `dataType` must be set to `text`, otherwise jQuery will attempt
+    // to convert the response to JSON automatically
+    const response = await service.post('/posts', {
+      dataType: 'text'
+    });
+
+    expect(response).to.equal('');
+  });
+
   describe('URL building', function() {
     class NamespaceLeadingSlash extends AjaxRequest {
       static get slashType() {
@@ -1088,6 +1103,25 @@ describe('Unit | Mixin | ajax request', function() {
           expect(reason.payload).to.be.null;
           expect(reason.status).to.equal(-1);
         });
+    });
+
+    it('does not swallow errors from making the request', function() {
+      this.server.post('/posts', jsonFactory(200), 2);
+
+      class SomeThing {
+        toJSON() {
+          throw new Error('Some user error');
+        }
+      }
+
+      const service = new AjaxRequest();
+
+      expect(() => {
+        service.post('/posts', {
+          contentType: 'application/json',
+          data: new SomeThing()
+        });
+      }, 'Error was not swallowed').to.throw('Some user error');
     });
 
     function errorHandlerTest(status, errorClass) {
