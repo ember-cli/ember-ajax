@@ -1,0 +1,78 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - 'v*'
+  pull_request:
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2.4.0
+      with:
+        # necessary for commitlint-github-action
+        fetch-depth: 0
+
+    - uses: actions/setup-node@v2.4.1
+      with:
+        node-version: '6'
+        cache: yarn
+
+    - run: yarn install --frozen-lockfile
+    - run: yarn lint:js
+    - uses: wagoid/commitlint-github-action@v4
+    - run: yarn ember ts:precompile
+
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2.4.0
+      - uses: actions/setup-node@v2.4.1
+        with:
+          node-version: '6'
+          cache: yarn
+
+      - run: yarn install --frozen-lockfile
+      - run: yarn test
+
+  try-scenarios:
+    name: ember-try
+    runs-on: ubuntu-latest
+    needs: [lint, test]
+
+    strategy:
+      fail-fast: false
+      matrix:
+        ember-try-scenario:
+          - ember-lts-2.12
+          - ember-lts-2.16
+          - ember-lts-2.18
+          - ember-lts-3.4
+          - ember-lts-3.8
+          # disabled because the Ember.js 4 scenarios are not passing yet
+          # - ember-release
+          # - ember-beta
+          # - ember-canary
+          # disabled for now because it fails with a strange ember-data
+          # installation error
+          #- fastboot-addon-tests
+
+    steps:
+      - uses: actions/checkout@v2.4.0
+      - uses: actions/setup-node@v2.4.1
+        with:
+          # some of the unlocked dependency versions that ember-try installs
+          # are incompatible with Node.js 6
+          node-version: '10'
+          cache: yarn
+
+      - run: yarn install --frozen-lockfile
+      - run: node_modules/.bin/ember try:one ${{ matrix.ember-try-scenario }}
