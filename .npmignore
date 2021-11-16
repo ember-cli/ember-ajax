@@ -1,19 +1,27 @@
+/.github/
+/.idea/
+/.vscode/
 /bower_components
 /config/ember-try.js
 /dist
+/fastboot-tests/
 /tests
 /tmp
 **/.gitkeep
 .bowerrc
 .editorconfig
 .ember-cli
+.eslintignore
 .eslintrc.js
 .gitignore
+.prettierrc.js
 .watchmanconfig
 .travis.yml
 bower.json
+commitlint.config.js
 ember-cli-build.js
 testem.js
+*.tgz
 
 # ember-try
 .node_modules.ember-try/
