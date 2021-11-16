@@ -4621,10 +4621,10 @@ ember-compatibility-helpers@^1.0.0:
     ember-cli-version-checker "^2.1.1"
     semver "^5.4.1"
 
-ember-data@^3.1.1:
-  version "3.1.1"
-  resolved "https://registry.yarnpkg.com/ember-data/-/ember-data-3.1.1.tgz#8c17c97a4932b0a0a405cc3e38c43140880366d2"
-  integrity sha512-fEoD80XZtu3U/iebFCNnqy+w0X9SD7oAtTJdLISlHJp872FfKV3UurdD098AJoGfDHy6FCZvCwjq0m4ZS+v+bw==
+ember-data@~3.1.1:
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/ember-data/-/ember-data-3.1.2.tgz#10525e7d3ea52919596b335bdd68f3802de7cda3"
+  integrity sha512-tVD+tnimzJ0CliNNmJRHOzXRaBVqRjrkH9EZUEG7obbCWwOZCQz2NKOlIxbxIoAJmDXMCWRGpqGsYQhDHTz8og==
   dependencies:
     "@ember/ordered-set" "^1.0.0"
     amd-name-resolver "0.0.7"
