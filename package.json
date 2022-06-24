@@ -10,10 +10,7 @@
     "doc": "doc",
     "test": "tests"
   },
-  "repository": {
-    "url": "git@github.com:ember-cli/ember-ajax.git",
-    "type": "git"
-  },
+  "repository": "https://github.com/adopted-ember-addons/ember-ajax",
   "scripts": {
     "build": "ember build",
     "lint:js": "eslint --ext js --ext ts .",
