@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="5.1.2"></a>
+## [5.1.2](https://github.com/ember-cli/ember-ajax/compare/v5.1.1...v5.1.2) (2022-10-11)
+
+
+### Bug Fixes
+
+* resolve `ember-polyfills.deprecate-assign` deprecation warnings ([5175d40](https://github.com/ember-cli/ember-ajax/commit/5175d40))
+
+
+
 <a name="5.0.0"></a>
 ## [5.0.0](https://github.com/ember-cli/ember-ajax/compare/v4.0.2...v5.0.0) (2019-03-05)
 
