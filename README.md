@@ -11,6 +11,10 @@ Service for making AJAX requests in Ember applications.
 - improved error handling
 - ability to specify request headers
 
+## :warning: Deprecated
+
+`ember-ajax` is now deprecated. Please consider using [`ember-fetch`](https://github.com/ember-cli/ember-fetch), or [`ember-ajax-fetch`](https://github.com/expel-io/ember-ajax-fetch) as a more direct replacement.
+
 ## Getting started
 
 If you're just starting out, you already have `ember-ajax` installed! However, if it's missing from your `package.json`, you can add it by doing:
